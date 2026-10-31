@@ -13,6 +13,10 @@
 macOS 14+ · Apple 芯片与 Intel 通用 · 约 3.5 MB · 免费开源
 </p>
 
+<p align="center">
+<a href="https://github.com/Yixin2020818/picline-multispace/releases/latest"><b>↓ 下载 Picline 0.2.0</b></a>
+</p>
+
 ---
 
 ## 这是什么
@@ -60,7 +64,7 @@ Picline 是 [Tendedero](https://github.com/alejandrobujan/tendedero) 的一个�
 
 ## 安装
 
-1. 从 [Releases](../../releases) 下载 `Picline-0.2.0.dmg`。
+1. 从 [Releases](https://github.com/Yixin2020818/picline-multispace/releases/latest) 下载 `Picline-0.2.0.dmg`。
 2. 打开 dmg，把 Picline 拖进「应用程序」。
 3. **首次打开会被 Gatekeeper 拦**（本项目是 adhoc 签名，未做 Apple 公证）：
 
