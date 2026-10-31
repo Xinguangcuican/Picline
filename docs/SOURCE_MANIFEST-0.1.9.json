@@ -1,0 +1,299 @@
+{
+  "format_version": 1,
+  "project": "Picline",
+  "version": "0.1.9",
+  "base_revision": "2c3ffd95f173585260aa198e85d3ea62a878f688",
+  "contents": "Current working files, including local modifications and new files.",
+  "files": [
+    {
+      "path": ".gitignore",
+      "size": 47,
+      "sha256": "24d6615db104792af6a118bcaab9ee134722f51d63306e863fa971758cb66765"
+    },
+    {
+      "path": "LICENSE",
+      "size": 1579,
+      "sha256": "7a1c1e644e9c6cf19afde4c3ca9e0952cbc9acb5d3a26954c69b6fa76eaa303b"
+    },
+    {
+      "path": "NOTICE",
+      "size": 1663,
+      "sha256": "7d31b75d83c96ef411ce9159bfdf08d6772d5a6fe4290122e0501243690e19ca"
+    },
+    {
+      "path": "Package.swift",
+      "size": 525,
+      "sha256": "7083bf0e218af51c3b80ca145aa92e06cc391fd9924c325e108544ee66dbb164"
+    },
+    {
+      "path": "README.md",
+      "size": 3580,
+      "sha256": "463f0885f723a5d9d1207e1bb4c1f8b2816d2e15689bf076bfb6dd70e1882798"
+    },
+    {
+      "path": "Sources/Tendedero/AppDelegate.swift",
+      "size": 39592,
+      "sha256": "5c609b2b3d4163e5c84141a0bc7514e9cb8eb9cb935b52c78b1152166ed29738"
+    },
+    {
+      "path": "Sources/Tendedero/CaptureFlight.swift",
+      "size": 9938,
+      "sha256": "cd773d236ae3fd1837a66f256ad78948ca87f0d2d63837644c5399019890fc7d"
+    },
+    {
+      "path": "Sources/Tendedero/CaptureReceiver.swift",
+      "size": 20344,
+      "sha256": "895bdd5055ec2fd498ad7524e11f0e33ce2cbeb0580fe97b5d595762e78602c8"
+    },
+    {
+      "path": "Sources/Tendedero/ClipboardWatcher.swift",
+      "size": 3734,
+      "sha256": "dba06afe6418113f6d48225bb61a108863b9ce7303e316d7c953a0184f45b3d6"
+    },
+    {
+      "path": "Sources/Tendedero/FullScreen.swift",
+      "size": 2311,
+      "sha256": "4a102ea7c26f6ab48c435c4531e21103933a304a575bb2b99ff95cd0aa5862f4"
+    },
+    {
+      "path": "Sources/Tendedero/GrabArea.swift",
+      "size": 10314,
+      "sha256": "ff2d9c96f7cda57604dda52e231c5c85f8167185b7287b02ca0f476e963b1ba9"
+    },
+    {
+      "path": "Sources/Tendedero/HotKey.swift",
+      "size": 6711,
+      "sha256": "736da0e5ea5cdb78f90b164c41f18044cd1cf1c907c575ce7097a588d3373e04"
+    },
+    {
+      "path": "Sources/Tendedero/ImageOpener.swift",
+      "size": 5543,
+      "sha256": "ed83bf196691a5406a70e2feb2414f7f0338a8aeb81443ab4cf8b6216246e903"
+    },
+    {
+      "path": "Sources/Tendedero/Inbox.swift",
+      "size": 6254,
+      "sha256": "16549fa135546aaac9dcfef138a26fad9dfa8b3d8b0ee7467f4cd67c0eea3bd5"
+    },
+    {
+      "path": "Sources/Tendedero/Line.swift",
+      "size": 16055,
+      "sha256": "6e7239fd6e9f378311e2dac8c5462804584ea8905c6af436a297a140ef277676"
+    },
+    {
+      "path": "Sources/Tendedero/LinePanel.swift",
+      "size": 2136,
+      "sha256": "48352a4fb828399d700a46e648515f11cce1597ce42c1e156836b457a6cf0b79"
+    },
+    {
+      "path": "Sources/Tendedero/LineView.swift",
+      "size": 6062,
+      "sha256": "2a6e515667ecc4877bebd72141ee3c4b340d2e5c332510a8a1cbafb0892990f8"
+    },
+    {
+      "path": "Sources/Tendedero/Localization.swift",
+      "size": 1348,
+      "sha256": "05180ed3f9ea3830addba73d3a91d48e8d9e72d9b9adc67480b5531b0a766531"
+    },
+    {
+      "path": "Sources/Tendedero/Markup.swift",
+      "size": 4093,
+      "sha256": "844c378fc0d1b7b8bbd42b74c22e010cb81e8b717810c669493eeb8125b28e90"
+    },
+    {
+      "path": "Sources/Tendedero/MenuBarIcon.swift",
+      "size": 2102,
+      "sha256": "f64110de7f3aa41f4067db2f2e20b373422d8460235b44a8ebb67f7f2a7c74fb"
+    },
+    {
+      "path": "Sources/Tendedero/OpenSourceNotices.swift",
+      "size": 2220,
+      "sha256": "80ea6c9fb862dd5a371fece2525742035db9e1aa18929797552363bf36e6bd76"
+    },
+    {
+      "path": "Sources/Tendedero/PeggedView.swift",
+      "size": 9461,
+      "sha256": "03ee54f7d1144bfd5a3e7e13e32b49f10813d09dad7f6631626bce741b849bd1"
+    },
+    {
+      "path": "Sources/Tendedero/QuickLook.swift",
+      "size": 2420,
+      "sha256": "ef8b3bcf7cf35d068e23d01d37a19e1b7396fac38a701e1d899925c961a5ea8d"
+    },
+    {
+      "path": "Sources/Tendedero/Resources/Artwork/Picline-AppIcon.png",
+      "size": 1623851,
+      "sha256": "4ad4d19018f0607b7fb0421ecee49ba1c3f8f341e6c6b3cd32af8b730be2ac78"
+    },
+    {
+      "path": "Sources/Tendedero/Resources/az.lproj/Localizable.strings",
+      "size": 5278,
+      "sha256": "3cc2315eac8fd11bb86502c5bd32325954db8fdabfe14098537a7deba6eb1f73"
+    },
+    {
+      "path": "Sources/Tendedero/Resources/en.lproj/Localizable.strings",
+      "size": 5043,
+      "sha256": "5d013fd89546f31fa25ca0ed49bf1d161c0f2d3f4f382e5b7c928b163358cac5"
+    },
+    {
+      "path": "Sources/Tendedero/Resources/es.lproj/Localizable.strings",
+      "size": 5043,
+      "sha256": "6adc7081a3602fd8868f7371b284d0fe38f739864e975f450bcbf965fa194ebd"
+    },
+    {
+      "path": "Sources/Tendedero/Resources/fr.lproj/Localizable.strings",
+      "size": 5247,
+      "sha256": "264a7c884e9cb8f657adb65556e8b2388d5013a8e5355323b40cd5ba29d85f65"
+    },
+    {
+      "path": "Sources/Tendedero/Resources/gl.lproj/Localizable.strings",
+      "size": 4999,
+      "sha256": "e5302baadc88a763d65861993e187003b9655ccee90dde7ae8fc0be24f0738a8"
+    },
+    {
+      "path": "Sources/Tendedero/Resources/hi.lproj/Localizable.strings",
+      "size": 7269,
+      "sha256": "1f5c3cc2cf14721684fca3844fb05ead6695a1452c8214aa5cd2db9a43d5abd0"
+    },
+    {
+      "path": "Sources/Tendedero/Resources/ja.lproj/Localizable.strings",
+      "size": 5655,
+      "sha256": "50cb5df12893db9b64799be4d8648ce4383f8cc1f4da670e00313fe291122aec"
+    },
+    {
+      "path": "Sources/Tendedero/Resources/ko.lproj/Localizable.strings",
+      "size": 5227,
+      "sha256": "ff055da7c879c22887bd73e7dd99315ce28f567928e68258f20499453be291b6"
+    },
+    {
+      "path": "Sources/Tendedero/Resources/pt-BR.lproj/Localizable.strings",
+      "size": 5016,
+      "sha256": "6acc2ee10cfaa601da1ea1e2c2ff540a18c10c3a205f969b0c53136c96904eee"
+    },
+    {
+      "path": "Sources/Tendedero/Resources/tr.lproj/Localizable.strings",
+      "size": 5005,
+      "sha256": "772c61fd90bfdee99c16a593c96a935665c79b6d40fc785aacbdd98d2ebdc34f"
+    },
+    {
+      "path": "Sources/Tendedero/Resources/zh-Hans.lproj/Localizable.strings",
+      "size": 4915,
+      "sha256": "1276473a38890c94b537c76756a51152c4a791fdc7341520c90b172a4d2ac75f"
+    },
+    {
+      "path": "Sources/Tendedero/ScreenshotWatcher.swift",
+      "size": 8911,
+      "sha256": "ec3ea8bcd1837fd3db9f94c9d601a408fcd7317cc616cf0be3431997c5c217ab"
+    },
+    {
+      "path": "Sources/Tendedero/Trim.swift",
+      "size": 4293,
+      "sha256": "3479710c029f943a2f4bdb4bbe7bb602a34f2d23f74ecbc5e329f23810ddd6c6"
+    },
+    {
+      "path": "Sources/Tendedero/main.swift",
+      "size": 229,
+      "sha256": "b7f30e2a3371f402f1f831e31857c94d1cd63eba3f69506fe8b9f05b35d25e8d"
+    },
+    {
+      "path": "Tests/TendederoTests/CaptureDeduplicationTests.swift",
+      "size": 13375,
+      "sha256": "e24b17311b8a2069cfca13a408839ee17d5b3347381e0dcfb76d4ab4a69f36ca"
+    },
+    {
+      "path": "Tests/TendederoTests/CaptureIntakeTests.swift",
+      "size": 22498,
+      "sha256": "0e6ca3b7dae62a4c10ec6b41e3b7d236447578f93cbdc2bf00d693f242b065ba"
+    },
+    {
+      "path": "Tests/TendederoTests/ImageOpenerTests.swift",
+      "size": 6620,
+      "sha256": "65678df9d060eae2d5e1bf7bd791725ca8cd9464c467dd1e6d2ab1f0a1f1837c"
+    },
+    {
+      "path": "Tests/TendederoTests/UpstreamInteractionTests.swift",
+      "size": 3267,
+      "sha256": "7fa29af8b64a51fd3e6e1c4ee20fcaa3767902c4ab183ec1783e96d1d3d06659"
+    },
+    {
+      "path": "docs/Picline.zh-Hans.md",
+      "size": 9578,
+      "sha256": "b45adbe3502510f47c4e0c493fc572e8ed4136b72c871f5593473faa7f106343"
+    },
+    {
+      "path": "docs/design/Picline-Icons-v1/Picline-A-hanging-cards.png",
+      "size": 1623851,
+      "sha256": "4ad4d19018f0607b7fb0421ecee49ba1c3f8f341e6c6b3cd32af8b730be2ac78"
+    },
+    {
+      "path": "docs/design/Picline-Icons-v1/Picline-AppIcon-final.png",
+      "size": 1107862,
+      "sha256": "d0db94d04ac3efd9a057d1343d40eb85fee38e56e9a726b64e498e0f57547f82"
+    },
+    {
+      "path": "docs/design/Picline-Icons-v1/Picline-B-clip.png",
+      "size": 1807221,
+      "sha256": "49dcaffd52e07919ea185e9d0192205bafe2c4af0433b3e427025c3c21074207"
+    },
+    {
+      "path": "docs/design/Picline-Icons-v1/Picline-C-minimal-line.png",
+      "size": 1429870,
+      "sha256": "52dfce5a109c66d557153675dc775919cf758f4f499b993842f6aca15d53f5d1"
+    },
+    {
+      "path": "docs/design/Picline-Icons-v1/Picline-MenuBar-preview.png",
+      "size": 16967,
+      "sha256": "225c69c48a94ce37943aeafaec084878a80ef4a53578f1461aa89116b36d8a14"
+    },
+    {
+      "path": "docs/design/Picline-Icons-v1/implementation.md",
+      "size": 1496,
+      "sha256": "6168923aa8ec1f81219fe5454b1379795d2675cb0c5900554ceeb0ec2fd7ed35"
+    },
+    {
+      "path": "docs/design/Picline-Icons-v1/prompts.md",
+      "size": 3838,
+      "sha256": "e294115b029e7236999a4412b7d687bd5921236ced21210dfb2412acefcc660a"
+    },
+    {
+      "path": "scripts/build-app.sh",
+      "size": 123,
+      "sha256": "ff3beb874436c567ab05ab163358d59cb817a6e2e9d31a59d2fe359100fb88b3"
+    },
+    {
+      "path": "scripts/build-picline.sh",
+      "size": 3212,
+      "sha256": "d73793774ca4d40685b17826a34fa5332ddeacfc8a808eb5ced1b535bca0d6a1"
+    },
+    {
+      "path": "scripts/build-preview.sh",
+      "size": 142,
+      "sha256": "6ef5137b9577ee93db3dd56242b13e4285be258d83179cb917f11595a70b01c3"
+    },
+    {
+      "path": "scripts/check-strings.swift",
+      "size": 2595,
+      "sha256": "214964fb3d9e7d9db469ce628de12704bee29ecf226364d9fc8a620604a0ac10"
+    },
+    {
+      "path": "scripts/make-dmg-background.swift",
+      "size": 2502,
+      "sha256": "e9c3378cc19047377bb4dd4a815844ce78a895a32ebfea89f91bcb1429d83371"
+    },
+    {
+      "path": "scripts/make-dmg.sh",
+      "size": 4234,
+      "sha256": "956d2d346213e81d8663684ac2b8de85589a70f484e3076b95912db7f8c18193"
+    },
+    {
+      "path": "scripts/make-picline-icon.swift",
+      "size": 3100,
+      "sha256": "c297731913453b1152171a5346c003f1d6b965ee4b273e1af1e7cab0d9d9fd4f"
+    },
+    {
+      "path": "scripts/package-source.py",
+      "size": 3855,
+      "sha256": "b570dfe786921448974b67fde7483cab0e6578f11d1b2b85d7fc9c0bd1a25605"
+    }
+  ]
+}

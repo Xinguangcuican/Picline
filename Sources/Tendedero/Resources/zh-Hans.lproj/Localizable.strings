@@ -1,0 +1,91 @@
+/* Chinese (Simplified). */
+
+/* AppDelegate */
+"Let Picline handle your screenshots?" = "让 Picline 接收系统截图？";
+"Screenshots will hang on the line the instant you take them, without the floating thumbnail, and will not pile up on your Desktop. Drag one to a folder to keep it, or discard it with the cross. You can turn this off from the menu bar, and your settings come back when Picline quits." = "开启后，macOS 截图会直接保存到本应用的截图文件夹并挂到绳子上，不再显示系统浮动缩略图，也不会堆积在桌面。拖到文件夹即可保留，点叉可丢弃。此设置仅影响系统截图，不会更改 Shottr 或 Snapzy 的设置；关闭此选项或退出应用后，系统截图设置会恢复。";
+"Turn on" = "开启";
+"Not now" = "暂不开启";
+"Hide line" = "隐藏晾衣绳";
+"Show line" = "显示晾衣绳";
+"Take everything down" = "全部取下";
+"Handle screenshots" = "接收系统截图";
+"Screenshots hang instantly and skip the Desktop" = "截图即刻挂上，不再经过桌面";
+"Open screenshots folder" = "打开截图文件夹";
+"Sounds" = "声音";
+"Open at login" = "登录时打开";
+"Check for Updates…" = "检查更新…";
+"Quit Picline" = "退出 Picline";
+"Could not change the login setting" = "无法更改登录项设置";
+"Move Picline to the Applications folder and try again." = "请先把 Picline 移到「应用程序」文件夹，再试一次。";
+"Keep on line" = "保留数量";
+"As many as fit" = "以屏幕可容纳数量为限";
+"%d photos" = "%d 张";
+"Also watch folders" = "接收其他文件夹的截图";
+"Add Folder…" = "添加文件夹…";
+"Stop Watching" = "停止监视";
+"Watch" = "添加";
+"New images saved to this folder and its subfolders will hang on the line. Copied images from this folder are accepted too." = "此文件夹及其子文件夹中新保存的图片会挂到绳子上，也会接收从这里复制的图片。";
+"Shortcut" = "快捷键";
+"Change Shortcut…" = "更改快捷键…";
+"Change Shortcut" = "更改快捷键";
+"None" = "无";
+"Space" = "空格";
+"Press the new shortcut" = "请按下新的快捷键";
+"Escape cancels. Delete removes the shortcut." = "按 Esc 取消，按删除键移除快捷键。";
+"Size" = "大小";
+"Small" = "小";
+"Medium" = "中";
+"Large" = "大";
+"Bring the line down" = "放下晾衣绳";
+"When the pointer rests in the menu bar" = "指针停在菜单栏时";
+"When something new hangs" = "有新内容挂上时";
+"Over full screen apps" = "在全屏应用上方显示";
+"Hang copied images" = "接收剪贴板图片";
+"Images you copy hang on the line too" = "接收复制的图片；文件形式的图片需位于已添加的截图文件夹中";
+"Picline, hanging copied images" = "Picline，正在挂上复制的图片";
+"The line is empty" = "晾衣绳上是空的";
+"%d on the line" = "晾衣绳上有 %d 张";
+
+/* GrabArea */
+"Copy" = "复制";
+"Open" = "打开";
+"Quick Look" = "快速查看";
+"Markup" = "标记";
+"Show in Finder" = "在访达中显示";
+"Save to Desktop" = "存储到桌面";
+"Discard" = "丢弃";
+"Take down" = "取下";
+"Move to Trash" = "移到废纸篓";
+"Take down everything to the left" = "取下左侧全部";
+"Take down everything to the right" = "取下右侧全部";
+
+/* LineView */
+"Take a screenshot and it will hang here" = "截图后，图片会挂到这里";
+
+/* PeggedView */
+"Copied" = "已复制";
+
+/* Interface language */
+"Language" = "语言";
+"Follow System" = "跟随系统";
+
+/* Image opening */
+"Preview" = "预览";
+"Double-Click Opens Images With" = "双击图片打开方式";
+"System Default" = "系统默认";
+"Not installed" = "未安装";
+"Other Application…" = "其他应用…";
+"Choose" = "选择";
+"Choose an application to open images when you double-click them." = "选择双击图片时使用的应用。";
+"Could not open the image" = "无法打开图片";
+"%@ could not open this image. Check that it is installed, or choose another application in the menu." = "%@ 未能打开此图片。请确认该应用仍已安装，或在菜单中选择其他应用。";
+"Use System Default" = "使用系统默认应用";
+"Cancel" = "取消";
+"Check that the file still exists and that an application is available to open it." = "请确认文件仍然存在，并且已安装可打开它的应用。";
+"OK" = "好";
+
+/* Open source notices */
+"Open Source Notices" = "开源声明";
+"Picline is based on Tendedero by Alejandro Buján. The upstream source code is licensed under the MIT License. Picline uses its own name and icon and is an independent modified version." = "Picline 基于 Alejandro Buján 开发的 Tendedero 修改而来。上游源代码采用 MIT 许可证。Picline 使用独立名称与图标，为独立修改版本。";
+"Upstream Project" = "上游项目";
+"The license file is unavailable in this build." = "此构建中无法读取许可证文件。";

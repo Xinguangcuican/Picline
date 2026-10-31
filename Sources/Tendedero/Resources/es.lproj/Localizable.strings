@@ -1,0 +1,91 @@
+/* Spanish. */
+
+/* AppDelegate */
+"Let Picline handle your screenshots?" = "¿Quieres que Picline se encargue de tus capturas?";
+"Screenshots will hang on the line the instant you take them, without the floating thumbnail, and will not pile up on your Desktop. Drag one to a folder to keep it, or discard it with the cross. You can turn this off from the menu bar, and your settings come back when Picline quits." = "Las capturas se colgarán al instante, sin la miniatura flotante, y no se acumularán en el Escritorio. Arrastra una a una carpeta para guardarla, o descártala con la cruz. Puedes desactivarlo desde la barra de menús, y tus ajustes vuelven a ser los de antes al salir de Picline.";
+"Turn on" = "Activar";
+"Not now" = "Ahora no";
+"Hide line" = "Ocultar tendedero";
+"Show line" = "Mostrar tendedero";
+"Take everything down" = "Descolgar todo";
+"Handle screenshots" = "Encargarse de las capturas";
+"Screenshots hang instantly and skip the Desktop" = "Las capturas se cuelgan al instante y no pasan por el Escritorio";
+"Open screenshots folder" = "Abrir carpeta de capturas";
+"Sounds" = "Sonidos";
+"Open at login" = "Abrir al iniciar sesión";
+"Check for Updates…" = "Buscar actualizaciones…";
+"Quit Picline" = "Salir de Picline";
+"Could not change the login setting" = "No se pudo cambiar el inicio de sesión";
+"Move Picline to the Applications folder and try again." = "Mueve Picline a la carpeta Aplicaciones y vuelve a intentarlo.";
+"Keep on line" = "Guardar en la cuerda";
+"As many as fit" = "Las que quepan";
+"%d photos" = "%d fotos";
+"Also watch folders" = "Vigilar también carpetas";
+"Add Folder…" = "Añadir carpeta…";
+"Stop Watching" = "Dejar de vigilar";
+"Watch" = "Vigilar";
+"New images saved to this folder and its subfolders will hang on the line. Copied images from this folder are accepted too." = "Las imágenes nuevas que se guarden en esta carpeta se colgarán en la cuerda.";
+"Shortcut" = "Atajo";
+"Change Shortcut…" = "Cambiar atajo…";
+"Change Shortcut" = "Cambiar atajo";
+"None" = "Ninguno";
+"Space" = "Espacio";
+"Press the new shortcut" = "Pulsa el nuevo atajo";
+"Escape cancels. Delete removes the shortcut." = "Escape cancela. Borrar quita el atajo.";
+"Size" = "Tamaño";
+"Small" = "Pequeño";
+"Medium" = "Mediano";
+"Large" = "Grande";
+"Bring the line down" = "Bajar la cuerda";
+"When the pointer rests in the menu bar" = "Al dejar el puntero en la barra de menús";
+"When something new hangs" = "Cuando se cuelga algo nuevo";
+"Over full screen apps" = "Sobre apps a pantalla completa";
+"Hang copied images" = "Colgar imágenes copiadas";
+"Images you copy hang on the line too" = "Las imágenes que copias también se cuelgan";
+"Picline, hanging copied images" = "Picline, colgando imágenes copiadas";
+"The line is empty" = "La cuerda está vacía";
+"%d on the line" = "%d en la cuerda";
+
+/* GrabArea */
+"Copy" = "Copiar";
+"Open" = "Abrir";
+"Quick Look" = "Vista Rápida";
+"Markup" = "Marcación";
+"Show in Finder" = "Mostrar en Finder";
+"Save to Desktop" = "Guardar en el Escritorio";
+"Discard" = "Descartar";
+"Take down" = "Descolgar";
+"Move to Trash" = "Mover a la Papelera";
+"Take down everything to the left" = "Descolgar todo lo de la izquierda";
+"Take down everything to the right" = "Descolgar todo lo de la derecha";
+
+/* LineView */
+"Take a screenshot and it will hang here" = "Haz una captura y se quedará colgada aquí";
+
+/* PeggedView */
+"Copied" = "Copiado";
+
+/* Interface language */
+"Language" = "Language";
+"Follow System" = "Follow System";
+
+/* Image opening */
+"Preview" = "Preview";
+"Double-Click Opens Images With" = "Double-Click Opens Images With";
+"System Default" = "System Default";
+"Not installed" = "Not installed";
+"Other Application…" = "Other Application…";
+"Choose" = "Choose";
+"Choose an application to open images when you double-click them." = "Choose an application to open images when you double-click them.";
+"Could not open the image" = "Could not open the image";
+"%@ could not open this image. Check that it is installed, or choose another application in the menu." = "%@ could not open this image. Check that it is installed, or choose another application in the menu.";
+"Use System Default" = "Use System Default";
+"Cancel" = "Cancel";
+"Check that the file still exists and that an application is available to open it." = "Check that the file still exists and that an application is available to open it.";
+"OK" = "OK";
+
+/* Open source notices */
+"Open Source Notices" = "Avisos de código abierto";
+"Picline is based on Tendedero by Alejandro Buján. The upstream source code is licensed under the MIT License. Picline uses its own name and icon and is an independent modified version." = "Picline se basa en Tendedero, de Alejandro Buján. El código fuente original está bajo la licencia MIT. Picline usa su propio nombre e icono y es una versión modificada independiente.";
+"Upstream Project" = "Proyecto original";
+"The license file is unavailable in this build." = "El archivo de licencia no está disponible en esta compilación.";
