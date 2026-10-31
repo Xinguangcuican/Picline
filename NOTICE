@@ -1,0 +1,43 @@
+Picline — Open Source Notices
+
+Picline is an independent modified version of Tendedero.
+Upstream project: https://github.com/alejandrobujan/tendedero
+Upstream author: Alejandro Buján
+Upstream copyright: Copyright (c) 2026 Alejandro Buján
+
+The upstream source code is licensed under the MIT License. The original
+copyright, permission notice, disclaimer and name/icon terms are preserved
+in the accompanying LICENSE file and are reproduced below in the app.
+
+The upstream MIT grant does not include the Tendedero name, its original
+icon artwork or the upstream documentation images. Picline uses its own
+name, independently created app artwork, and a custom menu-bar drawing.
+Picline is not presented as an official or endorsed Tendedero release.
+
+Picline's Swift package has no external package dependencies. Apple system
+frameworks are provided by macOS. Shottr, Snapzy and other chosen editors
+are separate applications; their software is not bundled with Picline.
+
+开源声明
+
+Picline 基于 Alejandro Buján 开发的 Tendedero 修改而来。
+上游源代码采用 MIT 许可证，原始版权声明、授权条款、免责条款及
+名称和图标的使用说明完整保留于 LICENSE，并可在本应用内查看。
+
+上游 MIT 授权不包含 Tendedero 的名称、原始图标及上游文档图片。
+Picline 使用独立名称、独立制作的 App 图标及自绘菜单栏图标，
+为独立修改版本，不代表上游官方发布或原作者背书。
+
+Picline 的 Swift Package 未引入外部第三方包。Apple 系统框架由
+macOS 提供；Shottr、Snapzy 等编辑器是用户单独安装的应用，
+Picline 未捆绑这些软件。
+
+多桌面版的补充说明
+
+本仓库（Picline 0.2.0）在 Picline 0.1.9 的基础上只做了一处功能修改：
+让晾衣绳在多个桌面（Spaces）中都能显示，做法参考上游 Tendedero 修复
+issue #80 的提交 b8242b0（作者 Alejandro Buján，MIT 许可）。
+
+除此之外的收图、剪贴板、界面、本地化代码均沿用 Picline 0.1.9。
+本项目不主张对 Tendedero 与 Picline 名称、图标及文档图片的任何权利。
+
