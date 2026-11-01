@@ -46,6 +46,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var pinned = false
     /// A new screenshot shows itself for a moment, then tucks away.
     private var peekUntil = Date.distantPast
+    /// When the pointer first landed in the menu bar, while it is still there.
+    /// The line waits out the short buffer below before coming down, so a
+    /// pointer merely crossing the top does not pull it out.
+    private var hotZoneSince: Date?
     /// After a click in the menu bar the line stays up there hidden until the
     /// pointer leaves the menu bar, so it does not come back over a menu.
     private var menuBarSuppressed = false
@@ -496,12 +500,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     private func startMouseTracking() {
         guard mouseTimer == nil else { return }
-        let timer = Timer(timeInterval: 1.0 / 30.0, repeats: true) { [weak self] _ in
+        // 60Hz rather than 30: the buffer below is only a few frames long, and
+        // a coarse poll would stretch it out by a whole frame on average.
+        let timer = Timer(timeInterval: 1.0 / 60.0, repeats: true) { [weak self] _ in
             MainActor.assumeIsolated { self?.tick() }
         }
         RunLoop.main.add(timer, forMode: .common)
         mouseTimer = timer
     }
+
+    /// The buffer between the pointer landing in the menu bar and the line
+    /// coming down. Short enough that it still reads as instant, long enough
+    /// to swallow a pointer on its way somewhere else.
+    private static let revealDelay: TimeInterval = 0.06
 
     /// The menu bar strip at the top of a screen. With an auto-hiding menu
     /// bar the visible frame reaches the top, so the system thickness is used.
@@ -519,6 +530,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 let p = NSEvent.mouseLocation
                 guard NSScreen.screens.contains(where: { NSMouseInRect(p, Self.menuBarBand(of: $0), false) }) else { return }
                 self.menuBarSuppressed = true
+                self.hotZoneSince = nil
                 if self.isRevealed {
                     self.pinned = false
                     self.setRevealed(false)
@@ -544,21 +556,29 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if !inMenuBar { menuBarSuppressed = false }
 
         guard isRevealed else {
-            // The line comes down the moment the cursor is in the menu bar of
-            // a screen: no dwell time, no second step. It goes back up as
-            // soon as the cursor leaves, and a click in the menu bar puts it
-            // away for as long as the cursor stays up there, so reaching for
-            // a menu does not leave the rope hanging over the window.
+            // Landing in the menu bar brings the line down on that screen
+            // after a very short buffer: short enough to feel like the rope
+            // was already waiting, long enough that crossing the top edge on
+            // the way somewhere else does not pull it out.
+            // A click in the menu bar puts it away for as long as the cursor
+            // stays up there, so reaching for a menu leaves nothing hanging.
             // An empty line comes down too: the bare rope is how you find out
             // the app is there at all, and it costs nothing to show.
             if Self.opensFromMenuBar, let screen = screenUnderPointer,
                inMenuBar, !menuBarSuppressed, !FullScreen.blocksLine(on: screen) {
-                if panel.screen != screen || !isPresent {
-                    panel.placeOnScreen(screen)
-                    updateCapacity()
+                let since = hotZoneSince ?? now
+                hotZoneSince = since
+                if now.timeIntervalSince(since) >= Self.revealDelay {
+                    hotZoneSince = nil
+                    if panel.screen != screen || !isPresent {
+                        panel.placeOnScreen(screen)
+                        updateCapacity()
+                    }
+                    refresh()
+                    reveal()
                 }
-                refresh()
-                reveal()
+            } else {
+                hotZoneSince = nil
             }
             return
         }
