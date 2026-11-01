@@ -15,7 +15,7 @@ macOS 14+ · Apple 芯片与 Intel 通用 · 约 3.5 MB · 免费开源
 </p>
 
 <p align="center">
-<a href="https://github.com/Xinguangcuican/Picline/releases/latest"><b>↓ 下载 Picline 0.2.4</b></a>
+<a href="https://github.com/Xinguangcuican/Picline/releases/latest"><b>↓ 下载 Picline 0.2.5</b></a>
 </p>
 
 <p align="center">
@@ -77,7 +77,7 @@ Picline 是 [Tendedero](https://github.com/alejandrobujan/tendedero) 的一个�
 
 | 操作 | 结果 |
 | --- | --- |
-| 指针停在菜单栏中间 | 在那一块屏幕上把绳子放下来 |
+| 指针停在菜单栏中间 | 在那一块屏幕上把绳子放下来 —— 绳子上没有图也照样放下来，看到的就是那条空绳和一句提示 |
 | 点击菜单栏任意处 | 把绳子收起来 |
 | 指针移开超过 0.5 秒 | 绳子自己收回去 |
 | `Control + Option + T` | 显示 / 隐藏绳子（菜单栏「快捷键」里可改） |
@@ -123,7 +123,7 @@ QSpace 有自己的右键菜单，但「打开方式」同样走系统那一套�
 
 ## 安装
 
-1. 从 [Releases](https://github.com/Xinguangcuican/Picline/releases/latest) 下载 `Picline-0.2.4.dmg`。
+1. 从 [Releases](https://github.com/Xinguangcuican/Picline/releases/latest) 下载 `Picline-0.2.5.dmg`。
 2. 打开 dmg，把 Picline 拖进「应用程序」。
 3. **首次打开会被 Gatekeeper 拦**（本项目是 adhoc 签名，未做 Apple 公证）：
 
@@ -157,8 +157,8 @@ scripts/package-dmg.sh               # 额外产出 build/Picline-<版本>.dmg
 打一个 tag 推上去就行，编译、打包、发 Release 全部由 GitHub Actions 完成：
 
 ```sh
-git tag v0.2.4
-git push origin v0.2.4
+git tag v0.2.5
+git push origin v0.2.5
 ```
 
 1. **版本号取自 tag**，代码里的任何数字都不用改。
@@ -175,7 +175,7 @@ Tendedero (Alejandro Buján, MIT)
           └── Picline 0.2.0 多桌面版
                  └── Picline 0.2.1（隔空投送、长按预览）
                         └── Picline 0.2.3（访达服务）
-                               └── Picline 0.2.4（本仓库当前版本，访达「打开方式」）
+                               └── Picline 0.2.5（本仓库当前版本，空绳子也能唤出）
 ```
 
 本仓库只做多桌面适配，不包含上游名称与图标的授权。详见 [`NOTICE`](NOTICE)。
