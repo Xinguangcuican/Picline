@@ -6,7 +6,8 @@
 
 <p align="center">
 截图不再落到桌面上，而是挂在菜单栏下面的一根绳子上，随用随取。<br>
-这个版本修好了一件事：<b>多桌面（Spaces）里都能用</b>。
+这个版本修好了一件事：<b>多桌面（Spaces）里都能用</b>。<br>
+0.2.1 又加了<b>隔空投送</b>和<b>长按预览</b>。
 </p>
 
 <p align="center">
@@ -14,7 +15,7 @@ macOS 14+ · Apple 芯片与 Intel 通用 · 约 3.5 MB · 免费开源
 </p>
 
 <p align="center">
-<a href="https://github.com/Yixin2020818/picline-multispace/releases/latest"><b>↓ 下载 Picline 0.2.0</b></a>
+<a href="https://github.com/Yixin2020818/picline-multispace/releases/latest"><b>↓ 下载 Picline 0.2.1</b></a>
 </p>
 
 ---
@@ -42,7 +43,7 @@ Picline 是 [Tendedero](https://github.com/alejandrobujan/tendedero) 的一个�
 - `scripts/build-picline.sh`：版本号升到 `0.2.0 (11)`，release 默认编**通用二进制**（arm64 + x86_64），构建前清空旧 bundle。
 - `scripts/package-dmg.sh`：新增，一条命令出可分发的 dmg。
 
-完整 diff 见 [`picline-multispace-0.2.0.patch`](picline-multispace-0.2.0.patch)。
+完整 diff 见 [`picline-multispace-0.2.1.patch`](picline-multispace-0.2.1.patch)。
 
 ## 两个关键功能
 
@@ -62,9 +63,28 @@ Picline 是 [Tendedero](https://github.com/alejandrobujan/tendedero) 的一个�
 
 切换桌面后，把鼠标压到屏幕顶部中间，绳子照常落下。见上文改动说明。
 
+## 怎么用
+
+绳子挂下来之后，一张图能做的事：
+
+| 操作 | 结果 |
+| --- | --- |
+| 单击 | 复制到剪贴板 |
+| 双击 | 用默认应用打开 |
+| **按住 0.45 秒** | **快速查看**，之后左右方向键翻整条绳子，空格或 Esc 关闭 |
+| 力触控（触控板）/ 中键（鼠标） | 标记 |
+| 拖出去 | 存成文件：拖到应用是给副本，拖到文件夹或桌面是留下原文件 |
+| 拖到废纸篓 | 删除 |
+| 左上角叉号 | 从绳子上取下 |
+| 右键 | 菜单：复制、打开、快速查看、标记、在访达中显示、**隔空投送**、存储到桌面、丢弃、取下左右两侧全部 |
+
+**隔空投送**：右键选「隔空投送」，系统窗口列出附近设备，选一台就发过去；绳子上的图不消失。文件已被移走或删除时，这一项会置灰。
+
+> 为什么不是「左键选中 + 空格预览」：绳子的窗口（`LinePanel`）`canBecomeKey` 恒为 `false`，这是上游刻意的设计 —— 它永远不抢你正在用的 App 的键盘焦点。要支持空格，只能改成抢焦点，或挂需要「辅助功能」权限的全局事件拦截，两者代价都大于收益。
+
 ## 安装
 
-1. 从 [Releases](https://github.com/Yixin2020818/picline-multispace/releases/latest) 下载 `Picline-0.2.0.dmg`。
+1. 从 [Releases](https://github.com/Yixin2020818/picline-multispace/releases/latest) 下载 `Picline-0.2.1.dmg`。
 2. 打开 dmg，把 Picline 拖进「应用程序」。
 3. **首次打开会被 Gatekeeper 拦**（本项目是 adhoc 签名，未做 Apple 公证）：
 
@@ -98,7 +118,8 @@ scripts/package-dmg.sh               # 额外产出 build/Picline-<版本>.dmg
 ```
 Tendedero (Alejandro Buján, MIT)
    └── Picline 0.1.9 (老张，增强剪贴板与收图)
-          └── Picline 0.2.0 多桌面版（本仓库）
+          └── Picline 0.2.0 多桌面版
+                 └── Picline 0.2.1（本仓库当前版本）
 ```
 
 本仓库只做多桌面适配，不包含上游名称与图标的授权。详见 [`NOTICE`](NOTICE)。

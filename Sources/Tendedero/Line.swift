@@ -316,6 +316,29 @@ final class Line: ObservableObject {
         NSWorkspace.shared.activateFileViewerSelecting([item.url])
     }
 
+    /// Hands the photo to AirDrop: the system window lists the devices near
+    /// you, and the one you pick gets the file. The photo stays on the line.
+    ///
+    /// The window belongs to the sharing service, so it is opened after the
+    /// menu has closed: nothing of ours can pop a window while a menu still
+    /// runs its own event loop.
+    func airdrop(_ id: UUID) {
+        guard let item = items.first(where: { $0.id == id }),
+              FileManager.default.fileExists(atPath: item.url.path),
+              let service = NSSharingService(named: .sendViaAirDrop),
+              service.canPerform(withItems: [item.url]) else {
+            NSSound.beep()
+            return
+        }
+        DispatchQueue.main.async {
+            // The line is a floating strip that never takes focus; the
+            // AirDrop window is a normal one, so the app has to come forward
+            // for it to be in front of what you were doing.
+            NSApp.activate(ignoringOtherApps: true)
+            service.perform(withItems: [item.url])
+        }
+    }
+
     // MARK: Breeze
 
     /// Every so often a little wind moves the line. It is the detail that

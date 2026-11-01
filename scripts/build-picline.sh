@@ -36,8 +36,8 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
   <key>CFBundleExecutable</key><string>Picline</string>
   <key>CFBundleIconFile</key><string>Picline</string>
   <key>CFBundlePackageType</key><string>APPL</string>
-  <key>CFBundleShortVersionString</key><string>0.2.0</string>
-  <key>CFBundleVersion</key><string>11</string>
+  <key>CFBundleShortVersionString</key><string>0.2.1</string>
+  <key>CFBundleVersion</key><string>12</string>
   <key>CFBundleDevelopmentRegion</key><string>en</string>
   <key>CFBundleLocalizations</key><array><string>en</string><string>zh-Hans</string><string>es</string><string>fr</string><string>gl</string><string>az</string><string>hi</string><string>ja</string><string>ko</string><string>pt-BR</string><string>tr</string></array>
   <key>PiclineDefaultLanguage</key><string>zh-Hans</string>
