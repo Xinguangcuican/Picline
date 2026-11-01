@@ -11,8 +11,8 @@ OUTPUT_DIR="${PICLINE_OUTPUT_DIR:-$PREVIEW_DIR}"
 APP="$OUTPUT_DIR/Picline.app"
 # The version normally lives here, but a release build can override it so that
 # CI derives the number from the tag instead of editing this file.
-VERSION="${PICLINE_VERSION:-0.2.3}"
-BUILD_NUMBER="${PICLINE_BUILD:-14}"
+VERSION="${PICLINE_VERSION:-0.2.4}"
+BUILD_NUMBER="${PICLINE_BUILD:-16}"
 export CLANG_MODULE_CACHE_PATH="$PREVIEW_CACHE/modules"
 export SWIFTPM_MODULECACHE_OVERRIDE="$CLANG_MODULE_CACHE_PATH"
 # Release builds are universal so the app can be handed to Intel Macs too.
@@ -68,8 +68,16 @@ cat > "$APP/Contents/Info.plist" <<PLIST
       <key>NSPortName</key><string>Picline</string>
       <key>NSSendFileTypes</key>
       <array><string>public.image</string></array>
-      <key>NSSendTypes</key>
-      <array><string>public.tiff</string><string>public.png</string></array>
+    </dict>
+  </array>
+  <key>CFBundleDocumentTypes</key>
+  <array>
+    <dict>
+      <key>CFBundleTypeName</key><string>Image</string>
+      <key>CFBundleTypeRole</key><string>Viewer</string>
+      <key>LSHandlerRank</key><string>Alternate</string>
+      <key>LSItemContentTypes</key>
+      <array><string>public.image</string></array>
     </dict>
   </array>
 </dict></plist>

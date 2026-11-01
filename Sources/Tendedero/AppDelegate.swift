@@ -952,6 +952,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         inputs.forEach(receiver.receive)
     }
 
+    /// `Open With > Picline` in Finder, and anything else that asks us to open
+    /// image files (a dragged selection, a shell `open -a Picline shot.png`).
+    /// The files are hung exactly as if they had been copied, so the original
+    /// can be moved or deleted afterwards without losing the card.
+    func application(_ sender: NSApplication, openFiles filenames: [String]) {
+        let items = filenames.map { path -> NSPasteboardItem in
+            let item = NSPasteboardItem()
+            item.setString(URL(fileURLWithPath: path).absoluteString, forType: .fileURL)
+            return item
+        }
+        let inputs = ClipboardWatcher.inputs(from: items)
+        guard !inputs.isEmpty else {
+            sender.reply(toOpenOrPrint: .failure)
+            return
+        }
+        inputs.forEach(receiver.receive)
+        sender.reply(toOpenOrPrint: .success)
+    }
+
     // MARK: Quick Look
 
     /// With no window of ours in front, Quick Look finds its controller here.
