@@ -9,14 +9,24 @@ PREVIEW_DIR="$PWD/build"
 PREVIEW_CACHE="${TMPDIR:-/private/tmp}/picline-build-cache"
 OUTPUT_DIR="${PICLINE_OUTPUT_DIR:-$PREVIEW_DIR}"
 APP="$OUTPUT_DIR/Picline.app"
+# The version normally lives here, but a release build can override it so that
+# CI derives the number from the tag instead of editing this file.
+VERSION="${PICLINE_VERSION:-0.2.1}"
+BUILD_NUMBER="${PICLINE_BUILD:-12}"
 export CLANG_MODULE_CACHE_PATH="$PREVIEW_CACHE/modules"
 export SWIFTPM_MODULECACHE_OVERRIDE="$CLANG_MODULE_CACHE_PATH"
 # Release builds are universal so the app can be handed to Intel Macs too.
 ARCH_ARGS=()
 if [ "$CONFIGURATION" = release ]; then ARCH_ARGS=(--arch arm64 --arch x86_64); fi
-SWIFT_ARGS=(--disable-sandbox --scratch-path "$PREVIEW_DIR/swift-picline"
-  --cache-path "$PREVIEW_CACHE/cache" --config-path "$PREVIEW_CACHE/config"
-  --security-path "$PREVIEW_CACHE/security" -c "$CONFIGURATION" "${ARCH_ARGS[@]}")
+# The cache flags are local conveniences; CI images do not always have the
+# SwiftPM version that understands them, so CI asks for the plain form.
+if [ "${PICLINE_SIMPLE:-0}" = 1 ]; then
+  SWIFT_ARGS=(--disable-sandbox -c "$CONFIGURATION" "${ARCH_ARGS[@]}")
+else
+  SWIFT_ARGS=(--disable-sandbox --scratch-path "$PREVIEW_DIR/swift-picline"
+    --cache-path "$PREVIEW_CACHE/cache" --config-path "$PREVIEW_CACHE/config"
+    --security-path "$PREVIEW_CACHE/security" -c "$CONFIGURATION" "${ARCH_ARGS[@]}")
+fi
 swift build "${SWIFT_ARGS[@]}" --product Picline
 BIN_DIR="$(swift build "${SWIFT_ARGS[@]}" --show-bin-path)"
 # Start from a clean bundle so nothing from an older build lingers.
@@ -26,7 +36,7 @@ cp "$BIN_DIR/Picline" "$APP/Contents/MacOS/.Picline.new"
 mv -f "$APP/Contents/MacOS/.Picline.new" "$APP/Contents/MacOS/Picline"
 for dir in Sources/Tendedero/Resources/*.lproj; do cp -R "$dir" "$APP/Contents/Resources/"; done
 swift -module-cache-path "$CLANG_MODULE_CACHE_PATH" scripts/make-picline-icon.swift "$APP/Contents/Resources/Picline.icns"
-cat > "$APP/Contents/Info.plist" <<'PLIST'
+cat > "$APP/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict>
@@ -36,8 +46,8 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
   <key>CFBundleExecutable</key><string>Picline</string>
   <key>CFBundleIconFile</key><string>Picline</string>
   <key>CFBundlePackageType</key><string>APPL</string>
-  <key>CFBundleShortVersionString</key><string>0.2.1</string>
-  <key>CFBundleVersion</key><string>12</string>
+  <key>CFBundleShortVersionString</key><string>${VERSION}</string>
+  <key>CFBundleVersion</key><string>${BUILD_NUMBER}</string>
   <key>CFBundleDevelopmentRegion</key><string>en</string>
   <key>CFBundleLocalizations</key><array><string>en</string><string>zh-Hans</string><string>es</string><string>fr</string><string>gl</string><string>az</string><string>hi</string><string>ja</string><string>ko</string><string>pt-BR</string><string>tr</string></array>
   <key>PiclineDefaultLanguage</key><string>zh-Hans</string>

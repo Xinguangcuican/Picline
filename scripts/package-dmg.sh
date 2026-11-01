@@ -5,10 +5,14 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-scripts/build-picline.sh release
+# Skip the rebuild when the caller has just built the app (CI does this).
+if [ "${PICLINE_SKIP_BUILD:-0}" != 1 ]; then
+  scripts/build-picline.sh release
+fi
 VERSION="$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' build/Picline.app/Contents/Info.plist)"
 DMG="build/Picline-$VERSION.dmg"
-README="${README_PATH:-../dist/安装说明.txt}"
+README="${README_PATH:-安装说明.txt}"
+[ -f "$README" ] || README="../dist/安装说明.txt"
 
 WORK="$(mktemp -d)"
 STAGE="$WORK/stage"
