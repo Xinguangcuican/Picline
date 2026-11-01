@@ -113,6 +113,21 @@ scripts/package-dmg.sh               # 额外产出 build/Picline-<版本>.dmg
 
 本地构建是 adhoc 签名，重新编译后 macOS 会再询问一次文件夹访问权限。
 
+## 发版
+
+打一个 tag 推上去就行，编译、打包、发 Release 全部由 GitHub Actions 完成：
+
+```sh
+git tag v0.2.2
+git push origin v0.2.2
+```
+
+1. **版本号取自 tag**，代码里的任何数字都不用改。
+2. **发布说明取自 `CHANGELOG.md`** 里对应版本的段落，末尾自动附上安装说明。所以发版前先写好那一节。
+3. **产物同时留在 Actions 页面**（保留 14 天），构建日志可查，出问题能追溯。
+
+在 Actions 页面手动点 `Run workflow` 则只构建、不发版，用来验证代码能不能过。
+
 ## 与上游的关系
 
 ```
