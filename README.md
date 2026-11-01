@@ -2,12 +2,12 @@
   <img src="Sources/Tendedero/Resources/Artwork/Picline-AppIcon.png" width="128" alt="Picline">
 </p>
 
-<h1 align="center">Picline 多桌面版</h1>
+<h1 align="center">Picline</h1>
 
 <p align="center">
-截图不再落到桌面上，而是挂在菜单栏下面的一根绳子上，随用随取。<br>
-这个版本修好了一件事：<b>多桌面（Spaces）里都能用</b>。<br>
-0.2.1 又加了<b>隔空投送</b>和<b>长按预览</b>。
+Mac 菜单栏下的截图晾衣绳 —— 把你的截图像衣服一样挂在屏幕上方，随时取用。<br>
+支持读取第三方截图工具的剪贴板，多桌面（Spaces）通用，还能标记编辑与快速预览。<br>
+这个分支修好了多桌面，并加上<b>隔空投送</b>与<b>长按预览</b>。
 </p>
 
 <p align="center">
@@ -15,7 +15,7 @@ macOS 14+ · Apple 芯片与 Intel 通用 · 约 3.5 MB · 免费开源
 </p>
 
 <p align="center">
-<a href="https://github.com/Yixin2020818/picline-multispace/releases/latest"><b>↓ 下载 Picline 0.2.1</b></a>
+<a href="https://github.com/Yixin2020818/Picline/releases/latest"><b>↓ 下载 Picline 0.2.2</b></a>
 </p>
 
 ---
@@ -84,7 +84,7 @@ Picline 是 [Tendedero](https://github.com/alejandrobujan/tendedero) 的一个�
 
 ## 安装
 
-1. 从 [Releases](https://github.com/Yixin2020818/picline-multispace/releases/latest) 下载 `Picline-0.2.1.dmg`。
+1. 从 [Releases](https://github.com/Yixin2020818/Picline/releases/latest) 下载 `Picline-0.2.2.dmg`。
 2. 打开 dmg，把 Picline 拖进「应用程序」。
 3. **首次打开会被 Gatekeeper 拦**（本项目是 adhoc 签名，未做 Apple 公证）：
 
@@ -105,8 +105,8 @@ Picline 是 [Tendedero](https://github.com/alejandrobujan/tendedero) 的一个�
 需要 macOS 14+ 和 Swift 工具链（Xcode 可选，Swift 5.9+）。
 
 ```sh
-git clone <this-repo>
-cd picline-multispace
+git clone git@github.com:Yixin2020818/Picline.git
+cd Picline
 scripts/build-picline.sh release     # 产出 build/Picline.app 和 build/Picline.zip
 scripts/package-dmg.sh               # 额外产出 build/Picline-<版本>.dmg
 ```
