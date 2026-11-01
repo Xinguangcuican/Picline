@@ -7,7 +7,7 @@
 <p align="center">
 连截几张图、连着复制几张图，剪贴板都只留最后一张 —— 把图挂成一排，用哪张取哪张。<br>
 Mac 菜单栏下的图片晾衣绳 · 读第三方截图工具与浏览器/访达复制来的图 · 多桌面（Spaces）通用 · 可标记与快速预览<br>
-这个分支修好了多桌面，并加上<b>隔空投送</b>、<b>长按预览</b>与<b>访达右键「挂到 Picline」</b>。
+这个分支修好了多桌面，并加上<b>隔空投送</b>、<b>长按预览</b>与<b>访达右键「打开方式 → Picline」</b>。
 </p>
 
 <p align="center">
@@ -15,7 +15,7 @@ macOS 14+ · Apple 芯片与 Intel 通用 · 约 3.5 MB · 免费开源
 </p>
 
 <p align="center">
-<a href="https://github.com/Xinguangcuican/Picline/releases/latest"><b>↓ 下载 Picline 0.2.3</b></a>
+<a href="https://github.com/Xinguangcuican/Picline/releases/latest"><b>↓ 下载 Picline 0.2.4</b></a>
 </p>
 
 <p align="center">
@@ -67,9 +67,9 @@ Picline 是 [Tendedero](https://github.com/alejandrobujan/tendedero) 的一个�
 
 切换桌面后，把鼠标压到屏幕顶部中间，绳子照常落下。见上文改动说明。
 
-### 三、访达里的「挂到 Picline」
+### 三、让访达把图交给 Picline
 
-在访达选中任意图片 → 右键 → 服务 → 挂到 Picline，图片会被复制一份进来并挂上。QSpace 等第三方文件管理器走同一套系统服务，找不到时见下面「怎么用」里的开启方法。
+在访达（或 QSpace）里选中任意图片 → 右键 → **打开方式** → **Picline**，图片会被复制一份进来并挂上。原文件之后改名、挪走或删掉，绳上那张都不受影响。
 
 ## 怎么用
 
@@ -111,22 +111,19 @@ Picline 是 [Tendedero](https://github.com/alejandrobujan/tendedero) 的一个�
 | 移到废纸篓 | 从绳上取下并删掉文件 | 同上 |
 | 取下左侧 / 右侧全部 | 一次清掉一半 | 那一侧还有图时 |
 
-### 从访达挂图：右键 → 服务 → 挂到 Picline
+### 从访达挂图：右键 → 打开方式 → Picline
 
-选中任意图片文件（一张或多张），在访达里右键 → **服务** → **挂到 Picline**，图片会被复制一份进应用并挂到绳子上。无论是桌面、下载、移动硬盘还是素材库里的图，都能挂；原文件之后被移走或删掉，绳子上那张也不受影响，因为挂上去的是副本。
+选中一张或多张图片（桌面、下载、移动硬盘、素材库都行），右键 → **打开方式** → **Picline**，图会复制一份进应用并挂到绳上。
 
-这条菜单来自系统的「服务」机制，所以除了访达，任何提供「服务」子菜单的 app 都能用，包括 QSpace 这类第三方文件管理器。如果 QSpace 的右键菜单里找不到它：
+QSpace 有自己的右键菜单，但「打开方式」同样走系统那一套，所以里面也会有 Picline。也可以把图片直接拖到 Picline 的图标上。
 
-1. 打开 `系统设置 → 键盘 → 键盘快捷键 → 服务`，展开「文件与文件夹」，勾上「挂到 Picline」；
-2. 想更快的话，在同一页给它录一个快捷键。之后在 QSpace 里选中图片，按一下快捷键就挂上了，不用打开菜单。
-
-> 为什么不在访达右键的第一层直接出现：那需要一个 Finder 扩展（`.appex`），必须有 Apple 开发者签名和沙盒才能被系统加载，本项目是 adhoc 签名，做得到也装不上。走「服务」是这类签名下唯一可靠的路子，代价只是多一层菜单。
+> 为什么不是「服务 → 挂到 Picline」：应用里其实仍然声明了这个服务，但 macOS 15 只会把服务列给能验证签名来历的应用。本项目是 adhoc 签名，实测这颗声明在同一台机器上时有时无，重装一次就可能消失，不能当主力入口。而「打开方式」是 LaunchServices 的文件类型声明，稳定得多。
 
 > 为什么不是「左键选中 + 空格预览」：绳子的窗口（`LinePanel`）`canBecomeKey` 恒为 `false`，这是上游刻意的设计 —— 它永远不抢你正在用的 App 的键盘焦点。要支持空格，只能改成抢焦点，或挂需要「辅助功能」权限的全局事件拦截，两者代价都大于收益。
 
 ## 安装
 
-1. 从 [Releases](https://github.com/Xinguangcuican/Picline/releases/latest) 下载 `Picline-0.2.3.dmg`。
+1. 从 [Releases](https://github.com/Xinguangcuican/Picline/releases/latest) 下载 `Picline-0.2.4.dmg`。
 2. 打开 dmg，把 Picline 拖进「应用程序」。
 3. **首次打开会被 Gatekeeper 拦**（本项目是 adhoc 签名，未做 Apple 公证）：
 
@@ -160,8 +157,8 @@ scripts/package-dmg.sh               # 额外产出 build/Picline-<版本>.dmg
 打一个 tag 推上去就行，编译、打包、发 Release 全部由 GitHub Actions 完成：
 
 ```sh
-git tag v0.2.3
-git push origin v0.2.3
+git tag v0.2.4
+git push origin v0.2.4
 ```
 
 1. **版本号取自 tag**，代码里的任何数字都不用改。
@@ -177,7 +174,8 @@ Tendedero (Alejandro Buján, MIT)
    └── Picline 0.1.9 (老张，增强剪贴板与收图)
           └── Picline 0.2.0 多桌面版
                  └── Picline 0.2.1（隔空投送、长按预览）
-                        └── Picline 0.2.3（本仓库当前版本，加了访达服务）
+                        └── Picline 0.2.3（访达服务）
+                               └── Picline 0.2.4（本仓库当前版本，访达「打开方式」）
 ```
 
 本仓库只做多桌面适配，不包含上游名称与图标的授权。详见 [`NOTICE`](NOTICE)。
