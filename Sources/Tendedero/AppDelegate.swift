@@ -54,6 +54,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var awaySince: Date?
     /// Whether the line should be up, if nothing prevents it. A full screen
     /// app on that screen does: the line waits until you leave full screen.
+    /// An empty line counts too, so the window stays ready while tucked away.
     private var wanted = false
     /// Set when you open the line on purpose, so it stays up while empty.
     private var keepOpen = false
@@ -121,8 +122,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in self?.itemsChanged() }
             .store(in: &cancellables)
-        // Photos kept from last time show themselves for a moment.
-        if line.liveCount > 0 { comeDown(on: nil) }
+        // Photos kept from last time show themselves for a moment. With an
+        // empty line the window is still made, tucked out of sight above the
+        // top edge, so the bare rope can come down on request.
+        wanted = true
+        if line.liveCount > 0 { comeDown(on: nil) } else { refresh() }
 
         // Entering or leaving full screen switches Space. Check again once the
         // switch animation has settled.
@@ -166,7 +170,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
                 guard let self, self.line.liveCount == 0 else { return }
                 self.keepOpen = false
-                self.wanted = false
                 self.refresh()
             }
         }
@@ -288,14 +291,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     // MARK: Showing and hiding
 
-    /// An empty line goes away, unless it was opened on purpose.
+    /// An empty line tucks away again, but the window stays at the ready: an
+    /// empty line still comes down when the pointer rests in the menu bar.
     private func itemsChanged() {
         updateStatusIcon()
         guard line.liveCount == 0, !keepOpen else { return }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) { [weak self] in
             guard let self, self.line.liveCount == 0, !self.keepOpen else { return }
-            self.wanted = false
-            self.refresh()
+            if self.isRevealed { self.setRevealed(false) }
         }
     }
 
@@ -387,9 +390,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         } else {
             dismiss()
         }
-        // The cursor is watched while there is a line, even tucked away,
-        // to notice it pushing against the top edge.
-        if wanted { startMouseTracking() } else { stopMouseTracking() }
+        // The pointer is watched for as long as the app runs, so an empty
+        // line comes down over the menu bar just like a full one.
+        startMouseTracking()
     }
 
     private func present() {
@@ -468,12 +471,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             peekUntil = .distantPast
             panel.ignoresMouseEvents = true
             // Opened on purpose lasts until the line tucks away, however that
-            // happens: an empty line then goes, as with the shortcut, and over
-            // a full screen app the line goes too.
+            // happens. An empty line is no reason to shut the window down: it
+            // comes back down over the menu bar like any other.
             if keepOpen || openedOnPurpose {
                 keepOpen = false
                 openedOnPurpose = false
-                if line.liveCount == 0 { wanted = false }
                 refresh()
             }
         }
@@ -500,12 +502,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
         RunLoop.main.add(timer, forMode: .common)
         mouseTimer = timer
-    }
-
-    private func stopMouseTracking() {
-        mouseTimer?.invalidate()
-        mouseTimer = nil
-        panel.ignoresMouseEvents = true
     }
 
     /// How long the cursor rests against the top edge before the line comes
@@ -558,16 +554,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             // Resting in the menu bar brings the line down on that screen.
             // Pushing against the top edge is part of it, and it also works
             // when another display sits above and the pointer never stops.
-            // An empty line stays up there: only the shortcut and the menu
-            // bring it down on purpose.
-            if line.liveCount > 0, Self.opensFromMenuBar, let screen = screenUnderPointer,
+            // An empty line comes down too: the bare rope is how you find out
+            // the app is there at all, and it costs nothing to show.
+            if Self.opensFromMenuBar, let screen = screenUnderPointer,
                inMenuBar, !menuBarSuppressed, !FullScreen.blocksLine(on: screen) {
                 let since = hotZoneSince ?? now
                 hotZoneSince = since
                 if now.timeIntervalSince(since) >= Self.revealDelay {
                     hotZoneSince = nil
-                    if panel.screen != screen {
-                        panel.placeOnScreen()
+                    if panel.screen != screen || !isPresent {
+                        panel.placeOnScreen(screen)
                         updateCapacity()
                     }
                     refresh()
