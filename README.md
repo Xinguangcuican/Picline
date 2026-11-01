@@ -15,7 +15,7 @@ macOS 14+ · Apple 芯片与 Intel 通用 · 约 3.5 MB · 免费开源
 </p>
 
 <p align="center">
-<a href="https://github.com/Yixin2020818/Picline/releases/latest"><b>↓ 下载 Picline 0.2.2</b></a>
+<a href="https://github.com/Xinguangcuican/Picline/releases/latest"><b>↓ 下载 Picline 0.2.2</b></a>
 </p>
 
 <p align="center">
@@ -88,7 +88,7 @@ Picline 是 [Tendedero](https://github.com/alejandrobujan/tendedero) 的一个�
 
 ## 安装
 
-1. 从 [Releases](https://github.com/Yixin2020818/Picline/releases/latest) 下载 `Picline-0.2.2.dmg`。
+1. 从 [Releases](https://github.com/Xinguangcuican/Picline/releases/latest) 下载 `Picline-0.2.2.dmg`。
 2. 打开 dmg，把 Picline 拖进「应用程序」。
 3. **首次打开会被 Gatekeeper 拦**（本项目是 adhoc 签名，未做 Apple 公证）：
 
@@ -109,7 +109,7 @@ Picline 是 [Tendedero](https://github.com/alejandrobujan/tendedero) 的一个�
 需要 macOS 14+ 和 Swift 工具链（Xcode 可选，Swift 5.9+）。
 
 ```sh
-git clone git@github.com:Yixin2020818/Picline.git
+git clone git@github.com:Xinguangcuican/Picline.git
 cd Picline
 scripts/build-picline.sh release     # 产出 build/Picline.app 和 build/Picline.zip
 scripts/package-dmg.sh               # 额外产出 build/Picline-<版本>.dmg
