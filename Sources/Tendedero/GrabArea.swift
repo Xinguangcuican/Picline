@@ -80,6 +80,11 @@ struct GrabArea: NSViewRepresentable {
             let right = ClosureMenuItem(L("Take down everything to the right")) { line.takeDown(id, toTheLeft: false) }
             right.isEnabled = !line.neighbours(of: id, toTheLeft: false).isEmpty
             menu.addItem(right)
+            // The whole line, this photo included. Same way out as the corner
+            // cross: a file from the line's own folder goes to the Trash, one
+            // from anywhere else just leaves the line.
+            menu.addItem(.separator())
+            menu.addItem(ClosureMenuItem(L("Take everything down")) { line.clear() })
             return menu
         }
     }
