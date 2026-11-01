@@ -46,7 +46,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var pinned = false
     /// A new screenshot shows itself for a moment, then tucks away.
     private var peekUntil = Date.distantPast
-    private var hotZoneSince: Date?
     /// After a click in the menu bar the line stays up there hidden until the
     /// pointer leaves the menu bar, so it does not come back over a menu.
     private var menuBarSuppressed = false
@@ -504,11 +503,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         mouseTimer = timer
     }
 
-    /// How long the cursor rests against the top edge before the line comes
-    /// down. Short enough to feel instant, long enough that a quick trip to
-    /// the menu bar does not trigger it.
-    private static let revealDelay: TimeInterval = 0.25
-
     /// The menu bar strip at the top of a screen. With an auto-hiding menu
     /// bar the visible frame reaches the top, so the system thickness is used.
     static func menuBarBand(of screen: NSScreen) -> NSRect {
@@ -525,7 +519,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 let p = NSEvent.mouseLocation
                 guard NSScreen.screens.contains(where: { NSMouseInRect(p, Self.menuBarBand(of: $0), false) }) else { return }
                 self.menuBarSuppressed = true
-                self.hotZoneSince = nil
                 if self.isRevealed {
                     self.pinned = false
                     self.setRevealed(false)
@@ -551,26 +544,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if !inMenuBar { menuBarSuppressed = false }
 
         guard isRevealed else {
-            // Resting in the menu bar brings the line down on that screen.
-            // Pushing against the top edge is part of it, and it also works
-            // when another display sits above and the pointer never stops.
+            // The line comes down the moment the cursor is in the menu bar of
+            // a screen: no dwell time, no second step. It goes back up as
+            // soon as the cursor leaves, and a click in the menu bar puts it
+            // away for as long as the cursor stays up there, so reaching for
+            // a menu does not leave the rope hanging over the window.
             // An empty line comes down too: the bare rope is how you find out
             // the app is there at all, and it costs nothing to show.
             if Self.opensFromMenuBar, let screen = screenUnderPointer,
                inMenuBar, !menuBarSuppressed, !FullScreen.blocksLine(on: screen) {
-                let since = hotZoneSince ?? now
-                hotZoneSince = since
-                if now.timeIntervalSince(since) >= Self.revealDelay {
-                    hotZoneSince = nil
-                    if panel.screen != screen || !isPresent {
-                        panel.placeOnScreen(screen)
-                        updateCapacity()
-                    }
-                    refresh()
-                    reveal()
+                if panel.screen != screen || !isPresent {
+                    panel.placeOnScreen(screen)
+                    updateCapacity()
                 }
-            } else {
-                hotZoneSince = nil
+                refresh()
+                reveal()
             }
             return
         }
