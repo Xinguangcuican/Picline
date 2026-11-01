@@ -41,7 +41,7 @@
 "When something new hangs" = "有新内容挂上时";
 "Over full screen apps" = "在全屏应用上方显示";
 "Hang copied images" = "接收剪贴板图片";
-"Images you copy hang on the line too" = "接收复制的图片；文件形式的图片需位于已添加的截图文件夹中";
+"Images you copy hang on the line too" = "接收复制的图片；任何位置的图片文件都能挂上";
 "Picline, hanging copied images" = "Picline，正在挂上复制的图片";
 "The line is empty" = "晾衣绳上是空的";
 "%d on the line" = "晾衣绳上有 %d 张";
