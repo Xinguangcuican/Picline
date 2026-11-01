@@ -18,7 +18,7 @@ jobs:
     timeout-minutes: 40
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: 环境信息
         run: |
@@ -74,7 +74,7 @@ jobs:
           hdiutil detach -quiet "/Volumes/Picline $V"
 
       - name: 上传构建产物
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: Picline-${{ steps.meta.outputs.version }}
           path: |
