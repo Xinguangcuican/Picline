@@ -97,6 +97,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
         setUpStatusItem()
         watchMenuBarClicks()
+        // "挂到 Picline" in Finder's Services menu. The item itself is
+        // declared in Info.plist; this is the object that answers it.
+        NSApp.servicesProvider = self
 
         Markup.shared.onSaved = { [weak self] url in
             self?.line.reloadThumbnail(for: url)
@@ -926,6 +929,27 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             NSApp.activate(ignoringOtherApps: true)
             alert.runModal()
         }
+    }
+
+    // MARK: Services
+
+    /// 「挂到 Picline」 in Finder's Services submenu, and in any other app that
+    /// offers it: whatever image is selected, from whatever folder, is hung as
+    /// if it had just been copied. The file is copied into the app first, so
+    /// moving or renaming the original afterwards leaves the card intact.
+    ///
+    /// Third-party file managers (QSpace and the like) cannot take a menu item
+    /// of their own, but they show the system Services list, so this works
+    /// there too once it is enabled in System Settings > Keyboard > Shortcuts.
+    @objc func hangOnPicline(_ pboard: NSPasteboard,
+                             userData: String,
+                             error: AutoreleasingUnsafeMutablePointer<NSString>) {
+        let inputs = ClipboardWatcher.inputs(from: pboard.pasteboardItems ?? [])
+        guard !inputs.isEmpty else {
+            error.pointee = "所选内容里没有可以挂上的图片。" as NSString
+            return
+        }
+        inputs.forEach(receiver.receive)
     }
 
     // MARK: Quick Look

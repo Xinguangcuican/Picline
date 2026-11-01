@@ -11,8 +11,8 @@ OUTPUT_DIR="${PICLINE_OUTPUT_DIR:-$PREVIEW_DIR}"
 APP="$OUTPUT_DIR/Picline.app"
 # The version normally lives here, but a release build can override it so that
 # CI derives the number from the tag instead of editing this file.
-VERSION="${PICLINE_VERSION:-0.2.2}"
-BUILD_NUMBER="${PICLINE_BUILD:-13}"
+VERSION="${PICLINE_VERSION:-0.2.3}"
+BUILD_NUMBER="${PICLINE_BUILD:-14}"
 export CLANG_MODULE_CACHE_PATH="$PREVIEW_CACHE/modules"
 export SWIFTPM_MODULECACHE_OVERRIDE="$CLANG_MODULE_CACHE_PATH"
 # Release builds are universal so the app can be handed to Intel Macs too.
@@ -57,6 +57,21 @@ cat > "$APP/Contents/Info.plist" <<PLIST
   <key>NSDesktopFolderUsageDescription</key><string>读取所选截图文件夹，将新截图挂到绳子上。</string>
   <key>NSDocumentsFolderUsageDescription</key><string>读取你选择的截图文件夹及其子文件夹。</string>
   <key>NSDownloadsFolderUsageDescription</key><string>读取你选择的截图文件夹及其子文件夹。</string>
+  <key>NSServices</key>
+  <array>
+    <dict>
+      <key>NSMenuItem</key>
+      <dict>
+        <key>default</key><string>挂到 Picline</string>
+      </dict>
+      <key>NSMessage</key><string>hangOnPicline</string>
+      <key>NSPortName</key><string>Picline</string>
+      <key>NSSendFileTypes</key>
+      <array><string>public.image</string></array>
+      <key>NSSendTypes</key>
+      <array><string>public.tiff</string><string>public.png</string></array>
+    </dict>
+  </array>
 </dict></plist>
 PLIST
 # Keep the bundle identifier stable so existing preferences are retained.
