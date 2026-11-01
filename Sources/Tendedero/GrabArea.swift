@@ -9,8 +9,8 @@ import SwiftUI
 /// - The Trash discards it.
 /// - Nowhere that accepts it: the photo flies back to the line.
 ///
-/// Click copies, double click opens, press and hold opens Markup, the corner
-/// cross discards.
+/// Click copies, double click opens, press and hold looks at the photo,
+/// a force click or the middle button opens Markup, the corner cross discards.
 struct GrabArea: NSViewRepresentable {
     let item: Pegged
     let line: Line
@@ -41,8 +41,12 @@ struct GrabArea: NSViewRepresentable {
         }
         view.onTrash = { line.trash(id) }
         view.onDiscard = { line.discard(id) }
-        view.onLongPress = { line.markup(id) }
+        // Holding a photo looks at it, the way holding a key on a keyboard
+        // does elsewhere; Markup moved to force click and the middle button,
+        // which are both deliberate rather than merely slow.
+        view.onLongPress = { line.quickLook(id) }
         view.onForceClick = { line.quickLook(id) }
+        view.onMiddleClick = { line.markup(id) }
         view.onPressChange = { pressed in line.pressedID = pressed ? id : nil }
         view.menuProvider = {
             let menu = NSMenu()
@@ -55,6 +59,10 @@ struct GrabArea: NSViewRepresentable {
                 menu.addItem(ClosureMenuItem(L("Markup")) { line.markup(id) })
             }
             menu.addItem(ClosureMenuItem(L("Show in Finder")) { line.reveal(id) })
+            // Only offered when the file is still where the line says it is.
+            let airdrop = ClosureMenuItem(L("Send via AirDrop")) { line.airdrop(id) }
+            airdrop.isEnabled = FileManager.default.fileExists(atPath: item.url.path)
+            menu.addItem(airdrop)
             let inInbox = line.isInInbox(id)
             if inInbox {
                 menu.addItem(ClosureMenuItem(L("Save to Desktop")) { line.saveToDesktop(id) })
@@ -92,6 +100,7 @@ final class GrabView: NSView, NSDraggingSource {
     var onDiscard: () -> Void = {}
     var onLongPress: () -> Void = {}
     var onForceClick: () -> Void = {}
+    var onMiddleClick: () -> Void = {}
     var onPressChange: (Bool) -> Void = { _ in }
     var menuProvider: () -> NSMenu = { NSMenu() }
 
@@ -207,6 +216,17 @@ final class GrabView: NSView, NSDraggingSource {
         GrabView.isShowingMenu = true
         NSMenu.popUpContextMenu(menuProvider(), with: event, for: self)
         GrabView.isShowingMenu = false
+    }
+
+    /// The middle button, for mice that have one. Markup is the one thing a
+    /// mouse cannot reach any other way now that holding the button looks at
+    /// the photo; a trackpad reaches it with a force click instead.
+    override func otherMouseDown(with event: NSEvent) {
+        guard event.buttonNumber == 2 else {
+            super.otherMouseDown(with: event)
+            return
+        }
+        onMiddleClick()
     }
 
     // MARK: NSDraggingSource

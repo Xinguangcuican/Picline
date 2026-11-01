@@ -1,0 +1,1173 @@
+diff -ruN a/CHANGELOG.md b/CHANGELOG.md
+--- a/CHANGELOG.md	1970-01-01 08:00:00
++++ b/CHANGELOG.md	2026-11-01 17:33:50
+@@ -0,0 +1,56 @@
++# 更新记录
++
++## 0.2.1 — 2026-11-01
++
++隔空投送 + 长按预览。基于 0.2.0。
++
++### 新增
++
++- **右键菜单「隔空投送」。** `Line.swift` 新增 `airdrop(_:)`，走系统 `NSSharingService(.sendViaAirDrop)`：弹出 AirDrop 窗口列出附近设备，选中即发送，绳子上的图不消失。文件已不存在时该项置灰，不弹窗。
++  - 发送在菜单关闭之后执行（`DispatchQueue.main.async`），避免菜单的事件循环里再开窗口。
++  - 发送前 `NSApp.activate`，因为绳子本身是不抢焦点的悬浮条，AirDrop 窗口需要应用在前台才看得见。
++- **长按图片 = 快速查看。** 按住 0.45 秒直接进系统预览，之后左右方向键翻整条绳子，空格或 Esc 关闭。三种输入设备（内建触控板、妙控鼠标、普通鼠标）行为一致。
++
++### 改动
++
++- **「标记」的手势位置变了。** 长按原先给标记，现在给预览。标记改为：力触控（触控板）+ 中键（带滚轮的鼠标）+ 右键菜单，三个入口都没有丢。
++- 版本号 `0.2.0 (11)` → `0.2.1 (12)`。
++
++### 未改动
++
++- 单击仍是复制，双击仍是打开，右键菜单原有项全部保留（含「快速查看」）。
++- 老张的收图与第三方剪贴板逻辑不动。
++
++### 说明
++
++- 「左键选中 + 空格预览」这条没有做。`LinePanel.canBecomeKey` 恒为 `false`，是上游刻意的设计：绳子永远不抢你正在用的 App 的键盘焦点。要支持空格只能改成抢焦点，或挂需要「辅助功能」权限的全局事件拦截，两者代价都大于收益。
++
++## 0.2.0 — 2026-10-31
++
++多桌面（Spaces）修复版。基于 Picline 0.1.9 源码。
++
++### 修复
++
++- **晾衣绳在多桌面下无法显示。** macOS 会把带 `canJoinAllSpaces` 的窗口在 `orderOut` / `orderFront` 之后永久绑定到某一个 Space，换桌面后再拉绳子什么都出不来（上游 [issue #80](https://github.com/alejandrobujan/tendedero/issues/80)）。
++  - `AppDelegate.swift`：切换桌面通知回调中，0.8 秒动画结束后复检一次窗口所在 Space。
++  - `AppDelegate.swift`：新增 `keepOnActiveSpace()`，`panel.isOnActiveSpace == false` 时重建窗口，`contentView` 与全部状态原样迁移。
++  - `AppDelegate.swift`：把绳子拉下来的瞬间（`setRevealed(true)`）也补检一次。
++
++### 改动
++
++- 版本号 `0.1.9 (10)` → `0.2.0 (11)`。
++- `scripts/build-picline.sh`：release 默认构建通用二进制（arm64 + x86_64）；构建前清空旧 bundle，避免残留旧的本地化与图标。
++- 新增 `scripts/package-dmg.sh`：一条命令产出可分发的 dmg（含 `Applications` 快捷方式与安装说明）。
++
++### 未改动
++
++- `ClipboardWatcher.swift`、`CaptureReceiver.swift` 等老张的收图与第三方剪贴板逻辑，完全保持原样。
++
++### 已知限制
++
++- adhoc 签名，未做 Apple 公证。他人下载后首次打开需在「系统设置 → 隐私与安全性」点「仍然打开」，或执行 `xattr -dr com.apple.quarantine /Applications/Picline.app`。
++- bundle id 沿用 `local.captureline.preview`，安装后会覆盖旧版 Picline，偏好设置保留。
++
++## 0.1.9 — 上游基线
++
++见 Picline 0.1.9 源码包（`base_revision` 2c3ffd95）。
+diff -ruN a/NOTICE b/NOTICE
+--- a/NOTICE	2026-11-01 17:35:29
++++ b/NOTICE	2026-10-31 18:03:21
+@@ -31,3 +31,13 @@
+ Picline 的 Swift Package 未引入外部第三方包。Apple 系统框架由
+ macOS 提供；Shottr、Snapzy 等编辑器是用户单独安装的应用，
+ Picline 未捆绑这些软件。
++
++多桌面版的补充说明
++
++本仓库（Picline 0.2.0）在 Picline 0.1.9 的基础上只做了一处功能修改：
++让晾衣绳在多个桌面（Spaces）中都能显示，做法参考上游 Tendedero 修复
++issue #80 的提交 b8242b0（作者 Alejandro Buján，MIT 许可）。
++
++除此之外的收图、剪贴板、界面、本地化代码均沿用 Picline 0.1.9。
++本项目不主张对 Tendedero 与 Picline 名称、图标及文档图片的任何权利。
++
+diff -ruN a/README.md b/README.md
+--- a/README.md	2026-11-01 17:35:29
++++ b/README.md	2026-11-01 17:34:02
+@@ -1,59 +1,142 @@
+-# Picline
++<p align="center">
++  <img src="Sources/Tendedero/Resources/Artwork/Picline-AppIcon.png" width="128" alt="Picline">
++</p>
+ 
+-Picline is a macOS utility that hangs screenshots and copied images on a line beneath the menu bar. It is an independent fork of [Tendedero](https://github.com/alejandrobujan/tendedero), created by Alejandro Buján, and uses its own name and icon.
++<h1 align="center">Picline 多桌面版</h1>
+ 
+-## Features
++<p align="center">
++截图不再落到桌面上，而是挂在菜单栏下面的一根绳子上，随用随取。<br>
++这个版本修好了一件事：<b>多桌面（Spaces）里都能用</b>。<br>
++0.2.1 又加了<b>隔空投送</b>和<b>长按预览</b>。
++</p>
+ 
+-- Receive images from the macOS screenshot location, additional folders and their subfolders, and the optional clipboard watcher.
+-- Merge images with identical decoded pixels while their card remains on the line, across tools, folders and clipboard inputs.
+-- Preserve private copies of temporary captures before their originating tool removes them.
+-- Choose the application used to open an image: the system default, Preview, Shottr, Snapzy, or another application.
+-- Chinese and English interface controls, with the upstream localization resources retained.
+-- A native menu-bar icon, keyboard shortcut, Quick Look, Markup, and access to open source notices from the menu.
++<p align="center">
++macOS 14+ · Apple 芯片与 Intel 通用 · 约 3.5 MB · 免费开源
++</p>
+ 
+-Image processing stays on the Mac. Clipboard intake is opt in. Shottr and Snapzy are separate applications and are not bundled.
++<p align="center">
++<a href="https://github.com/Yixin2020818/picline-multispace/releases/latest"><b>↓ 下载 Picline 0.2.1</b></a>
++</p>
+ 
+-## Build
++---
+ 
+-Requires macOS 14 or later and an installed Xcode/Swift toolchain. The package uses Swift tools version 5.9 or later and has no external package dependencies.
++## 这是什么
+ 
+-```sh
+-scripts/build-picline.sh
+-```
++Picline 是 [Tendedero](https://github.com/alejandrobujan/tendedero) 的一个修改分支，由 **老张** 在原版基础上增强了收图能力（能读第三方截图工具的剪贴板、跨工具去重、指定打开图片的应用）。
+ 
+-This builds a Release application for the current Mac architecture, signs it ad hoc, and creates `build/Picline.app` and `build/Picline.zip`. For a Debug build, pass `debug`. Set `PICLINE_OUTPUT_DIR` to place the application and ZIP in a separate directory.
++但老张那版有个 macOS 的老毛病：**晾衣绳的窗口会被系统钉死在某一个桌面上**，换到别的桌面后，鼠标压到屏幕顶部什么都不出现。
+ 
+-All icon artwork needed for the build is included. Building does not require an image-generation service or API key. The internal Swift target retains its original `Tendedero` module name; the executable and application are named Picline.
++这个仓库（0.2.0）只解决这一个问题，其他功能一行没动。
+ 
+-Existing installations retain their settings and the legacy screenshot directory when present. New installations use `~/Library/Application Support/Picline/Screenshots/`.
++## 这个版本改了什么
+ 
+-## Validation
++核心是上游 [issue #80](https://github.com/alejandrobujan/tendedero/issues/80) 的修法：带 `canJoinAllSpaces` 的 NSPanel 一旦 `orderOut` 再 `orderFront`，系统可能把它永久绑在某个 Space 上。官方的解法不是去修那个窗口，而是**发现它不在当前桌面时，直接重建一个新窗口**。
+ 
+-```sh
+-swift test --disable-sandbox
+-swift scripts/check-strings.swift
+-```
++全部改动集中在 `Sources/Tendedero/AppDelegate.swift`，共 31 行：
+ 
+-Folder-watching tests require access to macOS FSEvents. Tests create their own image files and simulated pasteboard items, without reading or changing the system clipboard.
++1. **切换桌面的回调里加一次复检**：等 0.8 秒动画结束后，确认窗口在不在当前桌面。
++2. **新增 `keepOnActiveSpace()`**：`panel.isOnActiveSpace` 为 `false` 时，把 `contentView` 从旧窗口摘下来、`orderOut` 旧窗口、新建一个 `LinePanel` 顶上去（frame / `ignoresMouseEvents` / `alphaValue` / `onScroll` 全部抄回）。
++3. **拉下绳子的瞬间再补检一次**：覆盖"人已经在另一个桌面、窗口还留在原桌面"这条路径。
+ 
+-See [the Chinese user guide](docs/Picline.zh-Hans.md) and [icon integration notes](docs/design/Picline-Icons-v1/implementation.md).
++配套改动：
+ 
+-## Source archive
++- `scripts/build-picline.sh`：版本号升到 `0.2.0 (11)`，release 默认编**通用二进制**（arm64 + x86_64），构建前清空旧 bundle。
++- `scripts/package-dmg.sh`：新增，一条命令出可分发的 dmg。
+ 
++完整 diff 见 [`picline-multispace-0.2.1.patch`](picline-multispace-0.2.1.patch)。
++
++## 两个关键功能
++
++### 一、读第三方截图工具的剪贴板
++
++老张那版已经放开了上游的过滤条件：上游会丢弃"同时带 `fileURL` 或纯文本"的剪贴板内容，而这恰好是 PixPin、Shottr、Snapzy、CleanShot 这类工具复制图片时的典型形态。
++
++现在的处理是：
++
++- 带 `fileURL` 的，读文件本体，并校验扩展名确实是图片；
++- 同时保留位图数据做 `fallbackImage`，防止临时文件被工具删掉后挂不上；
++- 仍然跳过密码管理器标记的隐私内容（`org.nspasteboard.ConcealedType` 等）。
++
++需要在菜单栏菜单里勾上 **「接收剪贴板图片」** 才会生效，默认关闭。
++
++### 二、多桌面
++
++切换桌面后，把鼠标压到屏幕顶部中间，绳子照常落下。见上文改动说明。
++
++## 怎么用
++
++绳子挂下来之后，一张图能做的事：
++
++| 操作 | 结果 |
++| --- | --- |
++| 单击 | 复制到剪贴板 |
++| 双击 | 用默认应用打开 |
++| **按住 0.45 秒** | **快速查看**，之后左右方向键翻整条绳子，空格或 Esc 关闭 |
++| 力触控（触控板）/ 中键（鼠标） | 标记 |
++| 拖出去 | 存成文件：拖到应用是给副本，拖到文件夹或桌面是留下原文件 |
++| 拖到废纸篓 | 删除 |
++| 左上角叉号 | 从绳子上取下 |
++| 右键 | 菜单：复制、打开、快速查看、标记、在访达中显示、**隔空投送**、存储到桌面、丢弃、取下左右两侧全部 |
++
++**隔空投送**：右键选「隔空投送」，系统窗口列出附近设备，选一台就发过去；绳子上的图不消失。文件已被移走或删除时，这一项会置灰。
++
++> 为什么不是「左键选中 + 空格预览」：绳子的窗口（`LinePanel`）`canBecomeKey` 恒为 `false`，这是上游刻意的设计 —— 它永远不抢你正在用的 App 的键盘焦点。要支持空格，只能改成抢焦点，或挂需要「辅助功能」权限的全局事件拦截，两者代价都大于收益。
++
++## 安装
++
++1. 从 [Releases](https://github.com/Yixin2020818/picline-multispace/releases/latest) 下载 `Picline-0.2.1.dmg`。
++2. 打开 dmg，把 Picline 拖进「应用程序」。
++3. **首次打开会被 Gatekeeper 拦**（本项目是 adhoc 签名，未做 Apple 公证）：
++
++   打开 `系统设置 → 隐私与安全性`，在「安全性」一栏点 **「仍然打开」**；
++
++   或者打开终端执行：
++
++   ```sh
++   xattr -dr com.apple.quarantine /Applications/Picline.app
++   ```
++
++4. 首次运行会请求访问截图文件夹，必须允许，否则收不到新截图。
++
++详细步骤见 [`安装说明.txt`](安装说明.txt)。
++
++## 从源码构建
++
++需要 macOS 14+ 和 Swift 工具链（Xcode 可选，Swift 5.9+）。
++
+ ```sh
+-python3 scripts/package-source.py
++git clone <this-repo>
++cd picline-multispace
++scripts/build-picline.sh release     # 产出 build/Picline.app 和 build/Picline.zip
++scripts/package-dmg.sh               # 额外产出 build/Picline-<版本>.dmg
+ ```
+ 
+-This packages the current working files, including local modifications and newly added files, into `build/Picline-<version>-Source.zip`. The archive includes application sources, localizations, tests, build scripts, approved artwork, documentation, `NOTICE`, and the original `LICENSE`, plus a file manifest with SHA-256 hashes.
++本地构建是 adhoc 签名，重新编译后 macOS 会再询问一次文件夹访问权限。
+ 
+-Git history, build products, caches, local configuration and unused upstream branding artwork are excluded. The source package can be built with the same commands after extraction.
++## 与上游的关系
+ 
+-## Open source notices
++```
++Tendedero (Alejandro Buján, MIT)
++   └── Picline 0.1.9 (老张，增强剪贴板与收图)
++          └── Picline 0.2.0 多桌面版
++                 └── Picline 0.2.1（本仓库当前版本）
++```
+ 
+-Open **Open Source Notices** from Picline's menu to read the bundled notices and full license text, or open the upstream repository. The Chinese menu label is **开源声明**.
++本仓库只做多桌面适配，不包含上游名称与图标的授权。详见 [`NOTICE`](NOTICE)。
+ 
+-Upstream source: <https://github.com/alejandrobujan/tendedero>
++## 许可
+ 
+-Original copyright: Copyright (c) 2026 Alejandro Buján.
++代码遵循 **MIT**，原始版权归 Alejandro Buján。Tendedero 与 Picline 的**名称和图标不在 MIT 授权范围内**，本项目沿用 Picline 的名称与自绘图标，不代表上游或原作者的官方发布与背书。
+ 
+-The original MIT license and the upstream name/icon terms are preserved verbatim in [LICENSE](LICENSE). Read [NOTICE](NOTICE) for attribution and the distinction between the original project and Picline. The upstream Tendedero name and original artwork are outside its MIT grant; the Picline application uses independent branding.
++---
++
++<details>
++<summary>English</summary>
++
++A fork of Picline (itself a fork of [Tendedero](https://github.com/alejandrobujan/tendedero) by Alejandro Buján) that fixes one thing: the clothesline window now follows you across every Space.
++
++The upstream window can get permanently bound to a single Space after being ordered out and back in ([issue #80](https://github.com/alejandrobujan/tendedero/issues/80)). The fix rebuilds the window whenever `panel.isOnActiveSpace` is `false`, both after a Space change and right after the line is revealed.
++
++MIT licensed. The Tendedero and Picline names and icons are not covered by that grant.
++
++</details>
+diff -ruN a/SOURCE_MANIFEST.json b/SOURCE_MANIFEST.json
+--- a/SOURCE_MANIFEST.json	2026-11-01 17:35:29
++++ b/SOURCE_MANIFEST.json	1970-01-01 08:00:00
+@@ -1,299 +0,0 @@
+-{
+-  "format_version": 1,
+-  "project": "Picline",
+-  "version": "0.1.9",
+-  "base_revision": "2c3ffd95f173585260aa198e85d3ea62a878f688",
+-  "contents": "Current working files, including local modifications and new files.",
+-  "files": [
+-    {
+-      "path": ".gitignore",
+-      "size": 47,
+-      "sha256": "24d6615db104792af6a118bcaab9ee134722f51d63306e863fa971758cb66765"
+-    },
+-    {
+-      "path": "LICENSE",
+-      "size": 1579,
+-      "sha256": "7a1c1e644e9c6cf19afde4c3ca9e0952cbc9acb5d3a26954c69b6fa76eaa303b"
+-    },
+-    {
+-      "path": "NOTICE",
+-      "size": 1663,
+-      "sha256": "7d31b75d83c96ef411ce9159bfdf08d6772d5a6fe4290122e0501243690e19ca"
+-    },
+-    {
+-      "path": "Package.swift",
+-      "size": 525,
+-      "sha256": "7083bf0e218af51c3b80ca145aa92e06cc391fd9924c325e108544ee66dbb164"
+-    },
+-    {
+-      "path": "README.md",
+-      "size": 3580,
+-      "sha256": "463f0885f723a5d9d1207e1bb4c1f8b2816d2e15689bf076bfb6dd70e1882798"
+-    },
+-    {
+-      "path": "Sources/Tendedero/AppDelegate.swift",
+-      "size": 39592,
+-      "sha256": "5c609b2b3d4163e5c84141a0bc7514e9cb8eb9cb935b52c78b1152166ed29738"
+-    },
+-    {
+-      "path": "Sources/Tendedero/CaptureFlight.swift",
+-      "size": 9938,
+-      "sha256": "cd773d236ae3fd1837a66f256ad78948ca87f0d2d63837644c5399019890fc7d"
+-    },
+-    {
+-      "path": "Sources/Tendedero/CaptureReceiver.swift",
+-      "size": 20344,
+-      "sha256": "895bdd5055ec2fd498ad7524e11f0e33ce2cbeb0580fe97b5d595762e78602c8"
+-    },
+-    {
+-      "path": "Sources/Tendedero/ClipboardWatcher.swift",
+-      "size": 3734,
+-      "sha256": "dba06afe6418113f6d48225bb61a108863b9ce7303e316d7c953a0184f45b3d6"
+-    },
+-    {
+-      "path": "Sources/Tendedero/FullScreen.swift",
+-      "size": 2311,
+-      "sha256": "4a102ea7c26f6ab48c435c4531e21103933a304a575bb2b99ff95cd0aa5862f4"
+-    },
+-    {
+-      "path": "Sources/Tendedero/GrabArea.swift",
+-      "size": 10314,
+-      "sha256": "ff2d9c96f7cda57604dda52e231c5c85f8167185b7287b02ca0f476e963b1ba9"
+-    },
+-    {
+-      "path": "Sources/Tendedero/HotKey.swift",
+-      "size": 6711,
+-      "sha256": "736da0e5ea5cdb78f90b164c41f18044cd1cf1c907c575ce7097a588d3373e04"
+-    },
+-    {
+-      "path": "Sources/Tendedero/ImageOpener.swift",
+-      "size": 5543,
+-      "sha256": "ed83bf196691a5406a70e2feb2414f7f0338a8aeb81443ab4cf8b6216246e903"
+-    },
+-    {
+-      "path": "Sources/Tendedero/Inbox.swift",
+-      "size": 6254,
+-      "sha256": "16549fa135546aaac9dcfef138a26fad9dfa8b3d8b0ee7467f4cd67c0eea3bd5"
+-    },
+-    {
+-      "path": "Sources/Tendedero/Line.swift",
+-      "size": 16055,
+-      "sha256": "6e7239fd6e9f378311e2dac8c5462804584ea8905c6af436a297a140ef277676"
+-    },
+-    {
+-      "path": "Sources/Tendedero/LinePanel.swift",
+-      "size": 2136,
+-      "sha256": "48352a4fb828399d700a46e648515f11cce1597ce42c1e156836b457a6cf0b79"
+-    },
+-    {
+-      "path": "Sources/Tendedero/LineView.swift",
+-      "size": 6062,
+-      "sha256": "2a6e515667ecc4877bebd72141ee3c4b340d2e5c332510a8a1cbafb0892990f8"
+-    },
+-    {
+-      "path": "Sources/Tendedero/Localization.swift",
+-      "size": 1348,
+-      "sha256": "05180ed3f9ea3830addba73d3a91d48e8d9e72d9b9adc67480b5531b0a766531"
+-    },
+-    {
+-      "path": "Sources/Tendedero/Markup.swift",
+-      "size": 4093,
+-      "sha256": "844c378fc0d1b7b8bbd42b74c22e010cb81e8b717810c669493eeb8125b28e90"
+-    },
+-    {
+-      "path": "Sources/Tendedero/MenuBarIcon.swift",
+-      "size": 2102,
+-      "sha256": "f64110de7f3aa41f4067db2f2e20b373422d8460235b44a8ebb67f7f2a7c74fb"
+-    },
+-    {
+-      "path": "Sources/Tendedero/OpenSourceNotices.swift",
+-      "size": 2220,
+-      "sha256": "80ea6c9fb862dd5a371fece2525742035db9e1aa18929797552363bf36e6bd76"
+-    },
+-    {
+-      "path": "Sources/Tendedero/PeggedView.swift",
+-      "size": 9461,
+-      "sha256": "03ee54f7d1144bfd5a3e7e13e32b49f10813d09dad7f6631626bce741b849bd1"
+-    },
+-    {
+-      "path": "Sources/Tendedero/QuickLook.swift",
+-      "size": 2420,
+-      "sha256": "ef8b3bcf7cf35d068e23d01d37a19e1b7396fac38a701e1d899925c961a5ea8d"
+-    },
+-    {
+-      "path": "Sources/Tendedero/Resources/Artwork/Picline-AppIcon.png",
+-      "size": 1623851,
+-      "sha256": "4ad4d19018f0607b7fb0421ecee49ba1c3f8f341e6c6b3cd32af8b730be2ac78"
+-    },
+-    {
+-      "path": "Sources/Tendedero/Resources/az.lproj/Localizable.strings",
+-      "size": 5278,
+-      "sha256": "3cc2315eac8fd11bb86502c5bd32325954db8fdabfe14098537a7deba6eb1f73"
+-    },
+-    {
+-      "path": "Sources/Tendedero/Resources/en.lproj/Localizable.strings",
+-      "size": 5043,
+-      "sha256": "5d013fd89546f31fa25ca0ed49bf1d161c0f2d3f4f382e5b7c928b163358cac5"
+-    },
+-    {
+-      "path": "Sources/Tendedero/Resources/es.lproj/Localizable.strings",
+-      "size": 5043,
+-      "sha256": "6adc7081a3602fd8868f7371b284d0fe38f739864e975f450bcbf965fa194ebd"
+-    },
+-    {
+-      "path": "Sources/Tendedero/Resources/fr.lproj/Localizable.strings",
+-      "size": 5247,
+-      "sha256": "264a7c884e9cb8f657adb65556e8b2388d5013a8e5355323b40cd5ba29d85f65"
+-    },
+-    {
+-      "path": "Sources/Tendedero/Resources/gl.lproj/Localizable.strings",
+-      "size": 4999,
+-      "sha256": "e5302baadc88a763d65861993e187003b9655ccee90dde7ae8fc0be24f0738a8"
+-    },
+-    {
+-      "path": "Sources/Tendedero/Resources/hi.lproj/Localizable.strings",
+-      "size": 7269,
+-      "sha256": "1f5c3cc2cf14721684fca3844fb05ead6695a1452c8214aa5cd2db9a43d5abd0"
+-    },
+-    {
+-      "path": "Sources/Tendedero/Resources/ja.lproj/Localizable.strings",
+-      "size": 5655,
+-      "sha256": "50cb5df12893db9b64799be4d8648ce4383f8cc1f4da670e00313fe291122aec"
+-    },
+-    {
+-      "path": "Sources/Tendedero/Resources/ko.lproj/Localizable.strings",
+-      "size": 5227,
+-      "sha256": "ff055da7c879c22887bd73e7dd99315ce28f567928e68258f20499453be291b6"
+-    },
+-    {
+-      "path": "Sources/Tendedero/Resources/pt-BR.lproj/Localizable.strings",
+-      "size": 5016,
+-      "sha256": "6acc2ee10cfaa601da1ea1e2c2ff540a18c10c3a205f969b0c53136c96904eee"
+-    },
+-    {
+-      "path": "Sources/Tendedero/Resources/tr.lproj/Localizable.strings",
+-      "size": 5005,
+-      "sha256": "772c61fd90bfdee99c16a593c96a935665c79b6d40fc785aacbdd98d2ebdc34f"
+-    },
+-    {
+-      "path": "Sources/Tendedero/Resources/zh-Hans.lproj/Localizable.strings",
+-      "size": 4915,
+-      "sha256": "1276473a38890c94b537c76756a51152c4a791fdc7341520c90b172a4d2ac75f"
+-    },
+-    {
+-      "path": "Sources/Tendedero/ScreenshotWatcher.swift",
+-      "size": 8911,
+-      "sha256": "ec3ea8bcd1837fd3db9f94c9d601a408fcd7317cc616cf0be3431997c5c217ab"
+-    },
+-    {
+-      "path": "Sources/Tendedero/Trim.swift",
+-      "size": 4293,
+-      "sha256": "3479710c029f943a2f4bdb4bbe7bb602a34f2d23f74ecbc5e329f23810ddd6c6"
+-    },
+-    {
+-      "path": "Sources/Tendedero/main.swift",
+-      "size": 229,
+-      "sha256": "b7f30e2a3371f402f1f831e31857c94d1cd63eba3f69506fe8b9f05b35d25e8d"
+-    },
+-    {
+-      "path": "Tests/TendederoTests/CaptureDeduplicationTests.swift",
+-      "size": 13375,
+-      "sha256": "e24b17311b8a2069cfca13a408839ee17d5b3347381e0dcfb76d4ab4a69f36ca"
+-    },
+-    {
+-      "path": "Tests/TendederoTests/CaptureIntakeTests.swift",
+-      "size": 22498,
+-      "sha256": "0e6ca3b7dae62a4c10ec6b41e3b7d236447578f93cbdc2bf00d693f242b065ba"
+-    },
+-    {
+-      "path": "Tests/TendederoTests/ImageOpenerTests.swift",
+-      "size": 6620,
+-      "sha256": "65678df9d060eae2d5e1bf7bd791725ca8cd9464c467dd1e6d2ab1f0a1f1837c"
+-    },
+-    {
+-      "path": "Tests/TendederoTests/UpstreamInteractionTests.swift",
+-      "size": 3267,
+-      "sha256": "7fa29af8b64a51fd3e6e1c4ee20fcaa3767902c4ab183ec1783e96d1d3d06659"
+-    },
+-    {
+-      "path": "docs/Picline.zh-Hans.md",
+-      "size": 9578,
+-      "sha256": "b45adbe3502510f47c4e0c493fc572e8ed4136b72c871f5593473faa7f106343"
+-    },
+-    {
+-      "path": "docs/design/Picline-Icons-v1/Picline-A-hanging-cards.png",
+-      "size": 1623851,
+-      "sha256": "4ad4d19018f0607b7fb0421ecee49ba1c3f8f341e6c6b3cd32af8b730be2ac78"
+-    },
+-    {
+-      "path": "docs/design/Picline-Icons-v1/Picline-AppIcon-final.png",
+-      "size": 1107862,
+-      "sha256": "d0db94d04ac3efd9a057d1343d40eb85fee38e56e9a726b64e498e0f57547f82"
+-    },
+-    {
+-      "path": "docs/design/Picline-Icons-v1/Picline-B-clip.png",
+-      "size": 1807221,
+-      "sha256": "49dcaffd52e07919ea185e9d0192205bafe2c4af0433b3e427025c3c21074207"
+-    },
+-    {
+-      "path": "docs/design/Picline-Icons-v1/Picline-C-minimal-line.png",
+-      "size": 1429870,
+-      "sha256": "52dfce5a109c66d557153675dc775919cf758f4f499b993842f6aca15d53f5d1"
+-    },
+-    {
+-      "path": "docs/design/Picline-Icons-v1/Picline-MenuBar-preview.png",
+-      "size": 16967,
+-      "sha256": "225c69c48a94ce37943aeafaec084878a80ef4a53578f1461aa89116b36d8a14"
+-    },
+-    {
+-      "path": "docs/design/Picline-Icons-v1/implementation.md",
+-      "size": 1496,
+-      "sha256": "6168923aa8ec1f81219fe5454b1379795d2675cb0c5900554ceeb0ec2fd7ed35"
+-    },
+-    {
+-      "path": "docs/design/Picline-Icons-v1/prompts.md",
+-      "size": 3838,
+-      "sha256": "e294115b029e7236999a4412b7d687bd5921236ced21210dfb2412acefcc660a"
+-    },
+-    {
+-      "path": "scripts/build-app.sh",
+-      "size": 123,
+-      "sha256": "ff3beb874436c567ab05ab163358d59cb817a6e2e9d31a59d2fe359100fb88b3"
+-    },
+-    {
+-      "path": "scripts/build-picline.sh",
+-      "size": 3212,
+-      "sha256": "d73793774ca4d40685b17826a34fa5332ddeacfc8a808eb5ced1b535bca0d6a1"
+-    },
+-    {
+-      "path": "scripts/build-preview.sh",
+-      "size": 142,
+-      "sha256": "6ef5137b9577ee93db3dd56242b13e4285be258d83179cb917f11595a70b01c3"
+-    },
+-    {
+-      "path": "scripts/check-strings.swift",
+-      "size": 2595,
+-      "sha256": "214964fb3d9e7d9db469ce628de12704bee29ecf226364d9fc8a620604a0ac10"
+-    },
+-    {
+-      "path": "scripts/make-dmg-background.swift",
+-      "size": 2502,
+-      "sha256": "e9c3378cc19047377bb4dd4a815844ce78a895a32ebfea89f91bcb1429d83371"
+-    },
+-    {
+-      "path": "scripts/make-dmg.sh",
+-      "size": 4234,
+-      "sha256": "956d2d346213e81d8663684ac2b8de85589a70f484e3076b95912db7f8c18193"
+-    },
+-    {
+-      "path": "scripts/make-picline-icon.swift",
+-      "size": 3100,
+-      "sha256": "c297731913453b1152171a5346c003f1d6b965ee4b273e1af1e7cab0d9d9fd4f"
+-    },
+-    {
+-      "path": "scripts/package-source.py",
+-      "size": 3855,
+-      "sha256": "b570dfe786921448974b67fde7483cab0e6578f11d1b2b85d7fc9c0bd1a25605"
+-    }
+-  ]
+-}
+diff -ruN a/Sources/Tendedero/AppDelegate.swift b/Sources/Tendedero/AppDelegate.swift
+--- a/Sources/Tendedero/AppDelegate.swift	2026-11-01 17:35:29
++++ b/Sources/Tendedero/AppDelegate.swift	2026-10-31 17:37:58
+@@ -130,7 +130,13 @@
+                     // Opened on purpose counts for the Space it was opened on.
+                     if name == NSWorkspace.activeSpaceDidChangeNotification { self?.openedOnPurpose = false }
+                     self?.refresh()
+-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { self?.refresh() }
++                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
++                        self?.refresh()
++                        // Once the switch animation has settled: if macOS left
++                        // the window behind on the Space we came from, make it
++                        // again here, on this one.
++                        self?.keepOnActiveSpace()
++                    }
+                 }
+             }
+         }
+@@ -401,6 +407,27 @@
+         }
+     }
+ 
++    /// The line is one window on every Space. macOS can leave it bound to a
++    /// single Space, where ordering it in does nothing on the others while
++    /// captures keep arriving (#80 upstream). Quitting and opening the app
++    /// again fixes it because the window is new, so do the same here: a fresh
++    /// window with the same contents, in the same place.
++    private func keepOnActiveSpace() {
++        guard isPresent, isRevealed, panel.isVisible, !panel.isOnActiveSpace else { return }
++        log.notice("The line was not on the active Space; making its window again")
++        let old = panel!
++        let content = old.contentView
++        old.contentView = NSView()
++        old.orderOut(nil)
++        let fresh = LinePanel(content: content ?? NSView())
++        fresh.onScroll = old.onScroll
++        fresh.setFrame(old.frame, display: false)
++        fresh.ignoresMouseEvents = old.ignoresMouseEvents
++        fresh.alphaValue = old.alphaValue
++        panel = fresh
++        fresh.orderFrontRegardless()
++    }
++
+     private func reveal(pinned: Bool = false, peekFor seconds: TimeInterval = 0) {
+         guard isPresent else { return }
+         if pinned { self.pinned = true }
+@@ -419,7 +446,14 @@
+         // over the top of the screen would still sit above other apps for
+         // anything that checks what is on top, like screen automation.
+         if on {
+-            if isPresent { panel.orderFrontRegardless() }
++            if isPresent {
++                panel.orderFrontRegardless()
++                // Bringing the line down on a Space the window is not on is
++                // how a stuck window shows itself: order it in there and
++                // nothing appears. Check right after, on the next turn of the
++                // run loop.
++                DispatchQueue.main.async { [weak self] in self?.keepOnActiveSpace() }
++            }
+         } else {
+             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+                 guard let self, !self.isRevealed else { return }
+diff -ruN a/Sources/Tendedero/GrabArea.swift b/Sources/Tendedero/GrabArea.swift
+--- a/Sources/Tendedero/GrabArea.swift	2026-11-01 17:35:29
++++ b/Sources/Tendedero/GrabArea.swift	2026-11-01 17:33:15
+@@ -9,8 +9,8 @@
+ /// - The Trash discards it.
+ /// - Nowhere that accepts it: the photo flies back to the line.
+ ///
+-/// Click copies, double click opens, press and hold opens Markup, the corner
+-/// cross discards.
++/// Click copies, double click opens, press and hold looks at the photo,
++/// a force click or the middle button opens Markup, the corner cross discards.
+ struct GrabArea: NSViewRepresentable {
+     let item: Pegged
+     let line: Line
+@@ -41,8 +41,12 @@
+         }
+         view.onTrash = { line.trash(id) }
+         view.onDiscard = { line.discard(id) }
+-        view.onLongPress = { line.markup(id) }
++        // Holding a photo looks at it, the way holding a key on a keyboard
++        // does elsewhere; Markup moved to force click and the middle button,
++        // which are both deliberate rather than merely slow.
++        view.onLongPress = { line.quickLook(id) }
+         view.onForceClick = { line.quickLook(id) }
++        view.onMiddleClick = { line.markup(id) }
+         view.onPressChange = { pressed in line.pressedID = pressed ? id : nil }
+         view.menuProvider = {
+             let menu = NSMenu()
+@@ -55,6 +59,10 @@
+                 menu.addItem(ClosureMenuItem(L("Markup")) { line.markup(id) })
+             }
+             menu.addItem(ClosureMenuItem(L("Show in Finder")) { line.reveal(id) })
++            // Only offered when the file is still where the line says it is.
++            let airdrop = ClosureMenuItem(L("Send via AirDrop")) { line.airdrop(id) }
++            airdrop.isEnabled = FileManager.default.fileExists(atPath: item.url.path)
++            menu.addItem(airdrop)
+             let inInbox = line.isInInbox(id)
+             if inInbox {
+                 menu.addItem(ClosureMenuItem(L("Save to Desktop")) { line.saveToDesktop(id) })
+@@ -92,6 +100,7 @@
+     var onDiscard: () -> Void = {}
+     var onLongPress: () -> Void = {}
+     var onForceClick: () -> Void = {}
++    var onMiddleClick: () -> Void = {}
+     var onPressChange: (Bool) -> Void = { _ in }
+     var menuProvider: () -> NSMenu = { NSMenu() }
+ 
+@@ -207,6 +216,17 @@
+         GrabView.isShowingMenu = true
+         NSMenu.popUpContextMenu(menuProvider(), with: event, for: self)
+         GrabView.isShowingMenu = false
++    }
++
++    /// The middle button, for mice that have one. Markup is the one thing a
++    /// mouse cannot reach any other way now that holding the button looks at
++    /// the photo; a trackpad reaches it with a force click instead.
++    override func otherMouseDown(with event: NSEvent) {
++        guard event.buttonNumber == 2 else {
++            super.otherMouseDown(with: event)
++            return
++        }
++        onMiddleClick()
+     }
+ 
+     // MARK: NSDraggingSource
+diff -ruN a/Sources/Tendedero/Line.swift b/Sources/Tendedero/Line.swift
+--- a/Sources/Tendedero/Line.swift	2026-11-01 17:35:29
++++ b/Sources/Tendedero/Line.swift	2026-11-01 17:32:58
+@@ -316,6 +316,29 @@
+         NSWorkspace.shared.activateFileViewerSelecting([item.url])
+     }
+ 
++    /// Hands the photo to AirDrop: the system window lists the devices near
++    /// you, and the one you pick gets the file. The photo stays on the line.
++    ///
++    /// The window belongs to the sharing service, so it is opened after the
++    /// menu has closed: nothing of ours can pop a window while a menu still
++    /// runs its own event loop.
++    func airdrop(_ id: UUID) {
++        guard let item = items.first(where: { $0.id == id }),
++              FileManager.default.fileExists(atPath: item.url.path),
++              let service = NSSharingService(named: .sendViaAirDrop),
++              service.canPerform(withItems: [item.url]) else {
++            NSSound.beep()
++            return
++        }
++        DispatchQueue.main.async {
++            // The line is a floating strip that never takes focus; the
++            // AirDrop window is a normal one, so the app has to come forward
++            // for it to be in front of what you were doing.
++            NSApp.activate(ignoringOtherApps: true)
++            service.perform(withItems: [item.url])
++        }
++    }
++
+     // MARK: Breeze
+ 
+     /// Every so often a little wind moves the line. It is the detail that
+diff -ruN a/Sources/Tendedero/Resources/zh-Hans.lproj/Localizable.strings b/Sources/Tendedero/Resources/zh-Hans.lproj/Localizable.strings
+--- a/Sources/Tendedero/Resources/zh-Hans.lproj/Localizable.strings	2026-11-01 17:35:29
++++ b/Sources/Tendedero/Resources/zh-Hans.lproj/Localizable.strings	2026-11-01 17:33:21
+@@ -52,6 +52,7 @@
+ "Quick Look" = "快速查看";
+ "Markup" = "标记";
+ "Show in Finder" = "在访达中显示";
++"Send via AirDrop" = "隔空投送";
+ "Save to Desktop" = "存储到桌面";
+ "Discard" = "丢弃";
+ "Take down" = "取下";
+diff -ruN a/docs/SOURCE_MANIFEST-0.1.9.json b/docs/SOURCE_MANIFEST-0.1.9.json
+--- a/docs/SOURCE_MANIFEST-0.1.9.json	1970-01-01 08:00:00
++++ b/docs/SOURCE_MANIFEST-0.1.9.json	2026-10-31 17:34:16
+@@ -0,0 +1,299 @@
++{
++  "format_version": 1,
++  "project": "Picline",
++  "version": "0.1.9",
++  "base_revision": "2c3ffd95f173585260aa198e85d3ea62a878f688",
++  "contents": "Current working files, including local modifications and new files.",
++  "files": [
++    {
++      "path": ".gitignore",
++      "size": 47,
++      "sha256": "24d6615db104792af6a118bcaab9ee134722f51d63306e863fa971758cb66765"
++    },
++    {
++      "path": "LICENSE",
++      "size": 1579,
++      "sha256": "7a1c1e644e9c6cf19afde4c3ca9e0952cbc9acb5d3a26954c69b6fa76eaa303b"
++    },
++    {
++      "path": "NOTICE",
++      "size": 1663,
++      "sha256": "7d31b75d83c96ef411ce9159bfdf08d6772d5a6fe4290122e0501243690e19ca"
++    },
++    {
++      "path": "Package.swift",
++      "size": 525,
++      "sha256": "7083bf0e218af51c3b80ca145aa92e06cc391fd9924c325e108544ee66dbb164"
++    },
++    {
++      "path": "README.md",
++      "size": 3580,
++      "sha256": "463f0885f723a5d9d1207e1bb4c1f8b2816d2e15689bf076bfb6dd70e1882798"
++    },
++    {
++      "path": "Sources/Tendedero/AppDelegate.swift",
++      "size": 39592,
++      "sha256": "5c609b2b3d4163e5c84141a0bc7514e9cb8eb9cb935b52c78b1152166ed29738"
++    },
++    {
++      "path": "Sources/Tendedero/CaptureFlight.swift",
++      "size": 9938,
++      "sha256": "cd773d236ae3fd1837a66f256ad78948ca87f0d2d63837644c5399019890fc7d"
++    },
++    {
++      "path": "Sources/Tendedero/CaptureReceiver.swift",
++      "size": 20344,
++      "sha256": "895bdd5055ec2fd498ad7524e11f0e33ce2cbeb0580fe97b5d595762e78602c8"
++    },
++    {
++      "path": "Sources/Tendedero/ClipboardWatcher.swift",
++      "size": 3734,
++      "sha256": "dba06afe6418113f6d48225bb61a108863b9ce7303e316d7c953a0184f45b3d6"
++    },
++    {
++      "path": "Sources/Tendedero/FullScreen.swift",
++      "size": 2311,
++      "sha256": "4a102ea7c26f6ab48c435c4531e21103933a304a575bb2b99ff95cd0aa5862f4"
++    },
++    {
++      "path": "Sources/Tendedero/GrabArea.swift",
++      "size": 10314,
++      "sha256": "ff2d9c96f7cda57604dda52e231c5c85f8167185b7287b02ca0f476e963b1ba9"
++    },
++    {
++      "path": "Sources/Tendedero/HotKey.swift",
++      "size": 6711,
++      "sha256": "736da0e5ea5cdb78f90b164c41f18044cd1cf1c907c575ce7097a588d3373e04"
++    },
++    {
++      "path": "Sources/Tendedero/ImageOpener.swift",
++      "size": 5543,
++      "sha256": "ed83bf196691a5406a70e2feb2414f7f0338a8aeb81443ab4cf8b6216246e903"
++    },
++    {
++      "path": "Sources/Tendedero/Inbox.swift",
++      "size": 6254,
++      "sha256": "16549fa135546aaac9dcfef138a26fad9dfa8b3d8b0ee7467f4cd67c0eea3bd5"
++    },
++    {
++      "path": "Sources/Tendedero/Line.swift",
++      "size": 16055,
++      "sha256": "6e7239fd6e9f378311e2dac8c5462804584ea8905c6af436a297a140ef277676"
++    },
++    {
++      "path": "Sources/Tendedero/LinePanel.swift",
++      "size": 2136,
++      "sha256": "48352a4fb828399d700a46e648515f11cce1597ce42c1e156836b457a6cf0b79"
++    },
++    {
++      "path": "Sources/Tendedero/LineView.swift",
++      "size": 6062,
++      "sha256": "2a6e515667ecc4877bebd72141ee3c4b340d2e5c332510a8a1cbafb0892990f8"
++    },
++    {
++      "path": "Sources/Tendedero/Localization.swift",
++      "size": 1348,
++      "sha256": "05180ed3f9ea3830addba73d3a91d48e8d9e72d9b9adc67480b5531b0a766531"
++    },
++    {
++      "path": "Sources/Tendedero/Markup.swift",
++      "size": 4093,
++      "sha256": "844c378fc0d1b7b8bbd42b74c22e010cb81e8b717810c669493eeb8125b28e90"
++    },
++    {
++      "path": "Sources/Tendedero/MenuBarIcon.swift",
++      "size": 2102,
++      "sha256": "f64110de7f3aa41f4067db2f2e20b373422d8460235b44a8ebb67f7f2a7c74fb"
++    },
++    {
++      "path": "Sources/Tendedero/OpenSourceNotices.swift",
++      "size": 2220,
++      "sha256": "80ea6c9fb862dd5a371fece2525742035db9e1aa18929797552363bf36e6bd76"
++    },
++    {
++      "path": "Sources/Tendedero/PeggedView.swift",
++      "size": 9461,
++      "sha256": "03ee54f7d1144bfd5a3e7e13e32b49f10813d09dad7f6631626bce741b849bd1"
++    },
++    {
++      "path": "Sources/Tendedero/QuickLook.swift",
++      "size": 2420,
++      "sha256": "ef8b3bcf7cf35d068e23d01d37a19e1b7396fac38a701e1d899925c961a5ea8d"
++    },
++    {
++      "path": "Sources/Tendedero/Resources/Artwork/Picline-AppIcon.png",
++      "size": 1623851,
++      "sha256": "4ad4d19018f0607b7fb0421ecee49ba1c3f8f341e6c6b3cd32af8b730be2ac78"
++    },
++    {
++      "path": "Sources/Tendedero/Resources/az.lproj/Localizable.strings",
++      "size": 5278,
++      "sha256": "3cc2315eac8fd11bb86502c5bd32325954db8fdabfe14098537a7deba6eb1f73"
++    },
++    {
++      "path": "Sources/Tendedero/Resources/en.lproj/Localizable.strings",
++      "size": 5043,
++      "sha256": "5d013fd89546f31fa25ca0ed49bf1d161c0f2d3f4f382e5b7c928b163358cac5"
++    },
++    {
++      "path": "Sources/Tendedero/Resources/es.lproj/Localizable.strings",
++      "size": 5043,
++      "sha256": "6adc7081a3602fd8868f7371b284d0fe38f739864e975f450bcbf965fa194ebd"
++    },
++    {
++      "path": "Sources/Tendedero/Resources/fr.lproj/Localizable.strings",
++      "size": 5247,
++      "sha256": "264a7c884e9cb8f657adb65556e8b2388d5013a8e5355323b40cd5ba29d85f65"
++    },
++    {
++      "path": "Sources/Tendedero/Resources/gl.lproj/Localizable.strings",
++      "size": 4999,
++      "sha256": "e5302baadc88a763d65861993e187003b9655ccee90dde7ae8fc0be24f0738a8"
++    },
++    {
++      "path": "Sources/Tendedero/Resources/hi.lproj/Localizable.strings",
++      "size": 7269,
++      "sha256": "1f5c3cc2cf14721684fca3844fb05ead6695a1452c8214aa5cd2db9a43d5abd0"
++    },
++    {
++      "path": "Sources/Tendedero/Resources/ja.lproj/Localizable.strings",
++      "size": 5655,
++      "sha256": "50cb5df12893db9b64799be4d8648ce4383f8cc1f4da670e00313fe291122aec"
++    },
++    {
++      "path": "Sources/Tendedero/Resources/ko.lproj/Localizable.strings",
++      "size": 5227,
++      "sha256": "ff055da7c879c22887bd73e7dd99315ce28f567928e68258f20499453be291b6"
++    },
++    {
++      "path": "Sources/Tendedero/Resources/pt-BR.lproj/Localizable.strings",
++      "size": 5016,
++      "sha256": "6acc2ee10cfaa601da1ea1e2c2ff540a18c10c3a205f969b0c53136c96904eee"
++    },
++    {
++      "path": "Sources/Tendedero/Resources/tr.lproj/Localizable.strings",
++      "size": 5005,
++      "sha256": "772c61fd90bfdee99c16a593c96a935665c79b6d40fc785aacbdd98d2ebdc34f"
++    },
++    {
++      "path": "Sources/Tendedero/Resources/zh-Hans.lproj/Localizable.strings",
++      "size": 4915,
++      "sha256": "1276473a38890c94b537c76756a51152c4a791fdc7341520c90b172a4d2ac75f"
++    },
++    {
++      "path": "Sources/Tendedero/ScreenshotWatcher.swift",
++      "size": 8911,
++      "sha256": "ec3ea8bcd1837fd3db9f94c9d601a408fcd7317cc616cf0be3431997c5c217ab"
++    },
++    {
++      "path": "Sources/Tendedero/Trim.swift",
++      "size": 4293,
++      "sha256": "3479710c029f943a2f4bdb4bbe7bb602a34f2d23f74ecbc5e329f23810ddd6c6"
++    },
++    {
++      "path": "Sources/Tendedero/main.swift",
++      "size": 229,
++      "sha256": "b7f30e2a3371f402f1f831e31857c94d1cd63eba3f69506fe8b9f05b35d25e8d"
++    },
++    {
++      "path": "Tests/TendederoTests/CaptureDeduplicationTests.swift",
++      "size": 13375,
++      "sha256": "e24b17311b8a2069cfca13a408839ee17d5b3347381e0dcfb76d4ab4a69f36ca"
++    },
++    {
++      "path": "Tests/TendederoTests/CaptureIntakeTests.swift",
++      "size": 22498,
++      "sha256": "0e6ca3b7dae62a4c10ec6b41e3b7d236447578f93cbdc2bf00d693f242b065ba"
++    },
++    {
++      "path": "Tests/TendederoTests/ImageOpenerTests.swift",
++      "size": 6620,
++      "sha256": "65678df9d060eae2d5e1bf7bd791725ca8cd9464c467dd1e6d2ab1f0a1f1837c"
++    },
++    {
++      "path": "Tests/TendederoTests/UpstreamInteractionTests.swift",
++      "size": 3267,
++      "sha256": "7fa29af8b64a51fd3e6e1c4ee20fcaa3767902c4ab183ec1783e96d1d3d06659"
++    },
++    {
++      "path": "docs/Picline.zh-Hans.md",
++      "size": 9578,
++      "sha256": "b45adbe3502510f47c4e0c493fc572e8ed4136b72c871f5593473faa7f106343"
++    },
++    {
++      "path": "docs/design/Picline-Icons-v1/Picline-A-hanging-cards.png",
++      "size": 1623851,
++      "sha256": "4ad4d19018f0607b7fb0421ecee49ba1c3f8f341e6c6b3cd32af8b730be2ac78"
++    },
++    {
++      "path": "docs/design/Picline-Icons-v1/Picline-AppIcon-final.png",
++      "size": 1107862,
++      "sha256": "d0db94d04ac3efd9a057d1343d40eb85fee38e56e9a726b64e498e0f57547f82"
++    },
++    {
++      "path": "docs/design/Picline-Icons-v1/Picline-B-clip.png",
++      "size": 1807221,
++      "sha256": "49dcaffd52e07919ea185e9d0192205bafe2c4af0433b3e427025c3c21074207"
++    },
++    {
++      "path": "docs/design/Picline-Icons-v1/Picline-C-minimal-line.png",
++      "size": 1429870,
++      "sha256": "52dfce5a109c66d557153675dc775919cf758f4f499b993842f6aca15d53f5d1"
++    },
++    {
++      "path": "docs/design/Picline-Icons-v1/Picline-MenuBar-preview.png",
++      "size": 16967,
++      "sha256": "225c69c48a94ce37943aeafaec084878a80ef4a53578f1461aa89116b36d8a14"
++    },
++    {
++      "path": "docs/design/Picline-Icons-v1/implementation.md",
++      "size": 1496,
++      "sha256": "6168923aa8ec1f81219fe5454b1379795d2675cb0c5900554ceeb0ec2fd7ed35"
++    },
++    {
++      "path": "docs/design/Picline-Icons-v1/prompts.md",
++      "size": 3838,
++      "sha256": "e294115b029e7236999a4412b7d687bd5921236ced21210dfb2412acefcc660a"
++    },
++    {
++      "path": "scripts/build-app.sh",
++      "size": 123,
++      "sha256": "ff3beb874436c567ab05ab163358d59cb817a6e2e9d31a59d2fe359100fb88b3"
++    },
++    {
++      "path": "scripts/build-picline.sh",
++      "size": 3212,
++      "sha256": "d73793774ca4d40685b17826a34fa5332ddeacfc8a808eb5ced1b535bca0d6a1"
++    },
++    {
++      "path": "scripts/build-preview.sh",
++      "size": 142,
++      "sha256": "6ef5137b9577ee93db3dd56242b13e4285be258d83179cb917f11595a70b01c3"
++    },
++    {
++      "path": "scripts/check-strings.swift",
++      "size": 2595,
++      "sha256": "214964fb3d9e7d9db469ce628de12704bee29ecf226364d9fc8a620604a0ac10"
++    },
++    {
++      "path": "scripts/make-dmg-background.swift",
++      "size": 2502,
++      "sha256": "e9c3378cc19047377bb4dd4a815844ce78a895a32ebfea89f91bcb1429d83371"
++    },
++    {
++      "path": "scripts/make-dmg.sh",
++      "size": 4234,
++      "sha256": "956d2d346213e81d8663684ac2b8de85589a70f484e3076b95912db7f8c18193"
++    },
++    {
++      "path": "scripts/make-picline-icon.swift",
++      "size": 3100,
++      "sha256": "c297731913453b1152171a5346c003f1d6b965ee4b273e1af1e7cab0d9d9fd4f"
++    },
++    {
++      "path": "scripts/package-source.py",
++      "size": 3855,
++      "sha256": "b570dfe786921448974b67fde7483cab0e6578f11d1b2b85d7fc9c0bd1a25605"
++    }
++  ]
++}
+diff -ruN a/scripts/build-picline.sh b/scripts/build-picline.sh
+--- a/scripts/build-picline.sh	2026-11-01 17:35:29
++++ b/scripts/build-picline.sh	2026-11-01 17:33:25
+@@ -11,11 +11,16 @@
+ APP="$OUTPUT_DIR/Picline.app"
+ export CLANG_MODULE_CACHE_PATH="$PREVIEW_CACHE/modules"
+ export SWIFTPM_MODULECACHE_OVERRIDE="$CLANG_MODULE_CACHE_PATH"
++# Release builds are universal so the app can be handed to Intel Macs too.
++ARCH_ARGS=()
++if [ "$CONFIGURATION" = release ]; then ARCH_ARGS=(--arch arm64 --arch x86_64); fi
+ SWIFT_ARGS=(--disable-sandbox --scratch-path "$PREVIEW_DIR/swift-picline"
+   --cache-path "$PREVIEW_CACHE/cache" --config-path "$PREVIEW_CACHE/config"
+-  --security-path "$PREVIEW_CACHE/security" -c "$CONFIGURATION")
++  --security-path "$PREVIEW_CACHE/security" -c "$CONFIGURATION" "${ARCH_ARGS[@]}")
+ swift build "${SWIFT_ARGS[@]}" --product Picline
+ BIN_DIR="$(swift build "${SWIFT_ARGS[@]}" --show-bin-path)"
++# Start from a clean bundle so nothing from an older build lingers.
++rm -rf "$APP/Contents"
+ mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
+ cp "$BIN_DIR/Picline" "$APP/Contents/MacOS/.Picline.new"
+ mv -f "$APP/Contents/MacOS/.Picline.new" "$APP/Contents/MacOS/Picline"
+@@ -31,8 +36,8 @@
+   <key>CFBundleExecutable</key><string>Picline</string>
+   <key>CFBundleIconFile</key><string>Picline</string>
+   <key>CFBundlePackageType</key><string>APPL</string>
+-  <key>CFBundleShortVersionString</key><string>0.1.9</string>
+-  <key>CFBundleVersion</key><string>10</string>
++  <key>CFBundleShortVersionString</key><string>0.2.1</string>
++  <key>CFBundleVersion</key><string>12</string>
+   <key>CFBundleDevelopmentRegion</key><string>en</string>
+   <key>CFBundleLocalizations</key><array><string>en</string><string>zh-Hans</string><string>es</string><string>fr</string><string>gl</string><string>az</string><string>hi</string><string>ja</string><string>ko</string><string>pt-BR</string><string>tr</string></array>
+   <key>PiclineDefaultLanguage</key><string>zh-Hans</string>
+diff -ruN a/scripts/package-dmg.sh b/scripts/package-dmg.sh
+--- a/scripts/package-dmg.sh	1970-01-01 08:00:00
++++ b/scripts/package-dmg.sh	2026-10-31 17:37:12
+@@ -0,0 +1,24 @@
++#!/bin/bash
++# Builds Picline.app and packs it into a disk image that can be handed out.
++# Keeps Finder scripting out of the way: no window layout, no prompts.
++# Usage: scripts/package-dmg.sh
++set -euo pipefail
++cd "$(dirname "$0")/.."
++
++scripts/build-picline.sh release
++VERSION="$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' build/Picline.app/Contents/Info.plist)"
++DMG="build/Picline-$VERSION.dmg"
++README="${README_PATH:-../dist/安装说明.txt}"
++
++WORK="$(mktemp -d)"
++STAGE="$WORK/stage"
++mkdir -p "$STAGE"
++cp -R build/Picline.app "$STAGE/"
++ln -s /Applications "$STAGE/Applications"
++[ -f "$README" ] && cp "$README" "$STAGE/"
++
++rm -f "$DMG"
++hdiutil create -quiet -srcfolder "$STAGE" -volname "Picline $VERSION" \
++  -fs HFS+ -format UDZO -imagekey zlib-level=9 "$DMG"
++rm -rf "$WORK"
++echo "Built $DMG"
+diff -ruN a/安装说明.txt b/安装说明.txt
+--- a/安装说明.txt	1970-01-01 08:00:00
++++ b/安装说明.txt	2026-11-01 17:34:50
+@@ -0,0 +1,75 @@
++Picline 0.2.1 — 多桌面 + 隔空投送 + 长按预览
++================================================
++
++一、这是什么
++------------
++这是在 Picline 0.1.9（老张做的 Tendedero 增强版）基础上改的一个版本。
++
++0.2.0 解决了多桌面问题：晾衣绳在多个桌面（Spaces）里都能用。
++0.2.1 又加了两件事：右键菜单里的"隔空投送"，以及长按图片直接预览。
++
++老张原来的第三方截图工具剪贴板支持，一行都没改，照旧能用。
++
++二、系统要求
++------------
++macOS 14 或更高版本。Intel 芯片和 Apple 芯片都支持（通用二进制）。
++
++三、安装
++--------
++1. 双击 Picline-0.2.1.dmg，把 Picline 拖进左边的"应用程序"文件夹。
++
++2. 第一次打开时，如果弹窗说"无法打开，因为 Apple 无法检查其是否包含恶意软件"：
++   打开 系统设置 → 隐私与安全性，往下翻到"安全性"一栏，
++   会看到一条关于 Picline 的提示，点"仍然打开"，再输一次密码即可。
++
++   如果找不到那条提示，也可以打开"终端"执行下面这行，然后正常双击打开：
++   xattr -dr com.apple.quarantine /Applications/Picline.app
++
++3. 第一次运行会请求访问"桌面"或你选择的文件夹，一定要点允许，
++   否则新截图不会挂到绳子上。
++
++四、怎么用
++----------
++1. 把鼠标停在屏幕最上方的中间位置，绳子会自动落下来；鼠标移开就收回去。
++
++2. 点菜单栏上的 Picline 图标，勾上"接收剪贴板图片"。
++   勾上之后，不管是系统截图、还是 PixPin、Shottr、Snapzy、CleanShot 这类第三方工具
++   截完图复制到剪贴板，都会直接挂上绳子。
++
++3. 按 Control + 左/右方向键切换桌面，在新桌面里把鼠标压到屏幕顶部，
++   绳子照样会落下来。
++
++4. 一张图能做的事：
++   单击                   复制到剪贴板
++   双击                   用默认应用打开
++   按住 0.45 秒           快速查看（预览），之后左右方向键翻整条绳子，
++                          空格或 Esc 关闭
++   力触控 / 鼠标中键      标记
++   拖出去                 存成文件（拖到应用给副本，拖到文件夹或桌面留下原文件）
++   左上角叉号             从绳子上取下
++   右键                   打开菜单
++
++5. 隔空投送：右键点那张图，选"隔空投送"，系统会列出附近的设备，
++   选你的 iPhone、iPad 或另一台 Mac，图就发过去了。
++   绳子上的图不会消失。图如果已经被移走或删掉，这一项会变灰。
++
++五、和原版的区别
++----------------
++原版（含 0.1.9）有一个 macOS 的老毛病：晾衣绳的窗口有时会被系统钉在某一个桌面上，
++换到别的桌面后，鼠标压到顶部什么都不出现。
++0.2.0 在每次切换桌面、以及每次拉下绳子的时候，都会检查窗口是不是在当前的桌面上，
++不在就立刻重建一个新窗口顶上去，所以每个桌面都能用。
++0.2.1 没有改动这部分逻辑。
++
++另外说明一点：没有做"单击选中 + 空格预览"。
++绳子的窗口在设计上永远不抢你正在使用的 App 的键盘焦点，
++要支持空格就得改成抢焦点（你正在写东西的窗口会变灰），或者安装需要"辅助功能"
++权限的全局按键拦截，两者都不划算，所以预览改成了长按。
++
++六、来源与许可
++--------------
++本项目基于：
++  Tendedero — 作者 Alejandro Buján，MIT 许可
++  Picline   — 作者 老张（在 Tendedero 基础上的增强分支）
++
++代码遵循 MIT 许可。Tendedero 与 Picline 的名称、图标归各自作者所有，本项目只做功能修改。
