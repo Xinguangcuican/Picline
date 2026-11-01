@@ -18,6 +18,10 @@ macOS 14+ · Apple 芯片与 Intel 通用 · 约 3.5 MB · 免费开源
 <a href="https://github.com/Yixin2020818/Picline/releases/latest"><b>↓ 下载 Picline 0.2.2</b></a>
 </p>
 
+<p align="center">
+  <img src="docs/demo/picline-demo.gif" width="880" alt="鼠标推到屏幕顶部，绳子落下，新截图依次挂上去">
+</p>
+
 ---
 
 ## 这是什么
