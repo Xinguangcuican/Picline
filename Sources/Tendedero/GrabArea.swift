@@ -92,17 +92,20 @@ final class GrabView: NSView, NSDraggingSource {
 
     var url: URL?
     var dragImage: NSImage?
-    var onClick: () -> Void = {}
-    var onDoubleClick: () -> Void = {}
-    var onDragStart: () -> Void = {}
-    var onDragEnd: () -> Void = {}
-    var onTrash: () -> Void = {}
-    var onDiscard: () -> Void = {}
-    var onLongPress: () -> Void = {}
-    var onForceClick: () -> Void = {}
-    var onMiddleClick: () -> Void = {}
-    var onPressChange: (Bool) -> Void = { _ in }
-    var menuProvider: () -> NSMenu = { NSMenu() }
+    // Every callback runs on the main thread: AppKit calls these from within
+    // event handling. Saying so explicitly lets the closures reach the line,
+    // which lives on the main actor, and keeps older compilers happy.
+    var onClick: @MainActor () -> Void = {}
+    var onDoubleClick: @MainActor () -> Void = {}
+    var onDragStart: @MainActor () -> Void = {}
+    var onDragEnd: @MainActor () -> Void = {}
+    var onTrash: @MainActor () -> Void = {}
+    var onDiscard: @MainActor () -> Void = {}
+    var onLongPress: @MainActor () -> Void = {}
+    var onForceClick: @MainActor () -> Void = {}
+    var onMiddleClick: @MainActor () -> Void = {}
+    var onPressChange: @MainActor (Bool) -> Void = { _ in }
+    var menuProvider: @MainActor () -> NSMenu = { NSMenu() }
 
     private var downPoint: NSPoint?
     private var startedDrag = false
@@ -268,9 +271,9 @@ final class GrabView: NSView, NSDraggingSource {
 }
 
 final class ClosureMenuItem: NSMenuItem {
-    private let handler: () -> Void
+    private let handler: @MainActor () -> Void
 
-    init(_ title: String, key: String = "", handler: @escaping () -> Void) {
+    init(_ title: String, key: String = "", handler: @escaping @MainActor () -> Void) {
         self.handler = handler
         super.init(title: title, action: #selector(fire), keyEquivalent: key)
         target = self
@@ -278,5 +281,5 @@ final class ClosureMenuItem: NSMenuItem {
 
     required init(coder: NSCoder) { fatalError() }
 
-    @objc private func fire() { handler() }
+    @objc private func fire() { MainActor.assumeIsolated { handler() } }
 }
