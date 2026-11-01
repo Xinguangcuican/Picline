@@ -83,9 +83,11 @@ struct LineView: View {
             .animation(.easeInOut(duration: 0.3), value: line.items.isEmpty)
             // Tucked away, the whole line waits above the top edge and slides
             // out from under the menu bar, the way an auto-hiding Dock does.
+            // Coming down is quick and barely overshoots: reaching the menu
+            // bar should feel like the rope was waiting there all along.
             .offset(y: line.revealed ? 0 : -(Layout.panelHeight + 12))
-            .animation(line.revealed ? .spring(response: 0.42, dampingFraction: 0.82)
-                                     : .easeIn(duration: 0.22), value: line.revealed)
+            .animation(line.revealed ? .spring(response: 0.26, dampingFraction: 0.9)
+                                     : .easeIn(duration: 0.2), value: line.revealed)
         }
         .onPreferenceChange(HitRectsKey.self) { rects in
             line.hitRects = rects
