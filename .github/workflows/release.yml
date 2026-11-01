@@ -94,7 +94,11 @@ jobs:
               if ($2 == v) { p = 1 }
               next
             }
-            p { print }
+            p {
+              if (!seen && $0 ~ /^[[:space:]]*$/) next
+              seen = 1
+              print
+            }
           ' CHANGELOG.md > "$RUNNER_TEMP/notes.md"
           cat .github/release-footer.md >> "$RUNNER_TEMP/notes.md"
           echo "--- 说明预览 ---"
