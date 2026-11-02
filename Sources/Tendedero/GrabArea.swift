@@ -98,11 +98,14 @@ struct GrabArea: NSViewRepresentable {
                 menu.addItem(ClosureMenuItem(label("Take down")) { line.discardGroup(id) })
                 menu.addItem(ClosureMenuItem(label("Move to Trash")) { line.trashGroup(id) })
             }
+            // One side at a time only means something for a single photo: with
+            // three picked out, "everything to the left" is a question about
+            // which of the three, so both are offered only when one is picked.
             let left = ClosureMenuItem(L("Take down everything to the left")) { line.takeDown(id, toTheLeft: true) }
-            left.isEnabled = !line.neighbours(of: id, toTheLeft: true).isEmpty
+            left.isEnabled = count == 1 && !line.neighbours(of: id, toTheLeft: true).isEmpty
             menu.addItem(left)
             let right = ClosureMenuItem(L("Take down everything to the right")) { line.takeDown(id, toTheLeft: false) }
-            right.isEnabled = !line.neighbours(of: id, toTheLeft: false).isEmpty
+            right.isEnabled = count == 1 && !line.neighbours(of: id, toTheLeft: false).isEmpty
             menu.addItem(right)
             // The whole line, this photo included. Same way out as the corner
             // cross: a file from the line's own folder goes to the Trash, one
