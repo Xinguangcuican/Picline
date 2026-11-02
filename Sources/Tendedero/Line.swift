@@ -32,6 +32,16 @@ final class Line: ObservableObject {
     @Published var copiedID: UUID?
     @Published var draggingID: UUID?
     @Published var pressedID: UUID?
+    /// Which photos are picked out. One click picks one; shift click takes the
+    /// run between the last one picked and this one; command click adds or
+    /// removes a single photo.
+    @Published private(set) var selection: Set<UUID> = []
+    /// Where a shift click measures from: the last photo picked on its own.
+    private var anchorID: UUID?
+    /// A press inside a group, held back until the button comes up: dragging
+    /// a picked-out photo has to carry the whole group, so the group can only
+    /// close down into one after a press that did not turn into a drag.
+    private var pendingCollapse: UUID?
     /// Whether the line has slid down into view.
     @Published var revealed = false
 
@@ -77,6 +87,85 @@ final class Line: ObservableObject {
         scheduleGust()
     }
 
+    // MARK: Choosing several
+
+    /// The button went down on a photo. Shift takes the run from the anchor,
+    /// command adds or removes one, a plain press picks this one out — unless
+    /// it is already part of a group, which stays as it is for now.
+    func press(_ id: UUID, extending: Bool, toggling: Bool) {
+        if extending || toggling {
+            pendingCollapse = nil
+            select(id, extending: extending, toggling: toggling)
+            return
+        }
+        if selection.contains(id), selection.count > 1 {
+            pendingCollapse = id
+            return
+        }
+        pendingCollapse = nil
+        select(id)
+    }
+
+    /// The button came up without a drag: a press inside a group now closes
+    /// down to that one photo, the way the Finder does it.
+    func settle(_ id: UUID, dragged: Bool) {
+        guard let pending = pendingCollapse else { return }
+        pendingCollapse = nil
+        if !dragged, pending == id { select(id) }
+    }
+
+    func select(_ id: UUID, extending: Bool = false, toggling: Bool = false) {
+        let live = items.filter { !$0.falling }
+        guard let index = live.firstIndex(where: { $0.id == id }) else { return }
+        // Shift measures from the photo picked before, and takes everything
+        // between the two, this one included.
+        if extending, let anchor = anchorID,
+           let from = live.firstIndex(where: { $0.id == anchor }) {
+            let run = from <= index ? from...index : index...from
+            selection = Set(live[run].map(\.id))
+            return
+        }
+        if toggling {
+            if selection.contains(id) {
+                selection.remove(id)
+            } else {
+                selection.insert(id)
+            }
+            anchorID = id
+            return
+        }
+        selection = [id]
+        anchorID = id
+    }
+
+    func clearSelection() {
+        pendingCollapse = nil
+        guard !selection.isEmpty || anchorID != nil else { return }
+        selection.removeAll()
+        anchorID = nil
+    }
+
+    /// What an action acts on: the whole group when this photo is part of it,
+    /// otherwise just this photo. One rule serves both halves of the menu,
+    /// because a plain click leaves exactly one photo picked out — so "do it
+    /// to these three" and "do it to this one" are the same sentence.
+    func targets(including id: UUID) -> [Pegged] {
+        let live = items.filter { !$0.falling }
+        guard let hit = live.first(where: { $0.id == id }) else { return [] }
+        let chosen = live.filter { selection.contains($0.id) }
+        return chosen.count > 1 && chosen.contains(where: { $0.id == id }) ? chosen : [hit]
+    }
+
+    /// A drag carries the same thing the menu acts on.
+    func dragPayload(including id: UUID) -> [Pegged] {
+        targets(including: id)
+    }
+
+    private func forgetSelection(_ id: UUID) {
+        if anchorID == id { anchorID = nil }
+        selection.remove(id)
+    }
+
     // MARK: Hanging and dropping
 
     @discardableResult
@@ -117,11 +206,13 @@ final class Line: ObservableObject {
         if !quietly { play("Pop", volume: 0.25) }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
             self?.items.removeAll { $0.id == id }
+            self?.forgetSelection(id)
         }
     }
 
     /// "Take everything down": every photo goes the way of its corner cross.
     func clear() {
+        clearSelection()
         takeDown(items.filter { !$0.falling })
     }
 
@@ -157,16 +248,22 @@ final class Line: ObservableObject {
 
     // MARK: Actions on one photo
 
+    /// Copies every photo the menu was asked about, one pasteboard item each:
+    /// Finder and chat windows both take a list of files, and the picture data
+    /// rides along so pasting into an editor still gives a picture.
     func copy(_ id: UUID) {
-        guard let item = items.first(where: { $0.id == id }) else { return }
-        let entry = NSPasteboardItem()
-        // A recording is copied as the file, which apps paste as the video.
-        if !item.isRecording, let png = pngData(item.url) { entry.setData(png, forType: .png) }
-        entry.setString(item.url.absoluteString, forType: .fileURL)
-        entry.setString("1", forType: ClipboardWatcher.ownType)
+        let group = targets(including: id)
+        guard !group.isEmpty else { return }
         let pb = NSPasteboard.general
         pb.clearContents()
-        pb.writeObjects([entry])
+        pb.writeObjects(group.map { item in
+            let entry = NSPasteboardItem()
+            // A recording is copied as the file, which apps paste as the video.
+            if !item.isRecording, let png = pngData(item.url) { entry.setData(png, forType: .png) }
+            entry.setString(item.url.absoluteString, forType: .fileURL)
+            entry.setString("1", forType: ClipboardWatcher.ownType)
+            return entry
+        })
 
         copiedID = id
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { [weak self] in
@@ -175,8 +272,7 @@ final class Line: ObservableObject {
     }
 
     func open(_ id: UUID) {
-        guard let item = items.first(where: { $0.id == id }) else { return }
-        imageOpener.open(item.url)
+        for item in targets(including: id) { imageOpener.open(item.url) }
     }
 
     /// Moves the file to the Trash and takes the photo off the line. When a
@@ -210,9 +306,25 @@ final class Line: ObservableObject {
         return item.url.standardizedFileURL.path.hasPrefix(Inbox.folder.standardizedFileURL.path + "/")
     }
 
-    /// The corner cross and "Take down" both end up here.
+    /// The corner cross and "Take down" both end up here. The cross is always
+    /// one photo; the menu widens this to the group through `discardGroup`.
     func discard(_ id: UUID, quietly: Bool = false) {
         if isInInbox(id) { trash(id, quietly: quietly) } else { drop(id, quietly: quietly) }
+    }
+
+    /// The menu's "Discard" and "Take down": one after another, and only the
+    /// first makes a sound.
+    func discardGroup(_ id: UUID) {
+        for (n, item) in targets(including: id).enumerated() {
+            discard(item.id, quietly: n > 0)
+        }
+    }
+
+    /// The menu's "Move to Trash", for the whole group.
+    func trashGroup(_ id: UUID) {
+        for (n, item) in targets(including: id).enumerated() {
+            trash(item.id, quietly: n > 0)
+        }
     }
 
     /// The oldest photo falling off a full line. Like the cross, a file from
@@ -239,18 +351,34 @@ final class Line: ObservableObject {
         drop(id, quietly: true)
     }
 
-    /// Inbox mode: keep a screenshot by moving it to the Desktop.
-    func saveToDesktop(_ id: UUID) {
-        guard let item = items.first(where: { $0.id == id }) else { return }
-        let desktop = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Desktop")
-        let target = uniqueURL(in: desktop, for: item.url.lastPathComponent)
-        do {
-            try FileManager.default.moveItem(at: item.url, to: target)
-            drop(id, quietly: true)
-        } catch {
-            log.error("Could not save to Desktop: \(error.localizedDescription, privacy: .public)")
-            NSSound.beep()
+    /// Inbox mode: keep the picked photos by moving them to the Desktop.
+    ///
+    /// A photo from the line's own folder is moved, since that folder exists
+    /// only to be emptied. One that came from somewhere else is copied: the
+    /// menu offers this for the line's own screenshots, and a stray foreign
+    /// photo in a mixed group must not be taken out of the folder you put it
+    /// in.
+    func saveToDesktop(_ id: UUID, into folder: URL? = nil) {
+        let group = targets(including: id)
+        guard !group.isEmpty else { return }
+        let desktop = folder ?? FileManager.default.homeDirectoryForCurrentUser
+            .appendingPathComponent("Desktop")
+        var trouble = false
+        for item in group {
+            let target = uniqueURL(in: desktop, for: item.url.lastPathComponent)
+            do {
+                if isInInbox(item.id) {
+                    try FileManager.default.moveItem(at: item.url, to: target)
+                } else {
+                    try FileManager.default.copyItem(at: item.url, to: target)
+                }
+                drop(item.id, quietly: true)
+            } catch {
+                log.error("Could not save to Desktop: \(error.localizedDescription, privacy: .public)")
+                trouble = true
+            }
         }
+        if trouble { NSSound.beep() }
     }
 
     private func uniqueURL(in folder: URL, for name: String) -> URL {
@@ -312,21 +440,23 @@ final class Line: ObservableObject {
     }
 
     func reveal(_ id: UUID) {
-        guard let item = items.first(where: { $0.id == id }) else { return }
-        NSWorkspace.shared.activateFileViewerSelecting([item.url])
+        let urls = targets(including: id).map(\.url)
+        guard !urls.isEmpty else { return }
+        NSWorkspace.shared.activateFileViewerSelecting(urls)
     }
 
-    /// Hands the photo to AirDrop: the system window lists the devices near
-    /// you, and the one you pick gets the file. The photo stays on the line.
+    /// Hands the photos to AirDrop: the system window lists the devices near
+    /// you, and the one you pick gets the files. The photos stay on the line.
     ///
     /// The window belongs to the sharing service, so it is opened after the
     /// menu has closed: nothing of ours can pop a window while a menu still
     /// runs its own event loop.
     func airdrop(_ id: UUID) {
-        guard let item = items.first(where: { $0.id == id }),
-              FileManager.default.fileExists(atPath: item.url.path),
+        let urls = targets(including: id).map(\.url)
+            .filter { FileManager.default.fileExists(atPath: $0.path) }
+        guard !urls.isEmpty,
               let service = NSSharingService(named: .sendViaAirDrop),
-              service.canPerform(withItems: [item.url]) else {
+              service.canPerform(withItems: urls) else {
             NSSound.beep()
             return
         }
@@ -335,7 +465,7 @@ final class Line: ObservableObject {
             // AirDrop window is a normal one, so the app has to come forward
             // for it to be in front of what you were doing.
             NSApp.activate(ignoringOtherApps: true)
-            service.perform(withItems: [item.url])
+            service.perform(withItems: urls)
         }
     }
 

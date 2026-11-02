@@ -11,7 +11,12 @@ struct PeggedView: View {
     @State private var hovering = false
 
     private var copied: Bool { line.copiedID == item.id }
-    private var dragging: Bool { line.draggingID == item.id }
+    private var selected: Bool { line.selection.contains(item.id) }
+    /// Every photo a drag is carrying steps back, not just the one the
+    /// pointer started on.
+    private var dragging: Bool {
+        line.draggingID != nil && line.selection.contains(item.id)
+    }
     private var pressed: Bool { line.pressedID == item.id }
 
     var body: some View {
@@ -78,6 +83,14 @@ struct PeggedView: View {
             }
             .padding(Frame.inset)
             .glassFrame(cornerRadius: Frame.radius)
+            // Picked out: a ring just outside the glass, so the photo itself
+            // is never covered.
+            .overlay(
+                RoundedRectangle(cornerRadius: Frame.radius + 2, style: .continuous)
+                    .strokeBorder(Color.accentColor, lineWidth: 2)
+                    .opacity(selected ? 1 : 0)
+            )
+            .animation(.easeOut(duration: 0.14), value: selected)
             .shadow(color: .black.opacity(hovering ? 0.26 : 0.18), radius: hovering ? 14 : 10, y: hovering ? 8 : 5)
             // Holding presses the photo in slowly, so a long press feels like
             // it is building up to something.
