@@ -74,38 +74,40 @@ enum CardMenu {
         // so a plain click needs no special case.
         let group = line.targets(including: id)
         let count = group.count
-        /// "Save to Desktop · 3 photos" while a group is picked out.
-        func label(_ english: String) -> String {
-            guard count > 1 else { return L(english) }
-            return L(english) + " · " + String(format: L("%d photos"), count)
+        /// "Save to Desktop · 3 photos" while a group is picked out. The
+        /// title is localized before it gets here, so the translation checker
+        /// still sees every key.
+        func counted(_ title: String) -> String {
+            guard count > 1 else { return title }
+            return title + " · " + String(format: L("%d photos"), count)
         }
         let menu = NSMenu()
         // Items say themselves whether they can be used.
         menu.autoenablesItems = false
-        menu.addItem(ClosureMenuItem(label("Copy")) { line.copy(id) })
-        menu.addItem(ClosureMenuItem(label("Open")) { line.open(id) })
+        menu.addItem(ClosureMenuItem(counted(L("Copy"))) { line.copy(id) })
+        menu.addItem(ClosureMenuItem(counted(L("Open"))) { line.open(id) })
         // One photo each: Quick Look already pages through the whole line, and
         // Markup edits the one file it was given.
         menu.addItem(ClosureMenuItem(L("Quick Look")) { line.quickLook(id) })
         if !item.isRecording {
             menu.addItem(ClosureMenuItem(L("Markup")) { line.markup(id) })
         }
-        menu.addItem(ClosureMenuItem(label("Show in Finder")) { line.reveal(id) })
+        menu.addItem(ClosureMenuItem(counted(L("Show in Finder"))) { line.reveal(id) })
         // Only offered when every file is still where the line says it is.
-        let airdrop = ClosureMenuItem(label("Send via AirDrop")) { line.airdrop(id) }
+        let airdrop = ClosureMenuItem(counted(L("Send via AirDrop"))) { line.airdrop(id) }
         airdrop.isEnabled = !group.isEmpty
             && group.allSatisfy { FileManager.default.fileExists(atPath: $0.url.path) }
         menu.addItem(airdrop)
         let inInbox = group.contains { line.isInInbox($0.id) }
         if inInbox {
-            menu.addItem(ClosureMenuItem(label("Save to Desktop")) { line.saveToDesktop(id) })
+            menu.addItem(ClosureMenuItem(counted(L("Save to Desktop"))) { line.saveToDesktop(id) })
         }
         menu.addItem(.separator())
         if inInbox {
-            menu.addItem(ClosureMenuItem(label("Discard")) { line.discardGroup(id) })
+            menu.addItem(ClosureMenuItem(counted(L("Discard"))) { line.discardGroup(id) })
         } else {
-            menu.addItem(ClosureMenuItem(label("Take down")) { line.discardGroup(id) })
-            menu.addItem(ClosureMenuItem(label("Move to Trash")) { line.trashGroup(id) })
+            menu.addItem(ClosureMenuItem(counted(L("Take down"))) { line.discardGroup(id) })
+            menu.addItem(ClosureMenuItem(counted(L("Move to Trash"))) { line.trashGroup(id) })
         }
         // One side at a time only means something for a single photo: with
         // three picked out, "everything to the left" is a question about which

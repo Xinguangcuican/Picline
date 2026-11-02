@@ -91,3 +91,12 @@
 "Picline is based on Tendedero by Alejandro Buján. The upstream source code is licensed under the MIT License. Picline uses its own name and icon and is an independent modified version." = "Picline, Alejandro Buján के Tendedero पर आधारित है। मूल स्रोत कोड MIT लाइसेंस के अंतर्गत है। Picline अपना नाम और आइकन इस्तेमाल करने वाला एक स्वतंत्र संशोधित संस्करण है।";
 "Upstream Project" = "मूल प्रोजेक्ट";
 "The license file is unavailable in this build." = "इस बिल्ड में लाइसेंस फ़ाइल उपलब्ध नहीं है।";
+
+/* Bringing the line down */
+"Only with a key held" = "केवल कुंजी दबाकर";
+"Nothing, just the pointer" = "कुछ नहीं, सिर्फ़ पॉइंटर";
+"Hold ⌘ Command" = "⌘ Command दबाएँ";
+"Hold ⌥ Option" = "⌥ Option दबाएँ";
+"Hold ⌃ Control" = "⌃ Control दबाएँ";
+"Hold ⇧ Shift" = "⇧ Shift दबाएँ";
+"Send via AirDrop" = "AirDrop से भेजें";

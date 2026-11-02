@@ -89,3 +89,12 @@
 "Picline is based on Tendedero by Alejandro Buján. The upstream source code is licensed under the MIT License. Picline uses its own name and icon and is an independent modified version." = "Picline est basé sur Tendedero, créé par Alejandro Buján. Le code source original est sous licence MIT. Picline utilise son propre nom et sa propre icône et constitue une version modifiée indépendante.";
 "Upstream Project" = "Projet d’origine";
 "The license file is unavailable in this build." = "Le fichier de licence est indisponible dans cette version.";
+
+/* Bringing the line down */
+"Only with a key held" = "Seulement avec une touche enfoncée";
+"Nothing, just the pointer" = "Rien, juste le pointeur";
+"Hold ⌘ Command" = "Maintenez ⌘ Command";
+"Hold ⌥ Option" = "Maintenez ⌥ Option";
+"Hold ⌃ Control" = "Maintenez ⌃ Control";
+"Hold ⇧ Shift" = "Maintenez ⇧ Shift";
+"Send via AirDrop" = "Envoyer par AirDrop";

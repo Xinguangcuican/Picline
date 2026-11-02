@@ -1,4 +1,4 @@
-# Picline 0.2.6
+# Picline 0.2.7
 
 基于 Tendedero 的本地修改版。按上游许可证要求使用独立名称和图标，保留原作者版权声明。
 
@@ -9,6 +9,7 @@ Picline 是 Mac 菜单栏下的一条图片晾衣绳：把截图和复制的图�
 | 操作 | 结果 |
 | --- | --- |
 | 指针碰到菜单栏 | 绳子立刻滑下来（只留 0.06 秒缓冲，挡掉只是从顶部穿过去的指针）。绳子上没有图也会下来，看到的是空绳和一句提示 |
+| 按住一个键再碰菜单栏 | 菜单栏 →「放下晾衣绳」→「需要按住按键」，可选 `⌘` / `⌥` / `⌃` / `⇧`（0.2.7 新增）。选了键之后不按就不放下来 |
 | 点击菜单栏任意处 | 把绳子收起来 |
 | 指针离开绳子超过 0.5 秒 | 自己收回去 |
 | `Control + Option + T` | 显示 / 隐藏（菜单栏「快捷键」里可改） |
@@ -80,14 +81,14 @@ Picline 是 Mac 菜单栏下的一条图片晾衣绳：把截图和复制的图�
 ```sh
 scripts/build-picline.sh release    # 通用二进制（arm64 + x86_64），产物在 build/Picline.app
 scripts/package-dmg.sh              # 打包成 build/Picline-<版本>.dmg
-swift test --disable-sandbox        # 77 项测试
+swift test --disable-sandbox        # 82 项测试
 ```
 
 构建使用 ad-hoc 签名，不安装到「应用程序」，也不做 Developer ID 或公证。菜单栏 → **开源声明** 可查看上游来源、原作者与完整许可证，内容随应用打包，离线可读。
 
 ## Windows 版
 
-`windows/` 里是同一套交互的 Windows 实现：Rust 写的手写 Win32 + GDI+，一个 exe，不用安装。贴顶唤出、截图与复制的图自动挂上、单击选中、`Shift` 连选、`Ctrl` 加选、双击预览、右键菜单、拖进聊天窗口或文件夹，规则与 Mac 版一致。在 Mac 上用 llvm-mingw 交叉编译出 x64 与 ARM64 两个 exe，详见 [`../windows/README.md`](../windows/README.md)。
+`windows/` 里是同一套交互的 Windows 实现：Rust 写的手写 Win32 + GDI+，一个 exe，不用安装。贴顶唤出（0.1.8 起也可要求按住 `Ctrl` / `Alt` / `Shift`）、截图与复制的图自动挂上、单击选中、`Shift` 连选、`Ctrl` 加选、双击预览、右键菜单、拖进聊天窗口或文件夹，规则与 Mac 版一致。在 Mac 上用 llvm-mingw 交叉编译出 x64 与 ARM64 两个 exe，详见 [`../windows/README.md`](../windows/README.md)。
 
 ## 最近几个版本
 

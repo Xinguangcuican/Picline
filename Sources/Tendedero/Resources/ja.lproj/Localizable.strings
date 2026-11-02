@@ -89,3 +89,12 @@
 "Picline is based on Tendedero by Alejandro Buján. The upstream source code is licensed under the MIT License. Picline uses its own name and icon and is an independent modified version." = "Picline は Alejandro Buján による Tendedero を基にしています。元のソースコードは MIT ライセンスで提供されています。Picline は独自の名前とアイコンを使用する、独立した改変版です。";
 "Upstream Project" = "元のプロジェクト";
 "The license file is unavailable in this build." = "このビルドではライセンスファイルを読み込めません。";
+
+/* Bringing the line down */
+"Only with a key held" = "キーを押しているときだけ";
+"Nothing, just the pointer" = "なし（ポインタだけで開く）";
+"Hold ⌘ Command" = "⌘ Command を押す";
+"Hold ⌥ Option" = "⌥ Option を押す";
+"Hold ⌃ Control" = "⌃ Control を押す";
+"Hold ⇧ Shift" = "⇧ Shift を押す";
+"Send via AirDrop" = "AirDrop で送信";

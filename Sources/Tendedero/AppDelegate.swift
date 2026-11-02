@@ -6,6 +6,46 @@ import ServiceManagement
 import SwiftUI
 import UniformTypeIdentifiers
 
+/// A key held while the pointer is in the menu bar. `none` keeps the old
+/// behaviour: the pointer alone brings the line down.
+enum RevealKey: String, CaseIterable {
+    case none, command, option, control, shift
+
+    /// The flag to look for, or nil when nothing has to be held.
+    var modifier: NSEvent.ModifierFlags? {
+        switch self {
+        case .none: return nil
+        case .command: return .command
+        case .option: return .option
+        case .control: return .control
+        case .shift: return .shift
+        }
+    }
+
+    /// Whether it is held right now. Read from the class property, which is
+    /// the keyboard state this instant, so the 60Hz timer sees a change the
+    /// moment the key goes down.
+    var isHeld: Bool {
+        guard let modifier else { return true }
+        return NSEvent.modifierFlags.contains(modifier)
+    }
+
+    var title: String {
+        switch self {
+        case .none: return L("Nothing, just the pointer")
+        case .command: return L("Hold ⌘ Command")
+        case .option: return L("Hold ⌥ Option")
+        case .control: return L("Hold ⌃ Control")
+        case .shift: return L("Hold ⇧ Shift")
+        }
+    }
+
+    static var current: RevealKey {
+        get { RevealKey(rawValue: UserDefaults.standard.string(forKey: "revealKey") ?? "") ?? .none }
+        set { UserDefaults.standard.set(newValue.rawValue, forKey: "revealKey") }
+    }
+}
+
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let line = Line()
@@ -73,6 +113,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     static var opensFromMenuBar: Bool {
         get { !UserDefaults.standard.bool(forKey: "menuBarRevealOff") }
         set { UserDefaults.standard.set(!newValue, forKey: "menuBarRevealOff") }
+    }
+
+    /// What has to be held down while the pointer is in the menu bar. Some
+    /// people reach up there for menus all day; a key turns "the line comes
+    /// down whenever I touch the top of the screen" into "when I mean it".
+    static var revealKey: RevealKey {
+        get { RevealKey.current }
+        set { RevealKey.current = newValue }
     }
 
     /// Something new hanging shows itself for a moment. Off, it hangs
@@ -567,7 +615,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             // An empty line comes down too: the bare rope is how you find out
             // the app is there at all, and it costs nothing to show.
             if Self.opensFromMenuBar, let screen = screenUnderPointer,
-               inMenuBar, !menuBarSuppressed, !FullScreen.blocksLine(on: screen) {
+               inMenuBar, Self.revealKey.isHeld, !menuBarSuppressed,
+               !FullScreen.blocksLine(on: screen) {
                 let since = hotZoneSince ?? now
                 hotZoneSince = since
                 if now.timeIntervalSince(since) >= Self.revealDelay {
@@ -741,6 +790,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
         hover.state = Self.opensFromMenuBar ? .on : .off
         options.addItem(hover)
+
+        // Which key, if any, has to be held for that. Its own submenu, so the
+        // parent stays one checkbox.
+        let keys = NSMenu()
+        for key in RevealKey.allCases {
+            let item = ClosureMenuItem(key.title) { AppDelegate.revealKey = key }
+            item.state = Self.revealKey == key ? .on : .off
+            item.indentationLevel = 0
+            keys.addItem(item)
+        }
+        let keyItem = NSMenuItem(title: L("Only with a key held"), action: nil, keyEquivalent: "")
+        keyItem.submenu = keys
+        // No point choosing a key if the pointer alone is not allowed in.
+        keyItem.isEnabled = Self.opensFromMenuBar
+        options.addItem(keyItem)
         let peek = ClosureMenuItem(L("When something new hangs")) {
             AppDelegate.peeksAtNew.toggle()
         }
