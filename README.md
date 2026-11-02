@@ -7,7 +7,7 @@
 <p align="center">
 连截几张图、连着复制几张图，剪贴板都只留最后一张 —— 把图挂成一排，用哪张取哪张。<br>
 Mac 菜单栏下的图片晾衣绳 · 读第三方截图工具与浏览器/访达复制来的图 · 多桌面（Spaces）通用 · 可标记与快速预览<br>
-这个分支修好了多桌面，并加上<b>隔空投送</b>、<b>长按预览</b>与<b>访达右键「打开方式 → Picline」</b>。
+这个分支修好了多桌面，并陆续加上<b>隔空投送</b>、<b>长按预览</b>、<b>访达右键「打开方式 → Picline」</b>，以及<b>一次选中几张一起拖走</b>。
 </p>
 
 <p align="center">
@@ -15,7 +15,7 @@ macOS 14+ · Apple 芯片与 Intel 通用 · 约 3.5 MB · 免费开源
 </p>
 
 <p align="center">
-<a href="https://github.com/Xinguangcuican/Picline/releases/latest"><b>↓ 下载 Picline 0.2.5</b></a>
+<a href="https://github.com/Xinguangcuican/Picline/releases/latest"><b>↓ 下载 Picline 0.2.6</b></a>
 </p>
 
 <p align="center">
@@ -137,7 +137,7 @@ QSpace 有自己的右键菜单，但「打开方式」同样走系统那一套�
 
 ## 安装
 
-1. 从 [Releases](https://github.com/Xinguangcuican/Picline/releases/latest) 下载 `Picline-0.2.5.dmg`。
+1. 从 [Releases](https://github.com/Xinguangcuican/Picline/releases/latest) 下载 `Picline-0.2.6.dmg`。
 2. 打开 dmg，把 Picline 拖进「应用程序」。
 3. **首次打开会被 Gatekeeper 拦**（本项目是 adhoc 签名，未做 Apple 公证）：
 
@@ -171,8 +171,8 @@ scripts/package-dmg.sh               # 额外产出 build/Picline-<版本>.dmg
 打一个 tag 推上去就行，编译、打包、发 Release 全部由 GitHub Actions 完成：
 
 ```sh
-git tag v0.2.5
-git push origin v0.2.5
+git tag v0.2.6
+git push origin v0.2.6
 ```
 
 1. **版本号取自 tag**，代码里的任何数字都不用改。
@@ -189,7 +189,7 @@ Tendedero (Alejandro Buján, MIT)
           └── Picline 0.2.0 多桌面版
                  └── Picline 0.2.1（隔空投送、长按预览）
                         └── Picline 0.2.3（访达服务）
-                               └── Picline 0.2.5（本仓库当前版本，空绳子也能唤出）
+                               └── Picline 0.2.6（本仓库当前版本，可以一次选几张一起用）
 ```
 
 本仓库只做多桌面适配，不包含上游名称与图标的授权。详见 [`NOTICE`](NOTICE)。
