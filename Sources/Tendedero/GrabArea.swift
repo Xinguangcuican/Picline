@@ -32,7 +32,6 @@ struct GrabArea: NSViewRepresentable {
     private func configure(_ view: GrabView) {
         let id = item.id
         let line = line
-        let isRecording = item.isRecording
         view.url = item.url
         view.dragImage = item.thumb
         view.onPress = { shift, command in
@@ -58,62 +57,72 @@ struct GrabArea: NSViewRepresentable {
         view.onForceClick = { line.quickLook(id) }
         view.onMiddleClick = { line.markup(id) }
         view.onPressChange = { pressed in line.pressedID = pressed ? id : nil }
-        view.menuProvider = {
-            // Everything below acts on what is picked out. Right-clicking one
-            // of three chosen photos means all three; right-clicking a photo
-            // that is not part of the group means just that photo. One pick
-            // counts as one, so a plain click needs no special case.
-            let group = line.targets(including: id)
-            let count = group.count
-            /// "Save to Desktop · 3 photos" while a group is picked out.
-            func label(_ english: String) -> String {
-                guard count > 1 else { return L(english) }
-                return L(english) + " · " + String(format: L("%d photos"), count)
-            }
-            let menu = NSMenu()
-            // Items say themselves whether they can be used.
-            menu.autoenablesItems = false
-            menu.addItem(ClosureMenuItem(label("Copy")) { line.copy(id) })
-            menu.addItem(ClosureMenuItem(label("Open")) { line.open(id) })
-            // One photo each: Quick Look already pages through the whole line,
-            // and Markup edits the one file it was given.
-            menu.addItem(ClosureMenuItem(L("Quick Look")) { line.quickLook(id) })
-            if !isRecording {
-                menu.addItem(ClosureMenuItem(L("Markup")) { line.markup(id) })
-            }
-            menu.addItem(ClosureMenuItem(label("Show in Finder")) { line.reveal(id) })
-            // Only offered when every file is still where the line says it is.
-            let airdrop = ClosureMenuItem(label("Send via AirDrop")) { line.airdrop(id) }
-            airdrop.isEnabled = !group.isEmpty
-                && group.allSatisfy { FileManager.default.fileExists(atPath: $0.url.path) }
-            menu.addItem(airdrop)
-            let inInbox = group.contains { line.isInInbox($0.id) }
-            if inInbox {
-                menu.addItem(ClosureMenuItem(label("Save to Desktop")) { line.saveToDesktop(id) })
-            }
-            menu.addItem(.separator())
-            if inInbox {
-                menu.addItem(ClosureMenuItem(label("Discard")) { line.discardGroup(id) })
-            } else {
-                menu.addItem(ClosureMenuItem(label("Take down")) { line.discardGroup(id) })
-                menu.addItem(ClosureMenuItem(label("Move to Trash")) { line.trashGroup(id) })
-            }
-            // One side at a time only means something for a single photo: with
-            // three picked out, "everything to the left" is a question about
-            // which of the three, so both are offered only when one is picked.
-            let left = ClosureMenuItem(L("Take down everything to the left")) { line.takeDown(id, toTheLeft: true) }
-            left.isEnabled = count == 1 && !line.neighbours(of: id, toTheLeft: true).isEmpty
-            menu.addItem(left)
-            let right = ClosureMenuItem(L("Take down everything to the right")) { line.takeDown(id, toTheLeft: false) }
-            right.isEnabled = count == 1 && !line.neighbours(of: id, toTheLeft: false).isEmpty
-            menu.addItem(right)
-            // The whole line, this photo included. Same way out as the corner
-            // cross: a file from the line's own folder goes to the Trash, one
-            // from anywhere else just leaves the line.
-            menu.addItem(.separator())
-            menu.addItem(ClosureMenuItem(L("Take everything down")) { line.clear() })
-            return menu
+        view.menuProvider = { CardMenu.make(for: item, on: line) }
+    }
+}
+
+/// The menu a card offers. Kept out of `GrabArea` so it can be built and
+/// inspected without a window: what it offers depends on how many photos are
+/// picked out, and that is the part worth checking.
+@MainActor
+enum CardMenu {
+    static func make(for item: Pegged, on line: Line) -> NSMenu {
+        let id = item.id
+        // Everything below acts on what is picked out. Right-clicking one of
+        // three chosen photos means all three; right-clicking a photo that is
+        // not part of the group means just that photo. One pick counts as one,
+        // so a plain click needs no special case.
+        let group = line.targets(including: id)
+        let count = group.count
+        /// "Save to Desktop · 3 photos" while a group is picked out.
+        func label(_ english: String) -> String {
+            guard count > 1 else { return L(english) }
+            return L(english) + " · " + String(format: L("%d photos"), count)
         }
+        let menu = NSMenu()
+        // Items say themselves whether they can be used.
+        menu.autoenablesItems = false
+        menu.addItem(ClosureMenuItem(label("Copy")) { line.copy(id) })
+        menu.addItem(ClosureMenuItem(label("Open")) { line.open(id) })
+        // One photo each: Quick Look already pages through the whole line, and
+        // Markup edits the one file it was given.
+        menu.addItem(ClosureMenuItem(L("Quick Look")) { line.quickLook(id) })
+        if !item.isRecording {
+            menu.addItem(ClosureMenuItem(L("Markup")) { line.markup(id) })
+        }
+        menu.addItem(ClosureMenuItem(label("Show in Finder")) { line.reveal(id) })
+        // Only offered when every file is still where the line says it is.
+        let airdrop = ClosureMenuItem(label("Send via AirDrop")) { line.airdrop(id) }
+        airdrop.isEnabled = !group.isEmpty
+            && group.allSatisfy { FileManager.default.fileExists(atPath: $0.url.path) }
+        menu.addItem(airdrop)
+        let inInbox = group.contains { line.isInInbox($0.id) }
+        if inInbox {
+            menu.addItem(ClosureMenuItem(label("Save to Desktop")) { line.saveToDesktop(id) })
+        }
+        menu.addItem(.separator())
+        if inInbox {
+            menu.addItem(ClosureMenuItem(label("Discard")) { line.discardGroup(id) })
+        } else {
+            menu.addItem(ClosureMenuItem(label("Take down")) { line.discardGroup(id) })
+            menu.addItem(ClosureMenuItem(label("Move to Trash")) { line.trashGroup(id) })
+        }
+        // One side at a time only means something for a single photo: with
+        // three picked out, "everything to the left" is a question about which
+        // of the three, so both are offered only when one is picked.
+        // No count on these two: they are about one side of one photo.
+        let left = ClosureMenuItem(L("Take down everything to the left")) { line.takeDown(id, toTheLeft: true) }
+        left.isEnabled = count == 1 && !line.neighbours(of: id, toTheLeft: true).isEmpty
+        menu.addItem(left)
+        let right = ClosureMenuItem(L("Take down everything to the right")) { line.takeDown(id, toTheLeft: false) }
+        right.isEnabled = count == 1 && !line.neighbours(of: id, toTheLeft: false).isEmpty
+        menu.addItem(right)
+        // The whole line, this photo included. Same way out as the corner
+        // cross: a file from the line's own folder goes to the Trash, one from
+        // anywhere else just leaves the line.
+        menu.addItem(.separator())
+        menu.addItem(ClosureMenuItem(L("Take everything down")) { line.clear() })
+        return menu
     }
 }
 
