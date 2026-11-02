@@ -88,10 +88,11 @@ swift test --disable-sandbox        # 82 项测试
 
 ## Windows 版
 
-`windows/` 里是同一套交互的 Windows 实现：Rust 写的手写 Win32 + GDI+，一个 exe，不用安装。贴顶唤出（0.1.8 起也可要求按住 `Ctrl` / `Alt` / `Shift`）、截图与复制的图自动挂上、单击选中、`Shift` 连选、`Ctrl` 加选、双击预览、右键菜单、拖进聊天窗口或文件夹，规则与 Mac 版一致。在 Mac 上用 llvm-mingw 交叉编译出 x64 与 ARM64 两个 exe，详见 [`../windows/README.md`](../windows/README.md)。
+`windows/` 里是同一套交互的 Windows 实现：Rust 写的手写 Win32 + GDI+，一个 exe，不用安装。贴顶唤出（0.1.8 起也可要求按住 `Ctrl` / `Alt` / `Shift`）、快捷键可自行录制（0.1.9）、截图与复制的图自动挂上、单击选中、`Shift` 连选、`Ctrl` 加选、双击预览、右键菜单、拖进聊天窗口或文件夹，规则与 Mac 版一致。在 Mac 上用 llvm-mingw 交叉编译出 x64 与 ARM64 两个 exe，详见 [`../windows/README.md`](../windows/README.md)。
 
 ## 最近几个版本
 
+- **0.2.7** — 贴顶唤出可以要求按住一个键（`⌘` / `⌥` / `⌃` / `⇧`），不按不放绳；选了一组时左右两侧置灰。Windows 端快捷键也不再写死（0.1.9）。
 - **0.2.6** — 一次选中几张一起用：Shift 连选、整组拖拽、右键菜单对整组生效；单击不再复制；指针碰到菜单栏立刻放绳；卡片右键加「全部取下」。
 - **0.2.5** — 空绳子也能贴顶唤出，应用不会像没在跑。
 - **0.2.4** — 从访达挂图的主入口改为「打开方式 → Picline」，不再依赖时有时无的「服务」菜单。

@@ -48,9 +48,9 @@ Everything is on the [Releases](https://github.com/Xinguangcuican/Picline/releas
 | --- | --- | --- |
 | macOS | `Picline-0.2.7.dmg` | Universal binary: Apple silicon and Intel in one package |
 | macOS | `Picline-0.2.7.zip` | Same, for people who prefer a zip |
-| Windows x64 | `Picline-0.1.8-win-x64.exe` | Nearly every 64-bit Windows |
-| Windows ARM64 | `Picline-0.1.8-win-arm64.exe` | Snapdragon laptops and other ARM machines |
-| Windows | `Picline-0.1.8-win.zip` | Both exes and the readme |
+| Windows x64 | `Picline-0.1.9-win-x64.exe` | Nearly every 64-bit Windows |
+| Windows ARM64 | `Picline-0.1.9-win-arm64.exe` | Snapdragon laptops and other ARM machines |
+| Windows | `Picline-0.1.9-win.zip` | Both exes and the readme |
 
 Neither build is code signed. On macOS, allow it once in Privacy & Security. On Windows, SmartScreen asks for "More info → Run anyway".
 
@@ -134,7 +134,7 @@ swift scripts/check-strings.swift   # 83 strings × 11 languages
 
 ## Install
 
-1. Download `Picline-0.1.8-win-x64.exe` (most machines) or `Picline-0.1.8-win-arm64.exe` (ARM laptops).
+1. Download `Picline-0.1.9-win-x64.exe` (most machines) or `Picline-0.1.9-win-arm64.exe` (ARM laptops).
 2. Double-click it. Nothing is installed and no registry keys are written, apart from the optional Explorer right-click entry, which can be switched off and removes its own key.
 3. SmartScreen stops the first run (unsigned): More info → Run anyway.
 
@@ -145,7 +145,7 @@ swift scripts/check-strings.swift   # 83 strings × 11 languages
 | Pointer rests at the very top of the screen | The line comes down (0.09 s buffer) | 0.1.0 |
 | Hold a key, then touch the top | Tray menu → "贴顶唤出" → no key / `Ctrl` / `Alt` / `Shift`; the choice is remembered | **0.1.8** |
 | Pointer leaves for 0.5 s | Tucks itself away | 0.1.0 |
-| `Ctrl + Alt + T` | Show / hide | 0.1.0 |
+| `Ctrl + Alt + T` | Show / hide, **changeable**: tray → "快捷键：…", press the new combination (`Esc` cancels, `Delete` clears it) | 0.1.0; changeable as of **0.1.9** |
 | `Ctrl + Alt + Shift + Q` | Quit | 0.1.0 |
 
 ## The cards on the line
@@ -203,7 +203,7 @@ The two builds are aligned item by item, but some gestures are native to one pla
 | Quick Look / Markup | Yes: hold or force click to look, middle button for Markup | No; the double click preview stands in |
 | AirDrop | Yes | No; copy the picture and paste it, or drag the card out |
 | Add to selection | `Command` | `Ctrl` |
-| Reveal shortcut | Editable (default `⌃⌥T`) | Fixed `Ctrl + Alt + T`, plus the reveal-key setting |
+| Reveal shortcut | Editable, default `⌃⌥T` (menu bar → Shortcut → Change Shortcut) | Editable, default `Ctrl + Alt + T` (tray → 快捷键：…, press the new combination) |
 | Hanging a picture | Finder → Open With → Picline | Explorer right-click → 挂到 Picline |
 | Interface language | 11 languages | Chinese |
 | Image formats | Anything ImageIO decodes, webp and heic included | png / jpg / gif / bmp / tif / ico (GDI+ limits) |
@@ -216,7 +216,7 @@ The two builds are aligned item by item, but some gestures are native to one pla
 
 The full history is in [`CHANGELOG.md`](CHANGELOG.md) (Chinese).
 
-- **0.2.7 — 2026-11-02 (macOS) / 0.1.8 (Windows)** Bringing the line down can require a key to be held (`⌘` / `⌥` / `⌃` / `⇧`; `Ctrl` / `Alt` / `Shift` on Windows). Both side items grey out while a group is picked. The Windows source now lives in this repository.
+- **0.2.7 — 2026-11-02 (macOS) / 0.1.9 (Windows)** Bringing the line down can require a key to be held (`⌘` / `⌥` / `⌃` / `⇧`; `Ctrl` / `Alt` / `Shift` on Windows). The Windows shortcut is no longer fixed either: press a new one in the tray.   Both side items grey out while a group is picked. The Windows source now lives in this repository.
 - **0.2.6 — 2026-11-02 (macOS) / 0.1.5–0.1.7 (Windows)** Pick several photos out: `Shift` to extend, drag the group, right-click a group and the menu acts on all of it with the count in the title. A click no longer copies. The line comes down the instant the pointer touches the menu bar. "Take everything down" joins the card menu.
 - **0.2.5 — 2026-11-02** An empty line comes down too, so the app never looks dead.
 - **0.2.4 — 2026-11-02** Finder entry moved to Open With, which is reliable, instead of the Services menu.
