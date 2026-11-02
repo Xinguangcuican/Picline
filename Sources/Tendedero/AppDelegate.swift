@@ -470,6 +470,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             }
         }
         if !on {
+            // Nothing stays picked out once the line is out of sight.
+            line.clearSelection()
             pinned = false
             peekUntil = .distantPast
             panel.ignoresMouseEvents = true

@@ -9,8 +9,12 @@ import SwiftUI
 /// - The Trash discards it.
 /// - Nowhere that accepts it: the photo flies back to the line.
 ///
-/// Click copies, double click opens, press and hold looks at the photo,
-/// a force click or the middle button opens Markup, the corner cross discards.
+/// Click picks a photo out, shift click takes the run between two of them,
+/// command click adds or removes one. What is picked out is what a drag
+/// carries and what every item in the right-click menu acts on, so three
+/// photos picked out and one of them right-clicked means three of everything.
+/// Double click opens, press and hold looks at the photo, a force click or the
+/// middle button opens Markup, the corner cross discards just its own photo.
 struct GrabArea: NSViewRepresentable {
     let item: Pegged
     let line: Line
@@ -31,7 +35,13 @@ struct GrabArea: NSViewRepresentable {
         let isRecording = item.isRecording
         view.url = item.url
         view.dragImage = item.thumb
-        view.onClick = { line.copy(id) }
+        view.onPress = { shift, command in
+            line.press(id, extending: shift, toggling: command)
+        }
+        view.onSettle = { dragged in line.settle(id, dragged: dragged) }
+        view.dragEntries = {
+            line.dragPayload(including: id).map { ($0.url, $0.thumb) }
+        }
         view.onDoubleClick = { line.open(id) }
         view.onDragStart = { line.draggingID = id }
         view.onDragEnd = {
@@ -49,30 +59,44 @@ struct GrabArea: NSViewRepresentable {
         view.onMiddleClick = { line.markup(id) }
         view.onPressChange = { pressed in line.pressedID = pressed ? id : nil }
         view.menuProvider = {
+            // Everything below acts on what is picked out. Right-clicking one
+            // of three chosen photos means all three; right-clicking a photo
+            // that is not part of the group means just that photo. One pick
+            // counts as one, so a plain click needs no special case.
+            let group = line.targets(including: id)
+            let count = group.count
+            /// "Save to Desktop · 3 photos" while a group is picked out.
+            func label(_ english: String) -> String {
+                guard count > 1 else { return L(english) }
+                return L(english) + " · " + String(format: L("%d photos"), count)
+            }
             let menu = NSMenu()
             // Items say themselves whether they can be used.
             menu.autoenablesItems = false
-            menu.addItem(ClosureMenuItem(L("Copy")) { line.copy(id) })
-            menu.addItem(ClosureMenuItem(L("Open")) { line.open(id) })
+            menu.addItem(ClosureMenuItem(label("Copy")) { line.copy(id) })
+            menu.addItem(ClosureMenuItem(label("Open")) { line.open(id) })
+            // One photo each: Quick Look already pages through the whole line,
+            // and Markup edits the one file it was given.
             menu.addItem(ClosureMenuItem(L("Quick Look")) { line.quickLook(id) })
             if !isRecording {
                 menu.addItem(ClosureMenuItem(L("Markup")) { line.markup(id) })
             }
-            menu.addItem(ClosureMenuItem(L("Show in Finder")) { line.reveal(id) })
-            // Only offered when the file is still where the line says it is.
-            let airdrop = ClosureMenuItem(L("Send via AirDrop")) { line.airdrop(id) }
-            airdrop.isEnabled = FileManager.default.fileExists(atPath: item.url.path)
+            menu.addItem(ClosureMenuItem(label("Show in Finder")) { line.reveal(id) })
+            // Only offered when every file is still where the line says it is.
+            let airdrop = ClosureMenuItem(label("Send via AirDrop")) { line.airdrop(id) }
+            airdrop.isEnabled = !group.isEmpty
+                && group.allSatisfy { FileManager.default.fileExists(atPath: $0.url.path) }
             menu.addItem(airdrop)
-            let inInbox = line.isInInbox(id)
+            let inInbox = group.contains { line.isInInbox($0.id) }
             if inInbox {
-                menu.addItem(ClosureMenuItem(L("Save to Desktop")) { line.saveToDesktop(id) })
+                menu.addItem(ClosureMenuItem(label("Save to Desktop")) { line.saveToDesktop(id) })
             }
             menu.addItem(.separator())
             if inInbox {
-                menu.addItem(ClosureMenuItem(L("Discard")) { line.discard(id) })
+                menu.addItem(ClosureMenuItem(label("Discard")) { line.discardGroup(id) })
             } else {
-                menu.addItem(ClosureMenuItem(L("Take down")) { line.discard(id) })
-                menu.addItem(ClosureMenuItem(L("Move to Trash")) { line.trash(id) })
+                menu.addItem(ClosureMenuItem(label("Take down")) { line.discardGroup(id) })
+                menu.addItem(ClosureMenuItem(label("Move to Trash")) { line.trashGroup(id) })
             }
             let left = ClosureMenuItem(L("Take down everything to the left")) { line.takeDown(id, toTheLeft: true) }
             left.isEnabled = !line.neighbours(of: id, toTheLeft: true).isEmpty
@@ -100,7 +124,12 @@ final class GrabView: NSView, NSDraggingSource {
     // Every callback runs on the main thread: AppKit calls these from within
     // event handling. Saying so explicitly lets the closures reach the line,
     // which lives on the main actor, and keeps older compilers happy.
-    var onClick: @MainActor () -> Void = {}
+    /// Shift and command, as they were when the button went down.
+    var onPress: @MainActor (_ shift: Bool, _ command: Bool) -> Void = { _, _ in }
+    /// The button came up. `dragged` says whether it turned into a drag.
+    var onSettle: @MainActor (_ dragged: Bool) -> Void = { _ in }
+    /// What this drag should carry: one photo, or everything picked out.
+    var dragEntries: @MainActor () -> [(url: URL, image: NSImage?)] = { [] }
     var onDoubleClick: @MainActor () -> Void = {}
     var onDragStart: @MainActor () -> Void = {}
     var onDragEnd: @MainActor () -> Void = {}
@@ -116,9 +145,6 @@ final class GrabView: NSView, NSDraggingSource {
     private var startedDrag = false
     private var holdTimer: Timer?
     private var didLongPress = false
-    /// A click copies only once it is clear it is not the first half of a
-    /// double click, which opens the photo and must leave the clipboard alone.
-    private var clickTimer: Timer?
 
     /// How long you hold before Markup opens. Long enough not to fire on a
     /// slow click, short enough to feel deliberate.
@@ -138,10 +164,6 @@ final class GrabView: NSView, NSDraggingSource {
     }
 
     override func mouseDown(with event: NSEvent) {
-        if event.clickCount > 1 {
-            clickTimer?.invalidate()
-            clickTimer = nil
-        }
         if isInCross(event) {
             downPoint = nil
             onDiscard()
@@ -152,6 +174,9 @@ final class GrabView: NSView, NSDraggingSource {
             onDoubleClick()
             return
         }
+        // Picking happens on the way down, as it does in the Finder: a drag
+        // that follows must already know what it is carrying.
+        onPress(event.modifierFlags.contains(.shift), event.modifierFlags.contains(.command))
         downPoint = event.locationInWindow
         startedDrag = false
         didLongPress = false
@@ -183,15 +208,31 @@ final class GrabView: NSView, NSDraggingSource {
     }
 
     override func mouseDragged(with event: NSEvent) {
-        guard let start = downPoint, !startedDrag, let url else { return }
+        guard let start = downPoint, !startedDrag else { return }
         let p = event.locationInWindow
         guard hypot(p.x - start.x, p.y - start.y) > 4, !didLongPress else { return }
+
+        // Everything picked out travels together; a photo that is not part of
+        // the selection travels alone.
+        var payload = dragEntries()
+        if payload.isEmpty, let url { payload = [(url, dragImage)] }
+        guard !payload.isEmpty else { return }
         startedDrag = true
         endPress()
 
-        let item = NSDraggingItem(pasteboardWriter: url as NSURL)
-        item.setDraggingFrame(imageFrame(), contents: dragImage)
-        let session = beginDraggingSession(with: [item], event: event, source: self)
+        var items: [NSDraggingItem] = []
+        for (n, entry) in payload.enumerated() {
+            let item = NSDraggingItem(pasteboardWriter: entry.url as NSURL)
+            // The cards behind peek out a little, so the drag reads as a
+            // stack rather than one photo.
+            let step = CGFloat(min(n, 3))
+            let frame = imageFrame()
+                .insetBy(dx: step * 3, dy: step * 3)
+                .offsetBy(dx: step * 7, dy: -step * 7)
+            item.setDraggingFrame(frame, contents: n == 0 ? dragImage : entry.image)
+            items.append(item)
+        }
+        let session = beginDraggingSession(with: items, event: event, source: self)
         // Released where nothing accepts it: it flies back to the line.
         session.animatesToStartingPositionsOnCancelOrFail = true
         GrabView.isDragging = true
@@ -199,22 +240,11 @@ final class GrabView: NSView, NSDraggingSource {
     }
 
     override func mouseUp(with event: NSEvent) {
+        // The pick already happened on the way down; letting go changes
+        // nothing. Copying moved to the menu, so a click no longer touches the
+        // clipboard.
         endPress()
-        if downPoint != nil && !startedDrag && !didLongPress && event.clickCount == 1 {
-            // Waits as long as the system lets a second click count as a double click.
-            clickTimer?.invalidate()
-            // The copy goes ahead even if the line redraws this view meanwhile.
-            let copy = onClick
-            let timer = Timer(timeInterval: NSEvent.doubleClickInterval, repeats: false) { [weak self] _ in
-                MainActor.assumeIsolated {
-                    self?.clickTimer = nil
-                    copy()
-                }
-            }
-            // Keeps time while a menu or a drag runs the loop in another mode.
-            RunLoop.main.add(timer, forMode: .common)
-            clickTimer = timer
-        }
+        onSettle(startedDrag)
         downPoint = nil
         didLongPress = false
     }
