@@ -1,3 +1,24 @@
+## 0.2.7 — 2026-11-02
+
+贴顶唤出可以要求按住一个键了。基于 0.2.6。
+
+### 新增
+
+- **「指针停在菜单栏时」可以再加一道条件：按住某个键。** 菜单栏 → 放下晾衣绳 →「需要按住按键」，可选不需要、`⌘ Command`、`⌥ Option`、`⌃ Control`、`⇧ Shift` 五档，默认仍然是「不需要」。
+  - 选一个键之后，只有那个键按住时把指针推到屏幕顶才会放绳；不按就什么都不发生。适合「一天要摸几十次菜单栏、又不想每次都被绳子挡一下」的用法。
+  - 修饰键是每帧直接读键盘状态（1/60 秒），按下即刻生效，感觉不到延迟；已经放下的绳子不会因为松手而收回，收回仍然只看指针离得远不远。
+  - 这是叠加在「指针停在菜单栏时」上的条件：把那个开关关掉，这一项会变灰，因为指针本来就进不来。
+  - 快捷键（默认 `Control + Option + T`）不受影响，仍然随时可以叫出绳子；它也能在「快捷键 → 更改快捷键…」里改。
+- **Windows 端同步了同一条设置。** 托盘右键 →「贴顶唤出」→ 不需要按键 / 按住 `Ctrl` / 按住 `Alt` / 按住 `Shift`，选择记在 `%LOCALAPPDATA%\Picline\settings.txt`，重启后保留。
+
+### 修复
+
+- 卡片右键菜单的标题改成先本地化再拼张数，否则翻译检查会把「复制 / 打开 / 存储到桌面」这几条当成没人使用的字符串。行为不变。
+
+### English
+
+Bringing the line down can now require a key to be held. Under the menu bar icon: Bring the line down → Only with a key held, choose none, ⌘, ⌥, ⌃ or ⇧. With a key chosen, the pointer alone no longer brings the line down — useful if you reach for the menu bar all day and do not want the rope in the way. The modifier is read from the keyboard every frame, so it takes effect immediately; letting go of the key does not retract a line that is already down. Windows has the same setting in its tray menu (Ctrl, Alt or Shift), remembered across restarts.
+
 # 更新记录
 
 ## 0.2.6 — 2026-11-02

@@ -89,3 +89,12 @@
 "Picline is based on Tendedero by Alejandro Buján. The upstream source code is licensed under the MIT License. Picline uses its own name and icon and is an independent modified version." = "Picline은 Alejandro Buján의 Tendedero를 기반으로 합니다. 원본 소스 코드는 MIT 라이선스로 제공됩니다. Picline은 고유한 이름과 아이콘을 사용하는 독립적인 수정 버전입니다.";
 "Upstream Project" = "원본 프로젝트";
 "The license file is unavailable in this build." = "이 빌드에서는 라이선스 파일을 읽을 수 없습니다.";
+
+/* Bringing the line down */
+"Only with a key held" = "키를 누를 때만";
+"Nothing, just the pointer" = "없음, 포인터만";
+"Hold ⌘ Command" = "⌘ Command 누르기";
+"Hold ⌥ Option" = "⌥ Option 누르기";
+"Hold ⌃ Control" = "⌃ Control 누르기";
+"Hold ⇧ Shift" = "⇧ Shift 누르기";
+"Send via AirDrop" = "AirDrop으로 보내기";

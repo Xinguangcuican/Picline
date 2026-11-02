@@ -17,6 +17,12 @@
 "Quit Picline" = "退出 Picline";
 "Could not change the login setting" = "无法更改登录项设置";
 "Move Picline to the Applications folder and try again." = "请先把 Picline 移到「应用程序」文件夹，再试一次。";
+"Only with a key held" = "需要按住按键";
+"Nothing, just the pointer" = "不需要，指针到顶就下来";
+"Hold ⌘ Command" = "按住 ⌘ Command";
+"Hold ⌥ Option" = "按住 ⌥ Option";
+"Hold ⌃ Control" = "按住 ⌃ Control";
+"Hold ⇧ Shift" = "按住 ⇧ Shift";
 "Keep on line" = "保留数量";
 "As many as fit" = "以屏幕可容纳数量为限";
 "%d photos" = "%d 张";
