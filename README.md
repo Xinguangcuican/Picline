@@ -48,9 +48,9 @@ Picline 是 [Tendedero](https://github.com/alejandrobujan/tendedero) 的一个�
 | --- | --- | --- |
 | macOS | `Picline-0.2.7.dmg` | 通用二进制，Apple 芯片与 Intel 同一个包 |
 | macOS | `Picline-0.2.7.zip` | 同上，适合直接解压 |
-| Windows x64 | `Picline-0.1.8-win-x64.exe` | 绝大多数 64 位 Windows |
-| Windows ARM64 | `Picline-0.1.8-win-arm64.exe` | 骁龙本等 ARM 机器 |
-| Windows | `Picline-0.1.8-win.zip` | 两个 exe 与说明打包在一起 |
+| Windows x64 | `Picline-0.1.9-win-x64.exe` | 绝大多数 64 位 Windows |
+| Windows ARM64 | `Picline-0.1.9-win-arm64.exe` | 骁龙本等 ARM 机器 |
+| Windows | `Picline-0.1.9-win.zip` | 两个 exe 与说明打包在一起 |
 
 未做代码签名：Mac 首次打开要在「隐私与安全性」里放行，Windows 首次运行要点「更多信息 → 仍要运行」。
 
@@ -135,7 +135,7 @@ swift scripts/check-strings.swift   # 83 条文案 × 11 种语言
 
 ## 安装
 
-1. 下载 `Picline-0.1.8-win-x64.exe`（绝大多数机器）或 `Picline-0.1.8-win-arm64.exe`（骁龙本等 ARM 机器）。
+1. 下载 `Picline-0.1.9-win-x64.exe`（绝大多数机器）或 `Picline-0.1.9-win-arm64.exe`（骁龙本等 ARM 机器）。
 2. 双击运行。不用安装，也不写注册表 —— 除了下面那条可选的资源管理器右键菜单（一键开关，关掉即删键）。
 3. 首次运行会被 SmartScreen 拦一下（未签名）：更多信息 → 仍要运行。
 
@@ -146,7 +146,7 @@ swift scripts/check-strings.swift   # 83 条文案 × 11 种语言
 | 指针停到屏幕最上面 | 立刻放下来（0.09 秒缓冲） | 0.1.0 |
 | 按住一个键再贴顶 | 托盘右键 →「贴顶唤出」→ 不需要按键 / `Ctrl` / `Alt` / `Shift`，选择会记住 | **0.1.8** |
 | 指针离开绳子 0.5 秒 | 自己收回去 | 0.1.0 |
-| `Ctrl + Alt + T` | 显示 / 隐藏 | 0.1.0 |
+| `Ctrl + Alt + T` | 显示 / 隐藏，**可自己改**：托盘右键 →「快捷键：…」，按一遍新组合即可（`Esc` 取消、`Delete` 取消设置） | 0.1.0；**0.1.9** 起可改 |
 | `Ctrl + Alt + Shift + Q` | 退出 | 0.1.0 |
 
 ## 绳子上的图
@@ -204,7 +204,7 @@ scripts/build-win.sh both     # dist/Picline-<版本>-win-{x64,arm64}.exe
 | 快速查看 / 标记 | 有：长按或力触控快速查看，中键标记 | 没有；用双击预览代替 |
 | 隔空投送 | 有 | 没有；用「复制图片」粘到聊天窗口，或直接拖 |
 | 加选键 | `Command` | `Ctrl` |
-| 放下绳子的快捷键 | 可自定义（默认 `⌃⌥T`） | 固定 `Ctrl + Alt + T`，另有「贴顶唤出」修饰键设置 |
+| 放下绳子的快捷键 | 可自定义（默认 `⌃⌥T`），菜单栏「快捷键 → 更改快捷键…」 | 可自定义（默认 `Ctrl + Alt + T`），托盘「快捷键：…」，按一遍新组合 |
 | 挂图入口 | 访达「打开方式 → Picline」 | 资源管理器右键「挂到 Picline」 |
 | 界面语言 | 11 种，可切换 | 中文 |
 | 图片格式 | 系统 ImageIO 能解的都能挂（含 webp、heic） | png / jpg / gif / bmp / tif / ico（GDI+ 能力所限） |
@@ -217,7 +217,7 @@ scripts/build-win.sh both     # dist/Picline-<版本>-win-{x64,arm64}.exe
 
 完整改动见 [`CHANGELOG.md`](CHANGELOG.md)，这里只记最近几版。
 
-- **0.2.7 — 2026-11-02（macOS）/ 0.1.8（Windows）** 贴顶唤出可以要求按住一个键（`⌘` / `⌥` / `⌃` / `⇧`；Windows 是 `Ctrl` / `Alt` / `Shift`），不按不放绳。选了一组时「取下左侧 / 右侧全部」置灰。Windows 源码并入本仓库。
+- **0.2.7 — 2026-11-02（macOS）/ 0.1.9（Windows）** 贴顶唤出可以要求按住一个键（`⌘` / `⌥` / `⌃` / `⇧`；Windows 是 `Ctrl` / `Alt` / `Shift`），不按不放绳。Windows 的快捷键也不再写死，托盘里按一遍就能改。选了一组时「取下左侧 / 右侧全部」置灰。Windows 源码并入本仓库。
 - **0.2.6 — 2026-11-02（macOS）/ 0.1.5–0.1.7（Windows）** 一次选中几张一起用：`Shift` 连选、整组拖拽、右键菜单对整组生效并带张数。单击不再复制。指针碰到菜单栏立刻放绳（0.06 秒缓冲、0.26 秒落定）。卡片右键加「全部取下」。Windows 端补上拖拽出卡片、整组菜单、左右两侧置灰。
 - **0.2.5 — 2026-11-02** 空绳子也能贴顶唤出，应用不会像没在跑。
 - **0.2.4 — 2026-11-02** 从访达挂图的主入口改为「打开方式 → Picline」，不再依赖时有时无的「服务」菜单。
@@ -261,8 +261,8 @@ git push origin v0.2.7
 3. **macOS 产物自动上传**；Windows 的 exe 体积小、又不需要签名，发版后手动补传一次：
 
 ```sh
-gh release upload v0.2.7 windows/dist/Picline-0.1.8-win-*.exe \
-  windows/dist/Picline-0.1.8-win.zip
+gh release upload v0.2.7 windows/dist/Picline-0.1.9-win-*.exe \
+  windows/dist/Picline-0.1.9-win.zip
 ```
 
 ## 许可
