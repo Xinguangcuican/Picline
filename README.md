@@ -32,6 +32,14 @@ Picline 是 [Tendedero](https://github.com/alejandrobujan/tendedero) 的一个�
 
 这个仓库的 0.2.0 只解决这一个问题，其他功能一行没动。之后的版本在它上面陆续加了隔空投送、长按预览，以及访达里的「挂到 Picline」。
 
+## Windows 版
+
+`windows/` 里是一个自成一体的 Windows 程序：Rust 写的手写 Win32 + GDI+ 调用，没有运行时依赖，一个 exe 双击就跑，不用安装。
+
+功能与 Mac 版一一对应：贴顶唤出、截图与复制的图自动挂上去、单击选中、`Shift` 连选、`Ctrl` 加选、双击全屏预览、右键菜单、按住卡片拖进聊天窗口 / 桌面 / 文件夹。选中几张，拖拽和右键菜单就作用于几张。
+
+它在 Mac 上用 llvm-mingw 交叉编译出 x64 与 ARM64 两个 exe，不需要 Windows 机器也能出包。构建步骤与用法见 [`windows/README.md`](windows/README.md)。
+
 ## 这个版本改了什么
 
 核心是上游 [issue #80](https://github.com/alejandrobujan/tendedero/issues/80) 的修法：带 `canJoinAllSpaces` 的 NSPanel 一旦 `orderOut` 再 `orderFront`，系统可能把它永久绑在某个 Space 上。官方的解法不是去修那个窗口，而是**发现它不在当前桌面时，直接重建一个新窗口**。
