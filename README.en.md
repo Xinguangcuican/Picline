@@ -48,9 +48,9 @@ Everything is on the [Releases](https://github.com/Xinguangcuican/Picline/releas
 | --- | --- | --- |
 | macOS | `Picline-0.2.9.dmg` | Universal binary: Apple silicon and Intel in one package |
 | macOS | `Picline-0.2.9.zip` | Same, for people who prefer a zip |
-| Windows x64 | `Picline-0.1.13-win-x64.exe` | Nearly every 64-bit Windows |
-| Windows ARM64 | `Picline-0.1.13-win-arm64.exe` | Snapdragon laptops and other ARM machines |
-| Windows | `Picline-0.1.13-win.zip` | Both exes and the readme |
+| Windows x64 | `Picline-0.1.1-win-x64.exe` | Nearly every 64-bit Windows |
+| Windows ARM64 | `Picline-0.1.1-win-arm64.exe` | Snapdragon laptops and other ARM machines |
+| Windows | `Picline-0.1.1-win.zip` | Both exes and the readme |
 
 Neither build is code signed. On macOS, allow it once in Privacy & Security. On Windows, SmartScreen asks for "More info → Run anyway".
 
@@ -132,9 +132,11 @@ swift scripts/check-strings.swift   # 83 strings × 11 languages
 
 # Windows
 
+> The Windows build restarts its numbering at **0.1.1**: 0.1.2, 0.1.3 and so on, with 0.2.0 after 0.1.9. The old 0.1.10 to 0.1.13 are gone; everything they added is in the current build.
+
 ## Install
 
-1. Download `Picline-0.1.13-win-x64.exe` (most machines) or `Picline-0.1.13-win-arm64.exe` (ARM laptops).
+1. Download `Picline-0.1.1-win-x64.exe` (most machines) or `Picline-0.1.1-win-arm64.exe` (ARM laptops).
 2. Double-click it. Nothing is installed and no registry keys are written, apart from the optional Explorer right-click entry, which can be switched off and removes its own key.
 3. SmartScreen stops the first run (unsigned): More info → Run anyway.
 
@@ -142,33 +144,35 @@ swift scripts/check-strings.swift   # 83 strings × 11 languages
 
 | Gesture | What happens | Since |
 | --- | --- | --- |
-| Pointer rests at the very top of the screen | The line comes down (0.09 s buffer); with nothing hanging it stays away | 0.1.0; empty line ignored as of 0.1.10 |
-| Hold a key, then touch the top | Tray menu → "贴顶唤出" → no key / `Ctrl` / `Alt` / `Shift`; the choice is remembered | **0.1.8** |
-| Pointer leaves for 0.5 s | Tucks itself away | 0.1.0 |
-| `Ctrl + Alt + T` | Show / hide, **changeable**: tray → "快捷键：…", press the new combination (`Esc` cancels, `Delete` clears it) | 0.1.0; changeable as of **0.1.9** |
-| `Ctrl + Alt + Shift + Q` | Quit | 0.1.0 |
+| Pointer rests at the very top of the screen | The line comes down (0.09 s buffer); with nothing hanging it stays away | 0.1.1 |
+| Hold a key, then touch the top | Tray menu → "贴顶唤出" → no key / `Ctrl` / `Alt` / `Shift`; the choice is remembered | 0.1.1 |
+| Pointer leaves for 0.5 s | Tucks itself away | 0.1.1 |
+| `Ctrl + Alt + T` | Show / hide, **changeable**: tray → "快捷键：…", press the new combination (`Esc` cancels, `Delete` clears it) | 0.1.1 |
+| `Ctrl + Alt + Shift + Q` | Quit | 0.1.1 |
 
 ## The cards on the line
 
 | Gesture | What happens | Since |
 | --- | --- | --- |
-| Click | Picks the card out, with a blue ring | 0.1.5 |
-| `Shift` + click | Picks everything between the two | 0.1.5 |
-| `Ctrl` + click | Adds or removes one | 0.1.5 |
-| Drag a picked card | The whole group travels; dropping it in a chat window sends them all | 0.1.5 |
-| Double click | Full screen preview: desktop dimmed, picture as large as possible, name and pixel size underneath | 0.1.5 |
-| Hover | A small cross appears in the corner; it takes that one card down | 0.1.3 |
-| Drag a card out | Into WeChat or QQ to send it, onto the Desktop or a folder to keep a png | 0.1.4 |
-| Right-click | See below | 0.1.3 |
+| Click | Picks the card out, with a blue ring | 0.1.1 |
+| `Shift` + click | Picks everything between the two | 0.1.1 |
+| `Ctrl` + click | Adds or removes one | 0.1.1 |
+| Drag a picked card | The whole group travels; dropping it in a chat window sends them all | 0.1.1 |
+| Double click | Full screen preview: desktop dimmed, picture as large as possible, name and pixel size underneath | 0.1.1 |
+| Arrow keys in the preview | `←` `→` step through the line, `Home` / `End` jump to the ends, the caption reads "3 / 7 · name · size"; `Esc`, space or a click closes it | 0.1.1 |
+| Hover | A small cross appears in the corner; it takes that one card down | 0.1.1 |
+| Drag a card out | Into WeChat or QQ to send it, onto the Desktop or a folder to keep a png | 0.1.1 |
+| Right-click | See below | 0.1.1 |
 
 ## The right-click menu
 
 | Item | What it does | Since |
 | --- | --- | --- |
-| Preview / Copy picture / Copy as file | Copy picture writes `CF_DIB`, so `Ctrl + V` in WeChat sends it; copy as file writes `CF_HDROP` | 0.1.3 |
-| Save to Desktop / Show in Explorer / Open with default viewer | Saves a png, reveals the file, hands it to the default viewer | 0.1.3 |
-| Take down this / everything to the left / to the right / everything | Off the line; both side items grey out while a group is picked | 0.1.3; greyed as of 0.1.7 |
-| **Group-wide** | Three cards picked, right-click any one: "Save to Desktop (3)" saves three | 0.1.6 |
+| Preview / Copy picture / Copy as file | Copy picture writes `CF_DIB`, so `Ctrl + V` in WeChat sends it; copy as file writes `CF_HDROP` | 0.1.1 |
+| Save to Desktop / Show in Explorer / Open with default viewer | Saves a png, reveals the file, hands it to the default viewer | 0.1.1 |
+| **Markup** | Opens the file in Paint; the card follows the save, and a missing Paint is reported instead of doing nothing | 0.1.1 |
+| Take down this / everything to the left / to the right / everything | Off the line; both side items grey out while a group is picked | 0.1.1 |
+| **Group-wide** | Three cards picked, right-click any one: "Save to Desktop (3)" saves three | 0.1.1 |
 
 "Copy picture" is the exception: a clipboard holds one bitmap, so it copies the card that was right-clicked. Use "Copy as file" or a drag for several.
 
@@ -177,10 +181,14 @@ swift scripts/check-strings.swift   # 83 strings × 11 languages
 | Feature | Notes | Since |
 | --- | --- | --- |
 | Clipboard | DIB from screenshot tools, PNG from browsers and tools, image files copied in Explorer | 0.1.1 |
-| Explorer right-click "挂到 Picline" | Select pictures, right-click, they hang on the line; no need to start the app first (Windows 11: "Show more options") | 0.1.2 |
-| Tray menu | Show / hide, take everything down, reveal key, Explorer entry on/off, quit | 0.1.2 |
-| Several screens and scaling | Comes down on the screen you touched, drawn at that screen's scale | 0.1.2 |
-| Full screen and single instance | Stays away over full screen apps; double-clicking twice does not make two lines | 0.1.2 |
+| Explorer right-click "挂到 Picline" | Select pictures, right-click, they hang on the line; no need to start the app first (Windows 11: "Show more options") | 0.1.1 |
+| Tray menu | Show / hide, take everything down, reveal key, Explorer entry on/off, quit | 0.1.1 |
+| Several screens and scaling | Comes down on the screen you touched, drawn at that screen's scale | 0.1.1 |
+| Full screen and single instance | Stays away over full screen apps; double-clicking twice does not make two lines | 0.1.1 |
+| **Launch at login** | One tick in the tray menu, one value under `HKCU\\...\\Run`, removed when unticked | 0.1.1 |
+| **Check for updates** | Tray → "检查更新…"; asks GitHub in the background and offers the download page | 0.1.1 |
+| **Tray icon** | Its own icon instead of the generic system one; follows light and dark, fades when the line is empty | 0.1.1 |
+| **WebP / HEIC / AVIF** | Falls back to the system WIC when GDI+ cannot read it (HEIC needs the HEIF extension installed) | 0.1.1 |
 
 ## Building from source
 
@@ -200,7 +208,7 @@ The two builds are aligned item by item, but some gestures are native to one pla
 | | macOS | Windows |
 | --- | --- | --- |
 | Double click | Opens the file in the default or chosen app | Full screen preview window |
-| Quick Look / Markup | Yes: hold or force click to look, middle button for Markup | No; the double click preview stands in |
+| Quick Look / Markup | Yes: hold or force click to look, middle button for Markup | Markup yes (right-click → "标记", through Paint, saved back to the file); Quick Look no, the double-click preview stands in |
 | AirDrop | Yes | No; copy the picture and paste it, or drag the card out |
 | Add to selection | `Command` | `Ctrl` |
 | Reveal shortcut | Editable, default `⌃⌥T` (menu bar → Shortcut → Change Shortcut) | Editable, default `Ctrl + Alt + T` (tray → 快捷键：…, press the new combination) |
@@ -216,10 +224,10 @@ The two builds are aligned item by item, but some gestures are native to one pla
 
 The full history is in [`CHANGELOG.md`](CHANGELOG.md) (Chinese).
 
-- **0.2.9 — 2026-11-04 (macOS) / 0.1.13 (Windows)** The Windows build catches up: arrow keys page through the preview, the tray icon fades when the line is empty, launch at login, check for updates, "mark up" through Paint with the card following the save, and WebP / HEIC / AVIF loading. macOS code unchanged.
-- **0.2.8 — 2026-11-04 (macOS) / 0.1.12 (Windows)** An empty line no longer drops when the pointer reaches the top, so the Wi-Fi menu is no longer covered by a bare rope. With photos hanging nothing changed; the shortcut, the menu and a new screenshot still bring it down. The Windows build also got its own icon, instead of the generic system one; the tray uses a one-colour version that flips with a light or dark taskbar.
-- **0.2.7 — 2026-11-02 (macOS) / 0.1.9 (Windows)** Bringing the line down can require a key to be held (`⌘` / `⌥` / `⌃` / `⇧`; `Ctrl` / `Alt` / `Shift` on Windows). The Windows shortcut is no longer fixed either: press a new one in the tray.   Both side items grey out while a group is picked. The Windows source now lives in this repository.
-- **0.2.6 — 2026-11-02 (macOS) / 0.1.5–0.1.7 (Windows)** Pick several photos out: `Shift` to extend, drag the group, right-click a group and the menu acts on all of it with the count in the title. A click no longer copies. The line comes down the instant the pointer touches the menu bar. "Take everything down" joins the card menu.
+- **0.2.9 — 2026-11-04 (macOS) / 0.1.1 (Windows)** The Windows build catches up: arrow keys page through the preview, the tray icon fades when the line is empty, launch at login, check for updates, "mark up" through Paint with the card following the save, and WebP / HEIC / AVIF loading. macOS code unchanged. The Windows build also restarts its numbering at 0.1.1, with single-digit patch numbers from here on.
+- **0.2.8 — 2026-11-04** An empty line no longer drops when the pointer reaches the top, so the Wi-Fi menu is no longer covered by a bare rope. With photos hanging nothing changed; the shortcut, the menu and a new screenshot still bring it down. The Windows build also got its own icon, instead of the generic system one; the tray uses a one-colour version that flips with a light or dark taskbar.
+- **0.2.7 — 2026-11-02** Bringing the line down can require a key to be held (`⌘` / `⌥` / `⌃` / `⇧`; `Ctrl` / `Alt` / `Shift` on Windows). The Windows shortcut is no longer fixed either: press a new one in the tray.   Both side items grey out while a group is picked. The Windows source now lives in this repository.
+- **0.2.6 — 2026-11-02** Pick several photos out: `Shift` to extend, drag the group, right-click a group and the menu acts on all of it with the count in the title. A click no longer copies. The line comes down the instant the pointer touches the menu bar. "Take everything down" joins the card menu.
 - **0.2.5 — 2026-11-02** An empty line comes down too, so the app never looks dead.
 - **0.2.4 — 2026-11-02** Finder entry moved to Open With, which is reliable, instead of the Services menu.
 - **0.2.3 — 2026-11-02** Finder service and intake fixes.
