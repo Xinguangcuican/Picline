@@ -1,3 +1,21 @@
+## 0.2.8 — 2026-11-04
+
+空绳子不再贴顶出现。基于 0.2.7。
+
+### 改动
+
+- **绳子上没有图时，指针贴顶不再放绳。** 0.2.5 让空绳也下来，是为了解决「贴顶什么都不出现，像应用没在跑」；用下来代价更大：去点 Wi-Fi、电池、时钟时空绳总要滑下来挡一下，而上面本来也没有东西可拿。
+  - 现在空绳只在你主动叫的时候出现：快捷键（默认 `⌃⌥T`）、菜单栏「显示晾衣绳」、「挂到 Picline」或截图挂图之后，它自然就有图了。
+  - 判断依据是「有没有挂着的图」，不是「有没有挂过图」：刚拍下、还在飞入途中的也算，所以新图挂上来的那一刻，绳子照旧会下来给你看一眼。
+  - 有图时手感一点没变：指针碰到菜单栏仍是 0.06 秒缓冲、0.26 秒落定。
+  - 菜单栏图标仍常驻，空绳时变淡，鼠标停上去写着「晾衣绳上是空的」—— 空着的时候靠它确认应用还在。
+  - 触发规则从 60Hz 循环里抽成 `RevealPolicy`（开关 / 修饰键 / 菜单栏点击抑制 / 全屏 / 张数），加了 6 项测试钉住，其中一项专门守着「空绳不出现」。
+- **Windows 端同步。** 空绳同样不再贴顶出现；托盘和 `Ctrl + Alt + T` 仍然能把它叫出来。
+
+### English
+
+An empty line no longer drops when the pointer reaches the top of the screen. 0.2.5 added that so the app could not look dead; in use the cost was higher than the benefit — every trip to the Wi-Fi menu pulled a bare rope over the screen, and there was nothing on it to take. The shortcut, the menu bar item and the Finder entry still open it, and a new screenshot brings it down exactly as before. Windows behaves the same way.
+
 ## 0.2.7 — 2026-11-02
 
 贴顶唤出可以要求按住一个键了。基于 0.2.6。

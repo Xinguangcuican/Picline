@@ -6,6 +6,28 @@ import ServiceManagement
 import SwiftUI
 import UniformTypeIdentifiers
 
+/// What has to be true for the pointer resting in the menu bar to bring the
+/// line down. Kept out of the 60Hz loop so the rules can be read — and
+/// checked — in one place.
+struct RevealPolicy {
+    /// "When the pointer rests in the menu bar" is on.
+    var allowed: Bool
+    /// The key it may be asked for is held, or nothing is asked for.
+    var keyHeld: Bool
+    /// A click in the menu bar said "leave me alone while I am up here".
+    var suppressed: Bool
+    /// A full screen app owns that screen.
+    var overFullScreen: Bool
+    /// How many photos are hanging. An empty line stays away: a bare rope
+    /// arriving every time you reach for the Wi-Fi menu is noise, and there is
+    /// nothing on it to take. The shortcut and the menu still open it.
+    var hanging: Int
+
+    var bringsTheLineDown: Bool {
+        allowed && keyHeld && !suppressed && !overFullScreen && hanging > 0
+    }
+}
+
 /// A key held while the pointer is in the menu bar. `none` keeps the old
 /// behaviour: the pointer alone brings the line down.
 enum RevealKey: String, CaseIterable {
@@ -612,11 +634,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             // the way somewhere else does not pull it out.
             // A click in the menu bar puts it away for as long as the cursor
             // stays up there, so reaching for a menu leaves nothing hanging.
-            // An empty line comes down too: the bare rope is how you find out
-            // the app is there at all, and it costs nothing to show.
-            if Self.opensFromMenuBar, let screen = screenUnderPointer,
-               inMenuBar, Self.revealKey.isHeld, !menuBarSuppressed,
-               !FullScreen.blocksLine(on: screen) {
+            let policy = RevealPolicy(
+                allowed: Self.opensFromMenuBar,
+                keyHeld: Self.revealKey.isHeld,
+                suppressed: menuBarSuppressed,
+                overFullScreen: screenUnderPointer.map { FullScreen.blocksLine(on: $0) } ?? false,
+                hanging: line.liveCount)
+            if let screen = screenUnderPointer, inMenuBar, policy.bringsTheLineDown {
                 let since = hotZoneSince ?? now
                 hotZoneSince = since
                 if now.timeIntervalSince(since) >= Self.revealDelay {

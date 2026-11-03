@@ -46,11 +46,11 @@ Picline 是 [Tendedero](https://github.com/alejandrobujan/tendedero) 的一个�
 
 | 平台 | 文件 | 说明 |
 | --- | --- | --- |
-| macOS | `Picline-0.2.7.dmg` | 通用二进制，Apple 芯片与 Intel 同一个包 |
-| macOS | `Picline-0.2.7.zip` | 同上，适合直接解压 |
-| Windows x64 | `Picline-0.1.9-win-x64.exe` | 绝大多数 64 位 Windows |
-| Windows ARM64 | `Picline-0.1.9-win-arm64.exe` | 骁龙本等 ARM 机器 |
-| Windows | `Picline-0.1.9-win.zip` | 两个 exe 与说明打包在一起 |
+| macOS | `Picline-0.2.8.dmg` | 通用二进制，Apple 芯片与 Intel 同一个包 |
+| macOS | `Picline-0.2.8.zip` | 同上，适合直接解压 |
+| Windows x64 | `Picline-0.1.10-win-x64.exe` | 绝大多数 64 位 Windows |
+| Windows ARM64 | `Picline-0.1.10-win-arm64.exe` | 骁龙本等 ARM 机器 |
+| Windows | `Picline-0.1.10-win.zip` | 两个 exe 与说明打包在一起 |
 
 未做代码签名：Mac 首次打开要在「隐私与安全性」里放行，Windows 首次运行要点「更多信息 → 仍要运行」。
 
@@ -60,7 +60,7 @@ Picline 是 [Tendedero](https://github.com/alejandrobujan/tendedero) 的一个�
 
 ## 安装
 
-1. 下载 `Picline-0.2.7.dmg`，双击打开，把 `Picline` 拖进「应用程序」。
+1. 下载 `Picline-0.2.8.dmg`，双击打开，把 `Picline` 拖进「应用程序」。
 2. 首次打开会被 Gatekeeper 拦（本版未做公证，属正常现象）。两种放行办法：
    - 系统设置 → 隐私与安全性 → 拉到下面点「仍要打开」，再确认一次；
    - 或终端执行：`xattr -dr com.apple.quarantine /Applications/Picline.app`
@@ -72,7 +72,7 @@ Picline 是 [Tendedero](https://github.com/alejandrobujan/tendedero) 的一个�
 | --- | --- | --- |
 | 指针碰到菜单栏 | 立刻放下来，只留 0.06 秒缓冲挡掉只是穿过去的指针 | 0.1.x；0.2.6 起几乎即时 |
 | 按住一个键再碰菜单栏 | 在「放下晾衣绳 → 需要按住按键」里选 `⌘` / `⌥` / `⌃` / `⇧`，不按就不放下来 | **0.2.7** |
-| 空绳子也放下来 | 没挂图时照样下来，显示一句提示，不会像应用没在跑 | 0.2.5 |
+| 空绳子不贴顶下来 | 没挂图时贴顶没有任何反应，去点菜单栏不会被挡；用快捷键或菜单叫出来仍能看到空绳和那句提示 | 0.2.8（0.2.5–0.2.7 会下来） |
 | 点击菜单栏任意处 | 把绳子收起来 | 0.1.x |
 | 指针移开超过 0.5 秒 | 自己收回去 | 0.1.x |
 | `Control + Option + T` | 显示 / 隐藏，可在「快捷键 → 更改快捷键…」里改 | 0.1.9 |
@@ -125,7 +125,7 @@ Picline 是 [Tendedero](https://github.com/alejandrobujan/tendedero) 的一个�
 ```sh
 scripts/build-picline.sh release    # 通用二进制（arm64 + x86_64），产物在 build/Picline.app
 scripts/package-dmg.sh              # 打包成 build/Picline-<版本>.dmg
-swift test --disable-sandbox        # 82 项测试
+swift test --disable-sandbox        # 88 项测试
 swift scripts/check-strings.swift   # 83 条文案 × 11 种语言
 ```
 
@@ -135,7 +135,7 @@ swift scripts/check-strings.swift   # 83 条文案 × 11 种语言
 
 ## 安装
 
-1. 下载 `Picline-0.1.9-win-x64.exe`（绝大多数机器）或 `Picline-0.1.9-win-arm64.exe`（骁龙本等 ARM 机器）。
+1. 下载 `Picline-0.1.10-win-x64.exe`（绝大多数机器）或 `Picline-0.1.10-win-arm64.exe`（骁龙本等 ARM 机器）。
 2. 双击运行。不用安装，也不写注册表 —— 除了下面那条可选的资源管理器右键菜单（一键开关，关掉即删键）。
 3. 首次运行会被 SmartScreen 拦一下（未签名）：更多信息 → 仍要运行。
 
@@ -143,7 +143,7 @@ swift scripts/check-strings.swift   # 83 条文案 × 11 种语言
 
 | 做法 | 结果 | 起始版本 |
 | --- | --- | --- |
-| 指针停到屏幕最上面 | 立刻放下来（0.09 秒缓冲） | 0.1.0 |
+| 指针停到屏幕最上面 | 立刻放下来（0.09 秒缓冲）；绳子上没有图时不下来 | 0.1.0；0.1.10 起空绳不响应 |
 | 按住一个键再贴顶 | 托盘右键 →「贴顶唤出」→ 不需要按键 / `Ctrl` / `Alt` / `Shift`，选择会记住 | **0.1.8** |
 | 指针离开绳子 0.5 秒 | 自己收回去 | 0.1.0 |
 | `Ctrl + Alt + T` | 显示 / 隐藏，**可自己改**：托盘右键 →「快捷键：…」，按一遍新组合即可（`Esc` 取消、`Delete` 取消设置） | 0.1.0；**0.1.9** 起可改 |
@@ -217,6 +217,7 @@ scripts/build-win.sh both     # dist/Picline-<版本>-win-{x64,arm64}.exe
 
 完整改动见 [`CHANGELOG.md`](CHANGELOG.md)，这里只记最近几版。
 
+- **0.2.8 — 2026-11-04（macOS）/ 0.1.10（Windows）** 空绳子不再贴顶出现：去点 Wi-Fi、电池时不会被一条空绳挡一下。有图时手感不变，快捷键、菜单、截图挂图照旧能把它叫下来。
 - **0.2.7 — 2026-11-02（macOS）/ 0.1.9（Windows）** 贴顶唤出可以要求按住一个键（`⌘` / `⌥` / `⌃` / `⇧`；Windows 是 `Ctrl` / `Alt` / `Shift`），不按不放绳。Windows 的快捷键也不再写死，托盘里按一遍就能改。选了一组时「取下左侧 / 右侧全部」置灰。Windows 源码并入本仓库。
 - **0.2.6 — 2026-11-02（macOS）/ 0.1.5–0.1.7（Windows）** 一次选中几张一起用：`Shift` 连选、整组拖拽、右键菜单对整组生效并带张数。单击不再复制。指针碰到菜单栏立刻放绳（0.06 秒缓冲、0.26 秒落定）。卡片右键加「全部取下」。Windows 端补上拖拽出卡片、整组菜单、左右两侧置灰。
 - **0.2.5 — 2026-11-02** 空绳子也能贴顶唤出，应用不会像没在跑。
@@ -242,6 +243,7 @@ Tendedero (Alejandro Buján, MIT)
               │                       └── Picline 0.2.5（空绳子也能唤出）
               │                             └── Picline 0.2.6（一次选几张一起用）
               │                                   └── Picline 0.2.7（贴顶唤出可要求按住按键）
+              │                                         └── Picline 0.2.8（空绳不再贴顶出现）
               └── Picline for Windows 0.1.x（Rust + Win32，交互对齐 macOS）
 ```
 
@@ -252,8 +254,8 @@ Tendedero (Alejandro Buján, MIT)
 打一个 tag 推上去，编译、打包、发 Release 全部由 GitHub Actions 完成：
 
 ```sh
-git tag v0.2.7
-git push origin v0.2.7
+git tag v0.2.8
+git push origin v0.2.8
 ```
 
 1. **版本号取自 tag**，代码里的任何数字都不用改。
@@ -261,8 +263,8 @@ git push origin v0.2.7
 3. **macOS 产物自动上传**；Windows 的 exe 体积小、又不需要签名，发版后手动补传一次：
 
 ```sh
-gh release upload v0.2.7 windows/dist/Picline-0.1.9-win-*.exe \
-  windows/dist/Picline-0.1.9-win.zip
+gh release upload v0.2.8 windows/dist/Picline-0.1.10-win-*.exe \
+  windows/dist/Picline-0.1.10-win.zip
 ```
 
 ## 许可
