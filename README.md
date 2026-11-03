@@ -46,11 +46,11 @@ Picline 是 [Tendedero](https://github.com/alejandrobujan/tendedero) 的一个�
 
 | 平台 | 文件 | 说明 |
 | --- | --- | --- |
-| macOS | `Picline-0.2.8.dmg` | 通用二进制，Apple 芯片与 Intel 同一个包 |
-| macOS | `Picline-0.2.8.zip` | 同上，适合直接解压 |
-| Windows x64 | `Picline-0.1.12-win-x64.exe` | 绝大多数 64 位 Windows |
-| Windows ARM64 | `Picline-0.1.12-win-arm64.exe` | 骁龙本等 ARM 机器 |
-| Windows | `Picline-0.1.12-win.zip` | 两个 exe 与说明打包在一起 |
+| macOS | `Picline-0.2.9.dmg` | 通用二进制，Apple 芯片与 Intel 同一个包 |
+| macOS | `Picline-0.2.9.zip` | 同上，适合直接解压 |
+| Windows x64 | `Picline-0.1.13-win-x64.exe` | 绝大多数 64 位 Windows |
+| Windows ARM64 | `Picline-0.1.13-win-arm64.exe` | 骁龙本等 ARM 机器 |
+| Windows | `Picline-0.1.13-win.zip` | 两个 exe 与说明打包在一起 |
 
 未做代码签名：Mac 首次打开要在「隐私与安全性」里放行，Windows 首次运行要点「更多信息 → 仍要运行」。
 
@@ -60,7 +60,7 @@ Picline 是 [Tendedero](https://github.com/alejandrobujan/tendedero) 的一个�
 
 ## 安装
 
-1. 下载 `Picline-0.2.8.dmg`，双击打开，把 `Picline` 拖进「应用程序」。
+1. 下载 `Picline-0.2.9.dmg`，双击打开，把 `Picline` 拖进「应用程序」。
 2. 首次打开会被 Gatekeeper 拦（本版未做公证，属正常现象）。两种放行办法：
    - 系统设置 → 隐私与安全性 → 拉到下面点「仍要打开」，再确认一次；
    - 或终端执行：`xattr -dr com.apple.quarantine /Applications/Picline.app`
@@ -135,7 +135,7 @@ swift scripts/check-strings.swift   # 83 条文案 × 11 种语言
 
 ## 安装
 
-1. 下载 `Picline-0.1.12-win-x64.exe`（绝大多数机器）或 `Picline-0.1.12-win-arm64.exe`（骁龙本等 ARM 机器）。
+1. 下载 `Picline-0.1.13-win-x64.exe`（绝大多数机器）或 `Picline-0.1.13-win-arm64.exe`（骁龙本等 ARM 机器）。
 2. 双击运行。不用安装，也不写注册表 —— 除了下面那条可选的资源管理器右键菜单（一键开关，关掉即删键）。
 3. 首次运行会被 SmartScreen 拦一下（未签名）：更多信息 → 仍要运行。
 
@@ -207,9 +207,9 @@ scripts/build-win.sh both     # dist/Picline-<版本>-win-{x64,arm64}.exe
 | 放下绳子的快捷键 | 可自定义（默认 `⌃⌥T`），菜单栏「快捷键 → 更改快捷键…」 | 可自定义（默认 `Ctrl + Alt + T`），托盘「快捷键：…」，按一遍新组合 |
 | 挂图入口 | 访达「打开方式 → Picline」 | 资源管理器右键「挂到 Picline」 |
 | 界面语言 | 11 种，可切换 | 中文 |
-| 图片格式 | 系统 ImageIO 能解的都能挂（含 webp、heic） | png / jpg / gif / bmp / tif / ico（GDI+ 能力所限） |
+| 图片格式 | 系统 ImageIO 能解的都能挂（含 webp、heic） | GDI+ 与系统 WIC 能解的都能挂（webp / heic 取决于机器上装没装对应解码器） |
 | 虚拟桌面 | 所有 Space 通用 | 切换虚拟桌面时窗口不跟随 |
-| 开机自启 | 菜单里勾选 | 需要自己把 exe 放进启动目录 |
+| 开机自启 | 菜单里勾选 | 托盘菜单里勾选（写 HKCU 的 Run 键） |
 
 ---
 
@@ -217,6 +217,7 @@ scripts/build-win.sh both     # dist/Picline-<版本>-win-{x64,arm64}.exe
 
 完整改动见 [`CHANGELOG.md`](CHANGELOG.md)，这里只记最近几版。
 
+- **0.2.9 — 2026-11-04（macOS）/ 0.1.13（Windows）** Windows 端补齐六件事：双击预览可 `←` `→` 翻页、空绳时托盘变淡、开机自启、检查更新、右键「标记（用画图）」且卡片跟随保存、WebP / HEIC / AVIF 可挂。macOS 端代码未改。
 - **0.2.8 — 2026-11-04（macOS）/ 0.1.12（Windows）** 空绳子不再贴顶出现：去点 Wi-Fi、电池时不会被一条空绳挡一下。有图时手感不变，快捷键、菜单、截图挂图照旧能把它叫下来。Windows 端补上了应用图标（之前是系统通用图标），托盘用随深浅色切换的单色线条版。
 - **0.2.7 — 2026-11-02（macOS）/ 0.1.9（Windows）** 贴顶唤出可以要求按住一个键（`⌘` / `⌥` / `⌃` / `⇧`；Windows 是 `Ctrl` / `Alt` / `Shift`），不按不放绳。Windows 的快捷键也不再写死，托盘里按一遍就能改。选了一组时「取下左侧 / 右侧全部」置灰。Windows 源码并入本仓库。
 - **0.2.6 — 2026-11-02（macOS）/ 0.1.5–0.1.7（Windows）** 一次选中几张一起用：`Shift` 连选、整组拖拽、右键菜单对整组生效并带张数。单击不再复制。指针碰到菜单栏立刻放绳（0.06 秒缓冲、0.26 秒落定）。卡片右键加「全部取下」。Windows 端补上拖拽出卡片、整组菜单、左右两侧置灰。
@@ -244,6 +245,7 @@ Tendedero (Alejandro Buján, MIT)
               │                             └── Picline 0.2.6（一次选几张一起用）
               │                                   └── Picline 0.2.7（贴顶唤出可要求按住按键）
               │                                         └── Picline 0.2.8（空绳不再贴顶出现）
+              │                                               └── Picline 0.2.9（Windows 端补齐六件事）
               └── Picline for Windows 0.1.x（Rust + Win32，交互对齐 macOS）
 ```
 
@@ -254,8 +256,8 @@ Tendedero (Alejandro Buján, MIT)
 打一个 tag 推上去，编译、打包、发 Release 全部由 GitHub Actions 完成：
 
 ```sh
-git tag v0.2.8
-git push origin v0.2.8
+git tag v0.2.9
+git push origin v0.2.9
 ```
 
 1. **版本号取自 tag**，代码里的任何数字都不用改。
@@ -264,7 +266,7 @@ git push origin v0.2.8
 
 ```sh
 gh release upload v0.2.8 windows/dist/Picline-0.1.10-win-*.exe \
-  windows/dist/Picline-0.1.12-win.zip
+  windows/dist/Picline-0.1.13-win.zip
 ```
 
 ## 许可

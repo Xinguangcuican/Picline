@@ -1,3 +1,23 @@
+## 0.2.9 — 2026-11-04
+
+Windows 端补齐了六件事；macOS 端代码未改。基于 0.2.8。
+
+### Windows
+
+- **双击预览可以左右翻页了。** 之前看完一张要关掉再双击下一张，连看三张就是六次点击。现在预览窗里 `←` `→` 翻上一张 / 下一张，`Home` / `End` 跳到两头，标题写成「3 / 7 · 文件名 · 2560 × 1440」；`Esc`、空格或点一下收起。
+  - 预览窗现在会自己拿焦点，否则根本收不到按键；关掉时把焦点还给原来那个窗口，不会把你切换到别的程序去。
+  - 翻页时不复制像素：窗口只留当前这一张，翻到下一张是向绳子要，否则十二张 4K 图一次复制进来就是几百 MB。
+- **空绳子时托盘图标会变淡。** 和 Mac 菜单栏那个一样。绳子上没有图时换成半透明的一版（深浅两套各一份），挂上图或取空时当场换，不用重启。
+- **开机自启。** 托盘菜单里一个勾，写 `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` 一个值；取消勾选就删掉它。不装服务、不要管理员权限、不动别的键。
+- **检查更新。** 托盘点「检查更新…」，后台问 GitHub 最新的 release，有新版就问你打不打开下载页；已经最新就直说。版本按数字比大小，所以 `0.1.10` 排在 `0.1.9` 后面而不是前面。整件事在后台线程做，不会让绳子卡住。
+- **标记。** 卡片右键「标记（用画图）」，用系统自带的画图打开原文件 —— 它是 Windows 上少数几个会直接存回原文件的编辑器。保存后卡片会跟着变：每半秒看一次文件时间，改了就重新读一遍。卡片的身份不变，还是同一个位置、同一个选中状态，因为对你来说这就是同一张图被改过。
+- **WebP / HEIC / AVIF 也能挂了。** 之前只认 GDI+ 认识的格式，从网页复制来的 WebP、从 iPhone 传过来的 HEIC 都挂不上。现在 GDI+ 失败之后走系统的 WIC，用这台机器上已经装好的解码器 —— 不打包新的解码器，也不再大几百 KB。
+  - HEIC 需要系统里装了「HEIF 图像扩展」（多数机器第一次遇到 HEIC 时会提示安装）；没装就还是失败，但不会崩。
+
+### English
+
+The Windows build caught up on six things; the macOS code is unchanged. Double click no longer dead-ends: the preview takes the arrow keys, shows "3 / 7" and gives focus back on the way out. The tray icon fades when the line is empty. Launch at login is one tick and one registry value. "Check for updates" asks GitHub in the background and offers the download page. "Mark up" opens the file in Paint and the card follows the save. And WebP, HEIC and AVIF now load through Windows Imaging Component, so pictures that GDI+ never knew about stop failing silently.
+
 ## 0.2.8 — 2026-11-04
 
 空绳子不再贴顶出现。基于 0.2.7。
