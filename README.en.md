@@ -46,11 +46,11 @@ Everything is on the [Releases](https://github.com/Xinguangcuican/Picline/releas
 
 | Platform | File | Notes |
 | --- | --- | --- |
-| macOS | `Picline-0.2.7.dmg` | Universal binary: Apple silicon and Intel in one package |
-| macOS | `Picline-0.2.7.zip` | Same, for people who prefer a zip |
-| Windows x64 | `Picline-0.1.9-win-x64.exe` | Nearly every 64-bit Windows |
-| Windows ARM64 | `Picline-0.1.9-win-arm64.exe` | Snapdragon laptops and other ARM machines |
-| Windows | `Picline-0.1.9-win.zip` | Both exes and the readme |
+| macOS | `Picline-0.2.8.dmg` | Universal binary: Apple silicon and Intel in one package |
+| macOS | `Picline-0.2.8.zip` | Same, for people who prefer a zip |
+| Windows x64 | `Picline-0.1.10-win-x64.exe` | Nearly every 64-bit Windows |
+| Windows ARM64 | `Picline-0.1.10-win-arm64.exe` | Snapdragon laptops and other ARM machines |
+| Windows | `Picline-0.1.10-win.zip` | Both exes and the readme |
 
 Neither build is code signed. On macOS, allow it once in Privacy & Security. On Windows, SmartScreen asks for "More info → Run anyway".
 
@@ -60,7 +60,7 @@ Neither build is code signed. On macOS, allow it once in Privacy & Security. On 
 
 ## Install
 
-1. Open `Picline-0.2.7.dmg` and drag `Picline` into Applications.
+1. Open `Picline-0.2.8.dmg` and drag `Picline` into Applications.
 2. The first launch is blocked by Gatekeeper (no notarisation). Either allow it in System Settings → Privacy & Security, or run:
    `xattr -dr com.apple.quarantine /Applications/Picline.app`
 3. The menu bar icon appears. Tick "Hang copied images" in the menu to start collecting.
@@ -71,7 +71,7 @@ Neither build is code signed. On macOS, allow it once in Privacy & Security. On 
 | --- | --- | --- |
 | Pointer touches the menu bar | The line comes down at once, with a 0.06 s buffer so a pointer merely passing through does not pull it out | 0.1.x; instant as of 0.2.6 |
 | Hold a key, then touch the menu bar | Bring the line down → "Only with a key held", choose `⌘` / `⌥` / `⌃` / `⇧`. Without the key nothing happens | **0.2.7** |
-| An empty line comes down too | No photos, still comes down with a hint, so the app never looks like it is not running | 0.2.5 |
+| An empty line stays away | With nothing hanging, touching the top does nothing, so reaching for the Wi-Fi menu is not blocked; the shortcut and the menu still open it | 0.2.8 (0.2.5–0.2.7 came down) |
 | Click anywhere in the menu bar | Puts it away | 0.1.x |
 | Pointer leaves for 0.5 s | Tucks itself away | 0.1.x |
 | `Control + Option + T` | Show / hide; change it under Shortcut → Change Shortcut | 0.1.9 |
@@ -124,7 +124,7 @@ Select one or more pictures, right-click → Open With → Picline. The picture 
 ```sh
 scripts/build-picline.sh release    # universal binary (arm64 + x86_64) in build/Picline.app
 scripts/package-dmg.sh              # build/Picline-<version>.dmg
-swift test --disable-sandbox        # 82 tests
+swift test --disable-sandbox        # 88 tests
 swift scripts/check-strings.swift   # 83 strings × 11 languages
 ```
 
@@ -134,7 +134,7 @@ swift scripts/check-strings.swift   # 83 strings × 11 languages
 
 ## Install
 
-1. Download `Picline-0.1.9-win-x64.exe` (most machines) or `Picline-0.1.9-win-arm64.exe` (ARM laptops).
+1. Download `Picline-0.1.10-win-x64.exe` (most machines) or `Picline-0.1.10-win-arm64.exe` (ARM laptops).
 2. Double-click it. Nothing is installed and no registry keys are written, apart from the optional Explorer right-click entry, which can be switched off and removes its own key.
 3. SmartScreen stops the first run (unsigned): More info → Run anyway.
 
@@ -142,7 +142,7 @@ swift scripts/check-strings.swift   # 83 strings × 11 languages
 
 | Gesture | What happens | Since |
 | --- | --- | --- |
-| Pointer rests at the very top of the screen | The line comes down (0.09 s buffer) | 0.1.0 |
+| Pointer rests at the very top of the screen | The line comes down (0.09 s buffer); with nothing hanging it stays away | 0.1.0; empty line ignored as of 0.1.10 |
 | Hold a key, then touch the top | Tray menu → "贴顶唤出" → no key / `Ctrl` / `Alt` / `Shift`; the choice is remembered | **0.1.8** |
 | Pointer leaves for 0.5 s | Tucks itself away | 0.1.0 |
 | `Ctrl + Alt + T` | Show / hide, **changeable**: tray → "快捷键：…", press the new combination (`Esc` cancels, `Delete` clears it) | 0.1.0; changeable as of **0.1.9** |
@@ -216,6 +216,7 @@ The two builds are aligned item by item, but some gestures are native to one pla
 
 The full history is in [`CHANGELOG.md`](CHANGELOG.md) (Chinese).
 
+- **0.2.8 — 2026-11-04 (macOS) / 0.1.10 (Windows)** An empty line no longer drops when the pointer reaches the top, so the Wi-Fi menu is no longer covered by a bare rope. With photos hanging nothing changed; the shortcut, the menu and a new screenshot still bring it down.
 - **0.2.7 — 2026-11-02 (macOS) / 0.1.9 (Windows)** Bringing the line down can require a key to be held (`⌘` / `⌥` / `⌃` / `⇧`; `Ctrl` / `Alt` / `Shift` on Windows). The Windows shortcut is no longer fixed either: press a new one in the tray.   Both side items grey out while a group is picked. The Windows source now lives in this repository.
 - **0.2.6 — 2026-11-02 (macOS) / 0.1.5–0.1.7 (Windows)** Pick several photos out: `Shift` to extend, drag the group, right-click a group and the menu acts on all of it with the count in the title. A click no longer copies. The line comes down the instant the pointer touches the menu bar. "Take everything down" joins the card menu.
 - **0.2.5 — 2026-11-02** An empty line comes down too, so the app never looks dead.
@@ -241,6 +242,7 @@ Tendedero (Alejandro Buján, MIT)
               │                       └── Picline 0.2.5 (an empty line comes down)
               │                             └── Picline 0.2.6 (pick several, act on all)
               │                                   └── Picline 0.2.7 (reveal can require a key)
+              │                                         └── Picline 0.2.8 (an empty line stays away)
               └── Picline for Windows 0.1.x (Rust + Win32, aligned with macOS)
 ```
 
