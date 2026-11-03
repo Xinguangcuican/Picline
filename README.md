@@ -48,9 +48,9 @@ Picline 是 [Tendedero](https://github.com/alejandrobujan/tendedero) 的一个�
 | --- | --- | --- |
 | macOS | `Picline-0.2.8.dmg` | 通用二进制，Apple 芯片与 Intel 同一个包 |
 | macOS | `Picline-0.2.8.zip` | 同上，适合直接解压 |
-| Windows x64 | `Picline-0.1.10-win-x64.exe` | 绝大多数 64 位 Windows |
-| Windows ARM64 | `Picline-0.1.10-win-arm64.exe` | 骁龙本等 ARM 机器 |
-| Windows | `Picline-0.1.10-win.zip` | 两个 exe 与说明打包在一起 |
+| Windows x64 | `Picline-0.1.11-win-x64.exe` | 绝大多数 64 位 Windows |
+| Windows ARM64 | `Picline-0.1.11-win-arm64.exe` | 骁龙本等 ARM 机器 |
+| Windows | `Picline-0.1.11-win.zip` | 两个 exe 与说明打包在一起 |
 
 未做代码签名：Mac 首次打开要在「隐私与安全性」里放行，Windows 首次运行要点「更多信息 → 仍要运行」。
 
@@ -135,7 +135,7 @@ swift scripts/check-strings.swift   # 83 条文案 × 11 种语言
 
 ## 安装
 
-1. 下载 `Picline-0.1.10-win-x64.exe`（绝大多数机器）或 `Picline-0.1.10-win-arm64.exe`（骁龙本等 ARM 机器）。
+1. 下载 `Picline-0.1.11-win-x64.exe`（绝大多数机器）或 `Picline-0.1.11-win-arm64.exe`（骁龙本等 ARM 机器）。
 2. 双击运行。不用安装，也不写注册表 —— 除了下面那条可选的资源管理器右键菜单（一键开关，关掉即删键）。
 3. 首次运行会被 SmartScreen 拦一下（未签名）：更多信息 → 仍要运行。
 
@@ -217,7 +217,7 @@ scripts/build-win.sh both     # dist/Picline-<版本>-win-{x64,arm64}.exe
 
 完整改动见 [`CHANGELOG.md`](CHANGELOG.md)，这里只记最近几版。
 
-- **0.2.8 — 2026-11-04（macOS）/ 0.1.10（Windows）** 空绳子不再贴顶出现：去点 Wi-Fi、电池时不会被一条空绳挡一下。有图时手感不变，快捷键、菜单、截图挂图照旧能把它叫下来。
+- **0.2.8 — 2026-11-04（macOS）/ 0.1.11（Windows）** 空绳子不再贴顶出现：去点 Wi-Fi、电池时不会被一条空绳挡一下。有图时手感不变，快捷键、菜单、截图挂图照旧能把它叫下来。Windows 端补上了应用图标（之前是系统通用图标）。
 - **0.2.7 — 2026-11-02（macOS）/ 0.1.9（Windows）** 贴顶唤出可以要求按住一个键（`⌘` / `⌥` / `⌃` / `⇧`；Windows 是 `Ctrl` / `Alt` / `Shift`），不按不放绳。Windows 的快捷键也不再写死，托盘里按一遍就能改。选了一组时「取下左侧 / 右侧全部」置灰。Windows 源码并入本仓库。
 - **0.2.6 — 2026-11-02（macOS）/ 0.1.5–0.1.7（Windows）** 一次选中几张一起用：`Shift` 连选、整组拖拽、右键菜单对整组生效并带张数。单击不再复制。指针碰到菜单栏立刻放绳（0.06 秒缓冲、0.26 秒落定）。卡片右键加「全部取下」。Windows 端补上拖拽出卡片、整组菜单、左右两侧置灰。
 - **0.2.5 — 2026-11-02** 空绳子也能贴顶唤出，应用不会像没在跑。
@@ -264,7 +264,7 @@ git push origin v0.2.8
 
 ```sh
 gh release upload v0.2.8 windows/dist/Picline-0.1.10-win-*.exe \
-  windows/dist/Picline-0.1.10-win.zip
+  windows/dist/Picline-0.1.11-win.zip
 ```
 
 ## 许可
