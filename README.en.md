@@ -48,9 +48,9 @@ Everything is on the [Releases](https://github.com/Xinguangcuican/Picline/releas
 | --- | --- | --- |
 | macOS | `Picline-0.2.8.dmg` | Universal binary: Apple silicon and Intel in one package |
 | macOS | `Picline-0.2.8.zip` | Same, for people who prefer a zip |
-| Windows x64 | `Picline-0.1.11-win-x64.exe` | Nearly every 64-bit Windows |
-| Windows ARM64 | `Picline-0.1.11-win-arm64.exe` | Snapdragon laptops and other ARM machines |
-| Windows | `Picline-0.1.11-win.zip` | Both exes and the readme |
+| Windows x64 | `Picline-0.1.12-win-x64.exe` | Nearly every 64-bit Windows |
+| Windows ARM64 | `Picline-0.1.12-win-arm64.exe` | Snapdragon laptops and other ARM machines |
+| Windows | `Picline-0.1.12-win.zip` | Both exes and the readme |
 
 Neither build is code signed. On macOS, allow it once in Privacy & Security. On Windows, SmartScreen asks for "More info → Run anyway".
 
@@ -134,7 +134,7 @@ swift scripts/check-strings.swift   # 83 strings × 11 languages
 
 ## Install
 
-1. Download `Picline-0.1.11-win-x64.exe` (most machines) or `Picline-0.1.11-win-arm64.exe` (ARM laptops).
+1. Download `Picline-0.1.12-win-x64.exe` (most machines) or `Picline-0.1.12-win-arm64.exe` (ARM laptops).
 2. Double-click it. Nothing is installed and no registry keys are written, apart from the optional Explorer right-click entry, which can be switched off and removes its own key.
 3. SmartScreen stops the first run (unsigned): More info → Run anyway.
 
@@ -216,7 +216,7 @@ The two builds are aligned item by item, but some gestures are native to one pla
 
 The full history is in [`CHANGELOG.md`](CHANGELOG.md) (Chinese).
 
-- **0.2.8 — 2026-11-04 (macOS) / 0.1.11 (Windows)** An empty line no longer drops when the pointer reaches the top, so the Wi-Fi menu is no longer covered by a bare rope. With photos hanging nothing changed; the shortcut, the menu and a new screenshot still bring it down. The Windows build also got its own icon, instead of the generic system one.
+- **0.2.8 — 2026-11-04 (macOS) / 0.1.12 (Windows)** An empty line no longer drops when the pointer reaches the top, so the Wi-Fi menu is no longer covered by a bare rope. With photos hanging nothing changed; the shortcut, the menu and a new screenshot still bring it down. The Windows build also got its own icon, instead of the generic system one; the tray uses a one-colour version that flips with a light or dark taskbar.
 - **0.2.7 — 2026-11-02 (macOS) / 0.1.9 (Windows)** Bringing the line down can require a key to be held (`⌘` / `⌥` / `⌃` / `⇧`; `Ctrl` / `Alt` / `Shift` on Windows). The Windows shortcut is no longer fixed either: press a new one in the tray.   Both side items grey out while a group is picked. The Windows source now lives in this repository.
 - **0.2.6 — 2026-11-02 (macOS) / 0.1.5–0.1.7 (Windows)** Pick several photos out: `Shift` to extend, drag the group, right-click a group and the menu acts on all of it with the count in the title. A click no longer copies. The line comes down the instant the pointer touches the menu bar. "Take everything down" joins the card menu.
 - **0.2.5 — 2026-11-02** An empty line comes down too, so the app never looks dead.
