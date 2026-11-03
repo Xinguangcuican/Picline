@@ -186,7 +186,7 @@ swift scripts/check-strings.swift   # 83 strings × 11 languages
 | Several screens and scaling | Comes down on the screen you touched, drawn at that screen's scale | 0.1.1 |
 | Full screen and single instance | Stays away over full screen apps; double-clicking twice does not make two lines | 0.1.1 |
 | **Launch at login** | One tick in the tray menu, one value under `HKCU\\...\\Run`, removed when unticked | 0.1.1 |
-| **Check for updates** | Tray → "检查更新…"; asks GitHub in the background and offers the download page | 0.1.1 |
+| **Check for updates** | Tray → "检查更新…"; asks GitHub in the background and compares the Windows version read from the asset names, not the macOS tag | 0.1.1 |
 | **Tray icon** | Its own icon instead of the generic system one; follows light and dark, fades when the line is empty | 0.1.1 |
 | **WebP / HEIC / AVIF** | Falls back to the system WIC when GDI+ cannot read it (HEIC needs the HEIF extension installed) | 0.1.1 |
 
