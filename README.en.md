@@ -134,6 +134,8 @@ swift scripts/check-strings.swift   # 83 strings × 11 languages
 
 > Every Windows release adds one to the last number, and carries into the middle one at 9 — `0.1.9` is followed by `0.2.0`, so nothing is ever as wide as `0.1.13`. Counting that way, this release is **0.2.4**; the four two-digit numbers before it (`0.1.10`–`0.1.13`) are `0.2.0`–`0.2.3`.
 
+The Windows half has a repository of its own — [`Xinguangcuican/Picline-Windows`](https://github.com/Xinguangcuican/Picline-Windows) — where its history can be read on its own. `windows/` here is a mirror of it.
+
 ## Install
 
 1. Download `Picline-0.2.4-win-x64.exe` (most machines) or `Picline-0.2.4-win-arm64.exe` (ARM laptops).
