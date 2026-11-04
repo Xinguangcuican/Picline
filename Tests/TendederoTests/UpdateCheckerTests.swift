@@ -40,6 +40,15 @@ final class UpdateCheckerTests: XCTestCase {
         XCTAssertEqual(UpdateChecker.tag(in: Data(json.utf8)), "v0.3.0")
     }
 
+    /// The cheap route: `/releases/latest` redirects to `/releases/tag/v0.3.0`,
+    /// and the last part of that address is the answer.
+    func testTheTagIsReadOffTheRedirect() {
+        XCTAssertEqual(UpdateChecker.tag(inPath: "v0.3.0"), "v0.3.0")
+        XCTAssertEqual(UpdateChecker.tag(inPath: "latest"), nil)
+        XCTAssertEqual(UpdateChecker.tag(inPath: "v"), nil)
+        XCTAssertEqual(UpdateChecker.tag(inPath: "vNext"), nil)
+    }
+
     func testSomethingThatIsNotAReleaseHasNoTag() {
         XCTAssertNil(UpdateChecker.tag(in: Data(#"{"message":"Not Found"}"#.utf8)))
         XCTAssertNil(UpdateChecker.tag(in: Data()))
