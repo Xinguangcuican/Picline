@@ -46,11 +46,11 @@ Picline 是 [Tendedero](https://github.com/alejandrobujan/tendedero) 的一个�
 
 | 平台 | 文件 | 说明 |
 | --- | --- | --- |
-| macOS | `Picline-0.2.9.dmg` | 通用二进制，Apple 芯片与 Intel 同一个包 |
-| macOS | `Picline-0.2.9.zip` | 同上，适合直接解压 |
-| Windows x64 | `Picline-0.2.4-win-x64.exe` | 绝大多数 64 位 Windows |
-| Windows ARM64 | `Picline-0.2.4-win-arm64.exe` | 骁龙本等 ARM 机器 |
-| Windows | `Picline-0.2.4-win.zip` | 两个 exe 与说明打包在一起 |
+| macOS | `Picline-0.3.0.dmg` | 通用二进制，Apple 芯片与 Intel 同一个包 |
+| macOS | `Picline-0.3.0.zip` | 同上，适合直接解压 |
+| Windows x64 | `Picline-0.2.5-win-x64.exe` | 绝大多数 64 位 Windows |
+| Windows ARM64 | `Picline-0.2.5-win-arm64.exe` | 骁龙本等 ARM 机器 |
+| Windows | `Picline-0.2.5-win.zip` | 两个 exe 与说明打包在一起 |
 
 未做代码签名：Mac 首次打开要在「隐私与安全性」里放行，Windows 首次运行要点「更多信息 → 仍要运行」。
 
@@ -60,7 +60,7 @@ Picline 是 [Tendedero](https://github.com/alejandrobujan/tendedero) 的一个�
 
 ## 安装
 
-1. 下载 `Picline-0.2.9.dmg`，双击打开，把 `Picline` 拖进「应用程序」。
+1. 下载 `Picline-0.3.0.dmg`，双击打开，把 `Picline` 拖进「应用程序」。
 2. 首次打开会被 Gatekeeper 拦（本版未做公证，属正常现象）。两种放行办法：
    - 系统设置 → 隐私与安全性 → 拉到下面点「仍要打开」，再确认一次；
    - 或终端执行：`xattr -dr com.apple.quarantine /Applications/Picline.app`
@@ -73,6 +73,7 @@ Picline 是 [Tendedero](https://github.com/alejandrobujan/tendedero) 的一个�
 | 指针碰到菜单栏 | 立刻放下来，只留 0.06 秒缓冲挡掉只是穿过去的指针 | 0.1.x；0.2.6 起几乎即时 |
 | 按住一个键再碰菜单栏 | 在「放下晾衣绳 → 需要按住按键」里选 `⌘` / `⌥` / `⌃` / `⇧`，不按就不放下来 | **0.2.7** |
 | 空绳子不贴顶下来 | 没挂图时贴顶没有任何反应，去点菜单栏不会被挡；用快捷键或菜单叫出来仍能看到空绳和那句提示 | 0.2.8（0.2.5–0.2.7 会下来） |
+| 第一次装上 | 绳子自己下来 9 秒，写两行：截图会挂在这里；指针推到屏幕最上面，它就会下来 | **0.3.0** |
 | 点击菜单栏任意处 | 把绳子收起来 | 0.1.x |
 | 指针移开超过 0.5 秒 | 自己收回去 | 0.1.x |
 | `Control + Option + T` | 显示 / 隐藏，可在「快捷键 → 更改快捷键…」里改 | 0.1.9 |
@@ -94,6 +95,7 @@ Picline 是 [Tendedero](https://github.com/alejandrobujan/tendedero) 的一个�
 | 拖进文件夹或桌面 | 存在那儿，图从绳上取下 | 0.1.x |
 | 拖到废纸篓 | 删除 | 0.1.x |
 | 点卡片左上角叉号 | 只取下这一张 | 0.1.x |
+| 取下之后文件去哪 | 应用自己生成的截图进废纸篓，可还原；从你文件夹挂上来的图只离开绳子，文件原地不动 | 0.1.x；**0.3.0** 起写明 |
 
 ## 右键菜单
 
@@ -108,6 +110,15 @@ Picline 是 [Tendedero](https://github.com/alejandrobujan/tendedero) 的一个�
 | 丢弃 / 取下 / 移到废纸篓 | 从绳上取下，按来源决定是否删文件（一组就整组） | 0.1.9 |
 | 取下左侧 / 右侧全部 | 一次清掉一半；**选了一组就置灰** | 0.1.9 起；0.2.7 置灰 |
 | 全部取下 | 把整条绳子收干净 | 0.2.6 |
+
+## 检查更新
+
+| 做法 | 结果 | 起始版本 |
+| --- | --- | --- |
+| 启动 20 秒后 / 每 24 小时 | 自己去 GitHub 问一次；有新版本发一条系统通知，点一下开下载页 | **0.3.0** |
+| 通知只提醒一次 | 同一个版本不会每次开机都烦你 | **0.3.0** |
+| 菜单栏最上面那一行 | 有新版时显示「Picline x.y.z 有新版本了」，点它去下载 | **0.3.0** |
+| 「检查更新…」 | 当场问一次并给答案：下载 / 以后再说 / 已经最新 / 网络不通 | 0.1.x（原为打开网页）；**0.3.0** 改为真的查询 |
 
 ## 收图
 
@@ -125,7 +136,7 @@ Picline 是 [Tendedero](https://github.com/alejandrobujan/tendedero) 的一个�
 ```sh
 scripts/build-picline.sh release    # 通用二进制（arm64 + x86_64），产物在 build/Picline.app
 scripts/package-dmg.sh              # 打包成 build/Picline-<版本>.dmg
-swift test --disable-sandbox        # 88 项测试
+swift test --disable-sandbox        # 95 项测试
 swift scripts/check-strings.swift   # 83 条文案 × 11 种语言
 ```
 
@@ -139,7 +150,7 @@ Windows 端另有独立仓库 [`Xinguangcuican/Picline-Windows`](https://github.
 
 ## 安装
 
-1. 下载 `Picline-0.2.4-win-x64.exe`（绝大多数机器）或 `Picline-0.2.4-win-arm64.exe`（骁龙本等 ARM 机器）。
+1. 下载 `Picline-0.2.5-win-x64.exe`（绝大多数机器）或 `Picline-0.2.5-win-arm64.exe`（骁龙本等 ARM 机器）。
 2. 双击运行。不用安装，也不写注册表 —— 除了下面那条可选的资源管理器右键菜单（一键开关，关掉即删键）。
 3. 首次运行会被 SmartScreen 拦一下（未签名）：更多信息 → 仍要运行。
 
@@ -276,7 +287,7 @@ git push origin v0.2.9
 
 ```sh
 gh release upload v0.2.8 windows/dist/Picline-0.1.10-win-*.exe \
-  windows/dist/Picline-0.2.4-win.zip
+  windows/dist/Picline-0.2.5-win.zip
 ```
 
 ## 许可

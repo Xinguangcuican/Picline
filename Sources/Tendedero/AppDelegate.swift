@@ -4,6 +4,7 @@ import Combine
 import Quartz
 import ServiceManagement
 import SwiftUI
+import UserNotifications
 import UniformTypeIdentifiers
 
 /// What has to be true for the pointer resting in the menu bar to bring the
@@ -234,18 +235,28 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { [weak self] in self?.offerInbox() }
         }
 
+        // The first time: down comes the line, with the one piece of advice a
+        // new line needs — how to bring it back once it slips away.
         if !UserDefaults.standard.bool(forKey: "welcomed") {
             UserDefaults.standard.set(true, forKey: "welcomed")
             keepOpen = true
             wanted = true
+            line.coaching = true
             refresh()
             reveal(pinned: true)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
-                guard let self, self.line.liveCount == 0 else { return }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 9) { [weak self] in
+                guard let self else { return }
+                self.line.coaching = false
+                guard self.line.liveCount == 0 else { return }
                 self.keepOpen = false
                 self.refresh()
             }
         }
+
+        // One request a day, quietly, from the moment it starts.
+        UpdateChecker.shared.onChange = { [weak self] in self?.updateStatusIcon() }
+        UpdateChecker.shared.start()
+        UNUserNotificationCenter.current().delegate = self
     }
 
     func applicationWillTerminate(_ notification: Notification) {
@@ -963,11 +974,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         login.state = SMAppService.mainApp.status == .enabled ? .on : .off
         menu.addItem(login)
 
-        // The app never connects to anything, so it cannot tell when a new
-        // version is out. The website can: it is opened with this version
-        // and language, and says whether there is a newer one.
-        menu.addItem(ClosureMenuItem(L("Check for Updates…")) {
-            NSWorkspace.shared.open(AppDelegate.updatesURL)
+        // A new release nobody hears about is a release that did not happen,
+        // so the app now asks GitHub itself. When something newer is known, it
+        // sits at the top of the menu with the number in the title.
+        if let newer = UpdateChecker.shared.newer {
+            menu.insertItem(ClosureMenuItem(String(format: L("Picline %@ is available"), newer)) {
+                NSWorkspace.shared.open(UpdateChecker.page)
+            }, at: 0)
+        }
+        menu.addItem(ClosureMenuItem(L("Check for Updates…")) { [weak self] in
+            self?.checkForUpdates()
         })
 
         menu.addItem(ClosureMenuItem(L("Open Source Notices")) {
@@ -996,17 +1012,30 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         line.imageOpener.selected = ImageOpeningApplication(name: name, bundleIdentifier: Bundle(url: url)?.bundleIdentifier, path: url.path)
     }
 
-    /// tendedero.app with the running version, and the menus' language when
-    /// the website has it too, so the page answers in the same words.
-    private static var updatesURL: URL {
-        var components = URLComponents(string: "https://tendedero.app/")!
-        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? ""
-        var query = [URLQueryItem(name: "update", value: version)]
-        if let language = Bundle.main.preferredLocalizations.first, ["en", "es", "gl", "fr", "pt-BR", "ja", "ko", "zh-Hans"].contains(language) {
-            query.append(URLQueryItem(name: "lang", value: language))
+    /// The menu's own check: the same request, answering in a dialog rather
+    /// than a notification — someone who just clicked is looking at the screen
+    /// and wants an answer now.
+    private func checkForUpdates() {
+        UpdateChecker.shared.check(announcing: false) { result in
+            let alert = NSAlert()
+            switch result {
+            case .success(let newer?):
+                alert.messageText = String(format: L("Picline %@ is available"), newer)
+                alert.addButton(withTitle: L("Download"))
+                alert.addButton(withTitle: L("Later"))
+            case .success(nil):
+                alert.messageText = L("You're up to date")
+                alert.addButton(withTitle: L("OK"))
+            case .failure:
+                alert.messageText = L("Couldn't check for updates")
+                alert.addButton(withTitle: L("OK"))
+            }
+            NSApp.activate(ignoringOtherApps: true)
+            if alert.runModal() == .alertFirstButtonReturn,
+               UpdateChecker.shared.newer != nil {
+                NSWorkspace.shared.open(UpdateChecker.page)
+            }
         }
-        components.queryItems = query
-        return components.url!
     }
 
     private static func toggleLaunchAtLogin() {
@@ -1078,4 +1107,32 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         QuickLook.shared.release(panel)
     }
 
+}
+
+// MARK: - Update notifications
+
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    /// Show the banner even while the app is in the foreground. A menu bar app
+    /// is active most of the time, so the default — only when in the
+    /// background — would mean never showing it at all.
+    nonisolated func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        completionHandler([.banner, .sound])
+    }
+
+    /// Clicking the banner opens the release page.
+    nonisolated func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
+        if let text = response.notification.request.content.userInfo["url"] as? String,
+           let url = URL(string: text) {
+            DispatchQueue.main.async { NSWorkspace.shared.open(url) }
+        }
+        completionHandler()
+    }
 }

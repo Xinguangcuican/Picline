@@ -98,3 +98,12 @@
 "Hold ⌃ Control" = "⌃ Control 누르기";
 "Hold ⇧ Shift" = "⇧ Shift 누르기";
 "Send via AirDrop" = "AirDrop으로 보내기";
+
+/* Updates and the first run */
+"Picline %@ is available" = "Picline %@ 버전이 나왔습니다";
+"Click to see what is new" = "클릭해서 새 기능 보기";
+"Download" = "다운로드";
+"Later" = "나중에";
+"You're up to date" = "최신 버전입니다";
+"Couldn't check for updates" = "업데이트를 확인하지 못했습니다";
+"Push the pointer to the top of the screen to bring it back" = "포인터를 화면 맨 위로 옮기면 다시 내려옵니다";

@@ -45,6 +45,11 @@ final class Line: ObservableObject {
     /// Whether the line has slid down into view.
     @Published var revealed = false
 
+    /// Set while the first-run greeting is on screen: the empty line then says
+    /// not only that a screenshot will hang here, but how to bring the line
+    /// back once it slips away again.
+    @Published var coaching = false
+
     /// Card frames in window coordinates, reported by the views. The panel
     /// uses them to only catch clicks over photos and let the rest through.
     var hitRects: [UUID: CGRect] = [:]

@@ -100,3 +100,12 @@
 "Hold ⌃ Control" = "⌃ Control basılı saxla";
 "Hold ⇧ Shift" = "⇧ Shift basılı saxla";
 "Send via AirDrop" = "AirDrop ilə göndər";
+
+/* Updates and the first run */
+"Picline %@ is available" = "Picline %@ əlçatandır";
+"Click to see what is new" = "Yeniliklərə baxmaq üçün klikləyin";
+"Download" = "Yüklə";
+"Later" = "Sonra";
+"You're up to date" = "Ən son versiyadasınız";
+"Couldn't check for updates" = "Yeniləmələr yoxlanıla bilmədi";
+"Push the pointer to the top of the screen to bring it back" = "Geri gətirmək üçün göstəricini ekranın ən üstünə aparın";
