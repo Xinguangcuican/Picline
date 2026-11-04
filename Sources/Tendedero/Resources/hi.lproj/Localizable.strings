@@ -100,3 +100,12 @@
 "Hold ⌃ Control" = "⌃ Control दबाएँ";
 "Hold ⇧ Shift" = "⇧ Shift दबाएँ";
 "Send via AirDrop" = "AirDrop से भेजें";
+
+/* Updates and the first run */
+"Picline %@ is available" = "Picline %@ उपलब्ध है";
+"Click to see what is new" = "नया क्या है, देखने के लिए क्लिक करें";
+"Download" = "डाउनलोड";
+"Later" = "बाद में";
+"You're up to date" = "आप नवीनतम संस्करण पर हैं";
+"Couldn't check for updates" = "अपडेट जाँच नहीं सके";
+"Push the pointer to the top of the screen to bring it back" = "वापस लाने के लिए पॉइंटर को स्क्रीन के सबसे ऊपर ले जाएँ";

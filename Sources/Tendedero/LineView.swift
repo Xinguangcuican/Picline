@@ -63,7 +63,7 @@ struct LineView: View {
                 Rope(width: width)
 
                 if line.items.isEmpty {
-                    Hint()
+                    Hint(coaching: line.coaching)
                         .position(x: width / 2, y: Layout.ropeY(x: width / 2, width: width) + 34)
                         .transition(.opacity)
                 }
@@ -96,13 +96,24 @@ struct LineView: View {
 }
 
 private struct Hint: View {
+    /// The first time the app runs, the line says how to get itself back.
+    var coaching = false
+
     var body: some View {
-        Text(L("Take a screenshot and it will hang here"))
-            .font(.system(size: 12, weight: .medium, design: .rounded))
-            .foregroundStyle(.secondary)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .background(.regularMaterial, in: Capsule())
+        VStack(spacing: 3) {
+            Text(L("Take a screenshot and it will hang here"))
+                .font(.system(size: 12, weight: .medium, design: .rounded))
+                .foregroundStyle(.primary)
+            if coaching {
+                Text(L("Push the pointer to the top of the screen to bring it back"))
+                    .font(.system(size: 11, weight: .regular, design: .rounded))
+                    .foregroundStyle(.secondary)
+                    .transition(.opacity)
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 8)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
 }
 

@@ -98,3 +98,12 @@
 "Hold ⌃ Control" = "Maintenez ⌃ Control";
 "Hold ⇧ Shift" = "Maintenez ⇧ Shift";
 "Send via AirDrop" = "Envoyer par AirDrop";
+
+/* Updates and the first run */
+"Picline %@ is available" = "Picline %@ est disponible";
+"Click to see what is new" = "Cliquez pour voir les nouveautés";
+"Download" = "Télécharger";
+"Later" = "Plus tard";
+"You're up to date" = "Vous êtes à jour";
+"Couldn't check for updates" = "Impossible de vérifier les mises à jour";
+"Push the pointer to the top of the screen to bring it back" = "Placez le pointeur en haut de l’écran pour la faire revenir";

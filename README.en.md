@@ -46,11 +46,11 @@ Everything is on the [Releases](https://github.com/Xinguangcuican/Picline/releas
 
 | Platform | File | Notes |
 | --- | --- | --- |
-| macOS | `Picline-0.2.9.dmg` | Universal binary: Apple silicon and Intel in one package |
-| macOS | `Picline-0.2.9.zip` | Same, for people who prefer a zip |
-| Windows x64 | `Picline-0.1.1-win-x64.exe` | Nearly every 64-bit Windows |
-| Windows ARM64 | `Picline-0.1.1-win-arm64.exe` | Snapdragon laptops and other ARM machines |
-| Windows | `Picline-0.1.1-win.zip` | Both exes and the readme |
+| macOS | `Picline-0.3.0.dmg` | Universal binary: Apple silicon and Intel in one package |
+| macOS | `Picline-0.3.0.zip` | Same, for people who prefer a zip |
+| Windows x64 | `Picline-0.2.5-win-x64.exe` | Nearly every 64-bit Windows |
+| Windows ARM64 | `Picline-0.2.5-win-arm64.exe` | Snapdragon laptops and other ARM machines |
+| Windows | `Picline-0.2.5-win.zip` | Both exes and the readme |
 
 Neither build is code signed. On macOS, allow it once in Privacy & Security. On Windows, SmartScreen asks for "More info → Run anyway".
 
@@ -60,7 +60,7 @@ Neither build is code signed. On macOS, allow it once in Privacy & Security. On 
 
 ## Install
 
-1. Open `Picline-0.2.9.dmg` and drag `Picline` into Applications.
+1. Open `Picline-0.3.0.dmg` and drag `Picline` into Applications.
 2. The first launch is blocked by Gatekeeper (no notarisation). Either allow it in System Settings → Privacy & Security, or run:
    `xattr -dr com.apple.quarantine /Applications/Picline.app`
 3. The menu bar icon appears. Tick "Hang copied images" in the menu to start collecting.
@@ -72,6 +72,7 @@ Neither build is code signed. On macOS, allow it once in Privacy & Security. On 
 | Pointer touches the menu bar | The line comes down at once, with a 0.06 s buffer so a pointer merely passing through does not pull it out | 0.1.x; instant as of 0.2.6 |
 | Hold a key, then touch the menu bar | Bring the line down → "Only with a key held", choose `⌘` / `⌥` / `⌃` / `⇧`. Without the key nothing happens | **0.2.7** |
 | An empty line stays away | With nothing hanging, touching the top does nothing, so reaching for the Wi-Fi menu is not blocked; the shortcut and the menu still open it | 0.2.8 (0.2.5–0.2.7 came down) |
+| The very first run | The line comes down by itself for nine seconds, saying what hangs on it and how to call it back | **0.3.0** |
 | Click anywhere in the menu bar | Puts it away | 0.1.x |
 | Pointer leaves for 0.5 s | Tucks itself away | 0.1.x |
 | `Control + Option + T` | Show / hide; change it under Shortcut → Change Shortcut | 0.1.9 |
@@ -93,6 +94,7 @@ It comes down on whichever screen you touched the top of, drawn at that screen's
 | Drag into a folder or the Desktop | The file goes there and leaves the line | 0.1.x |
 | Drag onto the Trash | Deleted | 0.1.x |
 | Click the corner cross | Takes down that one photo | 0.1.x |
+| Where the file goes | Screenshots this app made go to the Trash, recoverable; a photo hung from your own folder only leaves the line | 0.1.x; written down as of **0.3.0** |
 
 ## The right-click menu
 
@@ -107,6 +109,15 @@ Every item acts on what is picked out: three photos picked and one of them right
 | Discard / Take down / Move to Trash | Off the line, and the file deleted only when it was the app's own copy | 0.1.9 |
 | Take down everything to the left / right | Clears one side; greyed out while a group is picked | 0.1.9; greyed as of 0.2.7 |
 | Take everything down | Empties the whole line | 0.2.6 |
+
+## Updates
+
+| What happens | Result | Since |
+| --- | --- | --- |
+| Twenty seconds after launch, then daily | The app asks GitHub itself; a newer build arrives as a system notification that opens the download page | **0.3.0** |
+| One notification per version | It never nags again about something you ignored | **0.3.0** |
+| The line at the top of the menu | "Picline x.y.z is available" while there is something newer | **0.3.0** |
+| "Check for Updates…" | Asks on the spot and answers: download / later / already current / no network | 0.1.x (used to open a web page); real check as of **0.3.0** |
 
 ## Taking pictures in
 
@@ -124,7 +135,7 @@ Select one or more pictures, right-click → Open With → Picline. The picture 
 ```sh
 scripts/build-picline.sh release    # universal binary (arm64 + x86_64) in build/Picline.app
 scripts/package-dmg.sh              # build/Picline-<version>.dmg
-swift test --disable-sandbox        # 88 tests
+swift test --disable-sandbox        # 95 tests
 swift scripts/check-strings.swift   # 83 strings × 11 languages
 ```
 
@@ -138,7 +149,7 @@ The Windows half has a repository of its own — [`Xinguangcuican/Picline-Window
 
 ## Install
 
-1. Download `Picline-0.2.4-win-x64.exe` (most machines) or `Picline-0.2.4-win-arm64.exe` (ARM laptops).
+1. Download `Picline-0.2.5-win-x64.exe` (most machines) or `Picline-0.2.5-win-arm64.exe` (ARM laptops).
 2. Double-click it. Nothing is installed and no registry keys are written, apart from the optional Explorer right-click entry, which can be switched off and removes its own key.
 3. SmartScreen stops the first run (unsigned): More info → Run anyway.
 
@@ -226,6 +237,7 @@ The two builds are aligned item by item, but some gestures are native to one pla
 
 The full history is in [`CHANGELOG.md`](CHANGELOG.md) (Chinese).
 
+- **0.3.0 — 2026-11-05 (macOS) / 0.2.5 (Windows)** Picline finds its own updates: a system notification, a line at the top of the menu, and a check that answers on the spot. The first run introduces itself for nine seconds. Windows stops leaving a temporary PNG behind on every drag, and taking a card down recycles the files the app made for it.
 - **0.2.9 — 2026-11-04 (macOS) / 0.2.4 (Windows)** The Windows build catches up: arrow keys page through the preview, the tray icon fades when the line is empty, launch at login, check for updates, "mark up" through Paint with the card following the save, and WebP / HEIC / AVIF loading. macOS code unchanged. The Windows build also moved to single-digit numbering — after `0.1.9` comes `0.2.0` — which puts this release at `0.2.4`.
 - **0.2.8 — 2026-11-04** An empty line no longer drops when the pointer reaches the top, so the Wi-Fi menu is no longer covered by a bare rope. With photos hanging nothing changed; the shortcut, the menu and a new screenshot still bring it down. The Windows build also got its own icon, instead of the generic system one; the tray uses a one-colour version that flips with a light or dark taskbar.
 - **0.2.7 — 2026-11-02** Bringing the line down can require a key to be held (`⌘` / `⌥` / `⌃` / `⇧`; `Ctrl` / `Alt` / `Shift` on Windows). The Windows shortcut is no longer fixed either: press a new one in the tray.   Both side items grey out while a group is picked. The Windows source now lives in this repository.

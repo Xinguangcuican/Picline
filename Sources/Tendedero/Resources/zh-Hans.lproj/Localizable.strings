@@ -96,3 +96,12 @@
 "Picline is based on Tendedero by Alejandro Buján. The upstream source code is licensed under the MIT License. Picline uses its own name and icon and is an independent modified version." = "Picline 基于 Alejandro Buján 开发的 Tendedero 修改而来。上游源代码采用 MIT 许可证。Picline 使用独立名称与图标，为独立修改版本。";
 "Upstream Project" = "上游项目";
 "The license file is unavailable in this build." = "此构建中无法读取许可证文件。";
+
+/* Updates and the first run */
+"Picline %@ is available" = "Picline %@ 有新版本了";
+"Click to see what is new" = "点一下看看改了什么";
+"Download" = "下载";
+"Later" = "以后再说";
+"You're up to date" = "已是最新版本";
+"Couldn't check for updates" = "没能检查更新";
+"Push the pointer to the top of the screen to bring it back" = "指针推到屏幕顶端，就能把它叫回来";

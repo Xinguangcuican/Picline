@@ -98,3 +98,12 @@
 "Hold ⌃ Control" = "⌃ Control を押す";
 "Hold ⇧ Shift" = "⇧ Shift を押す";
 "Send via AirDrop" = "AirDrop で送信";
+
+/* Updates and the first run */
+"Picline %@ is available" = "Picline %@ が公開されました";
+"Click to see what is new" = "クリックして新機能を見る";
+"Download" = "ダウンロード";
+"Later" = "あとで";
+"You're up to date" = "最新バージョンです";
+"Couldn't check for updates" = "アップデートを確認できませんでした";
+"Push the pointer to the top of the screen to bring it back" = "ポインタを画面の一番上に持っていくと、また出てきます";

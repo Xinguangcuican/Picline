@@ -100,3 +100,12 @@
 "Hold ⌃ Control" = "Hold ⌃ Control";
 "Hold ⇧ Shift" = "Hold ⇧ Shift";
 "Send via AirDrop" = "Send via AirDrop";
+
+/* Updates and the first run */
+"Picline %@ is available" = "Picline %@ is available";
+"Click to see what is new" = "Click to see what is new";
+"Download" = "Download";
+"Later" = "Later";
+"You're up to date" = "You're up to date";
+"Couldn't check for updates" = "Couldn't check for updates";
+"Push the pointer to the top of the screen to bring it back" = "Push the pointer to the top of the screen to bring it back";

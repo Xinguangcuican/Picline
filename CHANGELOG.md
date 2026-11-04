@@ -1,3 +1,33 @@
+## 0.3.0 — 2026-11-05
+
+会自己发现新版本了，第一次装上也终于知道自己是什么。Windows 同步到 0.2.5。
+
+### 新增
+
+- **检查更新真的去问了。** 之前菜单里那一项只是打开一个网页，等网页告诉你有没有新版 —— 只有「已经怀疑有新版本」的人才会去点。现在应用自己问 GitHub：
+  - 启动 20 秒后问一次，之后每 24 小时问一次；有新版就发一条系统通知（「Picline 0.3.1 有新版本了」，点一下打开下载页），同一个版本只提醒一次，不会每次开机都烦。
+  - 菜单栏最上面会多出一行「Picline x.y.z 有新版本了」，点它直接去下载页 —— 通知被忽略了也还能找到。
+  - 「检查更新…」改成当场问一次并给答案：有新版本就给你「下载 / 以后再说」，已经最新就说已经最新，网络不通也明说。
+  - Windows 端同样的逻辑：启动时问一次、之后每 10 分钟看一眼要不要问（实际 24 小时一次），有新版弹托盘气泡，不再需要手动点。
+- **第一次装上，绳子会自己下来介绍自己。** 从 0.2.8 起空绳不再贴顶出现，于是新装的人第一分钟什么都看不到 —— 只有一个淡掉的菜单栏图标。现在第一次运行会主动把绳子放下来 9 秒，上面写两行：截图会挂在这里；指针推到屏幕最上面，它就会下来。看过一次就不再打扰。
+  - Windows 端一样：首次启动绳子自己下来，空绳上写的那句提示多一行「指针推到屏幕最上面，它就会下来」。
+
+### 改动
+
+- **不再留垃圾。**
+  - Windows 拖一张截图出去，之前每拖一次就在 `%TEMP%\Picline\drag` 写一个新 PNG，而且从不清理；同一张拖三次就是三份。现在每张图记住自己那份，重复拖复用同一个文件。
+  - 取下卡片就是删掉它 —— 应用自己产生的文件进回收站（Windows）/ 废纸篓（Mac），可以还原；从你自己文件夹挂上来的图不在此列，取下只是离开绳子，文件原地不动。
+  - Windows 启动时顺手清掉 `%TEMP%\Picline` 里超过一周的残留（老版本留下的、或者崩溃时没来得及清的）。
+- **版本号进位**：Mac 这一版是 0.3.0 而不是 0.2.10 —— 和 Windows 同一条规则，末位满 9 进第二位。Windows 是 0.2.5。
+
+### English
+
+Picline now finds its own updates: twenty seconds after launch and once a day, asking GitHub directly instead of opening a web page and hoping. A newer release arrives as a system notification — once per version, never on every launch — and also as a line at the top of the menu bar menu. The menu's own check now answers on the spot.
+
+The first run introduces itself: the line comes down for nine seconds saying what hangs on it and how to call it back. Without that, a fresh install was a dim menu bar icon and nothing else.
+
+Temp files stop piling up. Windows used to write a new PNG into %TEMP% for every drag of the same screenshot and never remove any of them; each card now remembers its copy. Taking a card down recycles the files this app made for it — and only those; a picture hung from your own folder stays where it is.
+
 ## 0.2.9 — 2026-11-04
 
 Windows 端补齐了六件事；macOS 端代码未改。基于 0.2.8。
