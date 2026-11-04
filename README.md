@@ -144,9 +144,9 @@ swift scripts/check-strings.swift   # 83 条文案 × 11 种语言
 
 # Windows
 
-> Windows 每改一版，版本号第三位加一；满 9 就进第二位（`0.1.9` 之后是 `0.2.0`），所以永远只有三位、没有 `0.1.13` 这种两位数。这一版接着往下数，是 **0.2.4**：早先那几个两位数的版号（`0.1.10`–`0.1.13`）按同一规则现在是 `0.2.0`–`0.2.3`。
+> Windows 每改一版，版本号第三位加一；满 9 就进第二位（`0.1.9` 之后是 `0.2.0`），所以永远只有三位、没有 `0.1.13` 这种两位数。这一版接着往下数，是 **0.2.5**：早先那几个两位数的版号（`0.1.10`–`0.1.13`）按同一规则现在是 `0.2.0`–`0.2.3`。
 
-Windows 端另有独立仓库 [`Xinguangcuican/Picline-Windows`](https://github.com/Xinguangcuican/Picline-Windows)，提交历史单独可查；本仓库的 `windows/` 是它的镜像，方便一处看两端。
+Windows 端另有独立仓库 [`Xinguangcuican/Picline-Windows`](https://github.com/Xinguangcuican/Picline-Windows)，提交历史单独可查，Windows 的 exe 也在那边单独发版；本仓库的 `windows/` 是它的镜像，方便一处看两端。
 
 ## 安装
 
