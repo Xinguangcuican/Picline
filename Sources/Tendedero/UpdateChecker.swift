@@ -17,6 +17,11 @@ final class UpdateChecker {
     /// The release feed. Unauthenticated, so GitHub allows sixty requests an
     /// hour; one a day is nowhere near it.
     nonisolated static let feed = URL(string: "https://api.github.com/repos/Xinguangcuican/Picline/releases/latest")!
+    /// The same answer without the API: this URL redirects to
+    /// `/releases/tag/vX.Y.Z`, so the tag can be read off the address it lands
+    /// on. The API allows sixty requests an hour per address, which a shared
+    /// connection can use up without trying; a redirect has no such ceiling.
+    nonisolated static let latest = URL(string: "https://github.com/Xinguangcuican/Picline/releases/latest")!
     nonisolated static let page = URL(string: "https://github.com/Xinguangcuican/Picline/releases/latest")!
 
     /// The newest version that is newer than this build, once one is known.
@@ -35,6 +40,7 @@ final class UpdateChecker {
     /// Once a day, and once shortly after launch. The first check waits a
     /// little: starting up is not the moment to be doing network calls.
     func start() {
+        log.notice("update check: started, current \(Self.currentVersion, privacy: .public)")
         let last = UserDefaults.standard.object(forKey: Self.checkedAtKey) as? Date ?? .distantPast
         let waited = Date().timeIntervalSince(last)
         if waited > 6 * 3600 {
@@ -62,6 +68,56 @@ final class UpdateChecker {
     /// itself, so it never gets both an alert and a notification.
     func check(announcing: Bool, then report: ((Result<String?, Error>) -> Void)? = nil) {
         task?.cancel()
+        // The cheap way first: follow the redirect, read the tag off the end.
+        var head = URLRequest(url: Self.latest)
+        head.httpMethod = "HEAD"
+        head.timeoutInterval = 15
+        head.setValue("Picline/1", forHTTPHeaderField: "User-Agent")
+        task = URLSession.shared.dataTask(with: head) { [weak self] _, response, error in
+            let landed = (response as? HTTPURLResponse)?.url?.lastPathComponent
+            if let landed, let tag = Self.tag(inPath: landed) {
+                DispatchQueue.main.async {
+                    MainActor.assumeIsolated { self?.finish(tag: tag, announcing: announcing, report: report) }
+                }
+                return
+            }
+            // No redirect, or something that is not a tag: ask the API, which
+            // answers with the whole release but is rate limited.
+            DispatchQueue.main.async {
+                MainActor.assumeIsolated {
+                    _ = error
+                    self?.askAPI(announcing: announcing, report: report)
+                }
+            }
+        }
+        task?.resume()
+    }
+
+    /// `v0.3.0` out of `/releases/tag/v0.3.0`, or nothing.
+    nonisolated static func tag(inPath path: String) -> String? {
+        guard path.hasPrefix("v"), path.count > 1,
+              path.dropFirst().allSatisfy({ $0.isNumber || $0 == "." }) else { return nil }
+        return path
+    }
+
+    /// Everything that happens once a tag is known, whichever way it arrived.
+    private func finish(tag: String, announcing: Bool,
+                        report: ((Result<String?, Error>) -> Void)?) {
+        UserDefaults.standard.set(Date(), forKey: Self.checkedAtKey)
+        UserDefaults.standard.removeObject(forKey: "updateLastError")
+        let latest = tag.hasPrefix("v") ? String(tag.dropFirst()) : tag
+        let current = Self.currentVersion
+        log.notice("update check: latest \(latest, privacy: .public), this build \(current, privacy: .public)")
+        let found = isNewer(latest, than: current) ? latest : nil
+        newer = found
+        onChange?()
+        if announcing, let found { announce(found) }
+        report?(.success(found))
+    }
+
+    /// The API request, used when the redirect says nothing.
+    private func askAPI(announcing: Bool, report: ((Result<String?, Error>) -> Void)?) {
+        task?.cancel()
         var request = URLRequest(url: Self.feed)
         request.timeoutInterval = 15
         // GitHub answers 403 without one.
@@ -72,22 +128,23 @@ final class UpdateChecker {
             DispatchQueue.main.async {
                 MainActor.assumeIsolated {
                     if let error {
+                        // Kept where it can be looked at later: a check that
+                        // fails silently is indistinguishable from one that
+                        // never ran.
+                        UserDefaults.standard.set(error.localizedDescription,
+                                                  forKey: "updateLastError")
+                        log.error("update check: \(error.localizedDescription, privacy: .public)")
                         report?(.failure(error))
                         return
                     }
                     guard let data,
                           let tag = Self.tag(in: data) else {
+                        UserDefaults.standard.set("the answer had no tag", forKey: "updateLastError")
+                        log.error("update check: the answer had no tag_name")
                         report?(.failure(URLError(.cannotParseResponse)))
                         return
                     }
-                    UserDefaults.standard.set(Date(), forKey: Self.checkedAtKey)
-                    let latest = tag.hasPrefix("v") ? String(tag.dropFirst()) : tag
-                    let current = Self.currentVersion
-                    let found = isNewer(latest, than: current) ? latest : nil
-                    self.newer = found
-                    self.onChange?()
-                    if announcing, let found { self.announce(found) }
-                    report?(.success(found))
+                    self.finish(tag: tag, announcing: announcing, report: report)
                 }
             }
         }
