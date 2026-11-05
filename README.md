@@ -167,7 +167,7 @@ swift scripts/check-strings.swift   # 83 条文案 × 11 种语言
 
 # Windows
 
-> Windows 每改一版，版本号第三位加一；满 9 就进第二位（`0.1.9` 之后是 `0.2.0`），所以永远只有三位、没有 `0.1.13` 这种两位数。这一版接着往下数，是 **0.2.5**：早先那几个两位数的版号（`0.1.10`–`0.1.13`）按同一规则现在是 `0.2.0`–`0.2.3`。
+> Windows 每改一版，版本号第三位加一；满 9 就进第二位（`0.1.9` 之后是 `0.2.0`），所以永远只有三位、没有 `0.1.13` 这种两位数。这一版接着往下数，是 **0.2.6**：早先那几个两位数的版号（`0.1.10`–`0.1.13`）按同一规则现在是 `0.2.0`–`0.2.3`。
 
 Windows 端另有独立仓库 [`Xinguangcuican/Picline-Windows`](https://github.com/Xinguangcuican/Picline-Windows)，提交历史单独可查，Windows 的 exe 也在那边单独发版；本仓库的 `windows/` 是它的镜像，方便一处看两端。
 
@@ -304,17 +304,20 @@ Tendedero (Alejandro Buján, MIT)
 打一个 tag 推上去，编译、打包、发 Release 全部由 GitHub Actions 完成：
 
 ```sh
-git tag v0.2.9
-git push origin v0.2.9
+git tag v0.3.1
+git push origin v0.3.1
 ```
 
 1. **版本号取自 tag**，代码里的任何数字都不用改。
 2. **发布说明取自 `CHANGELOG.md`** 里对应版本的段落，末尾自动附上安装说明。
-3. **macOS 产物自动上传**；Windows 的 exe 体积小、又不需要签名，发版后手动补传一次：
+3. **macOS 产物自动上传**；Windows 的 exe 体积小、又不需要签名，先在 `picline-win` 里 `scripts/build-win.sh both` 编出来、打自己的 tag 和 Release，再手动补一份到这个 Release：
 
 ```sh
-gh release upload v0.2.8 windows/dist/Picline-0.1.10-win-*.exe \
-  windows/dist/Picline-0.2.6-win.zip
+V=0.2.6                                   # Windows 仓的版本号
+gh release upload v0.3.1 \
+  ../picline-win/dist/Picline-$V-win-x64.exe \
+  ../picline-win/dist/Picline-$V-win-arm64.exe \
+  ../picline-win/dist/Picline-$V-win.zip
 ```
 
 ## 许可
