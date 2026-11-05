@@ -1,3 +1,28 @@
+## 0.3.1 — 2026-11-06
+
+把图拖到屏幕顶部，绳子会自己下来接住。macOS 端；Windows 本版未改，仍是 0.2.5。
+
+### 新增
+
+- **拖进来也算一条收图路。** 之前绳子只能把图往外送：截图、复制、访达里「打开方式 → Picline」这三条路之外，想把一张已经躺在文件夹里的图挂上去，得先绕一圈。现在从访达按住图往屏幕顶上一拖，绳子下来接，松手就挂上。
+  - 拖进来时绳子会往下探 60 像素迎一下，落点位置画一个虚线框，告诉你松手会挂在哪；一次拖几张就挂几张，重复的仍然靠像素指纹去掉。
+  - 只认文件、TIFF、PNG，拖别的东西绳子不动。
+- **接图带只有两个菜单栏那么高。** 从屏幕顶边往下算，约 64 像素（内建刘海屏）/ 50 像素（外接屏）。早先试过 200 像素，结果拖窗口、选文字经过屏幕上方时绳子也会掉下来，比省下的那点距离烦人得多。
+- **空绳子不再白下来。** 判定从「左键按着」改成「左键按住 0.25 秒 **且指针真的移动过** 5 像素以上」：手指停在屏幕顶上不动、或者点一下菜单栏，都不算在拖东西；从访达把图拖上来，一路上早就超过这个距离了。
+
+### 改动
+
+- **空绳离开接图带就收，不再等半秒。** 绳子上没有图、也没有东西正拖过来时，指针一离开接图带，同一帧收回；绳子上有图时仍是 0.5 秒缓冲，免得你只是往下看一眼就被收走。
+- **构建脚本**：`scripts/build-picline.sh` 的 debug 分支在 `set -u` 下会因为空数组直接退出，已修（之前只有 release 走过这条路）。
+
+### English
+
+Pictures can now be dragged in. Until this version the line only handed pictures out: a screenshot, a copy, or "Open With → Picline" were the ways in. Drag a picture from Finder up to the top of the screen instead and the line comes down to take it, with a dashed outline showing where it will land. Several at once work; duplicates are still dropped by pixel fingerprint.
+
+The catching strip is two menu bars tall — about 64 points on a built-in display, 50 on an external one. A 200-point strip was tried first and pulled the line down during window drags and text selections.
+
+The empty line stays put more firmly: a press now has to be held for a quarter of a second *and* actually move five points to count as carrying a picture, so resting a finger on the top edge no longer summons it. And once nothing is hanging and nothing is on its way, the line leaves the moment the pointer leaves the strip instead of lingering half a second.
+
 ## 0.3.0 — 2026-11-05
 
 会自己发现新版本了，第一次装上也终于知道自己是什么。Windows 同步到 0.2.5。
