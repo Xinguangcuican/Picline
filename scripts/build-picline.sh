@@ -11,8 +11,8 @@ OUTPUT_DIR="${PICLINE_OUTPUT_DIR:-$PREVIEW_DIR}"
 APP="$OUTPUT_DIR/Picline.app"
 # The version normally lives here, but a release build can override it so that
 # CI derives the number from the tag instead of editing this file.
-VERSION="${PICLINE_VERSION:-0.3.0}"
-BUILD_NUMBER="${PICLINE_BUILD:-28}"
+VERSION="${PICLINE_VERSION:-0.3.1}"
+BUILD_NUMBER="${PICLINE_BUILD:-29}"
 export CLANG_MODULE_CACHE_PATH="$PREVIEW_CACHE/modules"
 export SWIFTPM_MODULECACHE_OVERRIDE="$CLANG_MODULE_CACHE_PATH"
 # Release builds are universal so the app can be handed to Intel Macs too.
@@ -20,12 +20,14 @@ ARCH_ARGS=()
 if [ "$CONFIGURATION" = release ]; then ARCH_ARGS=(--arch arm64 --arch x86_64); fi
 # The cache flags are local conveniences; CI images do not always have the
 # SwiftPM version that understands them, so CI asks for the plain form.
+# ARCH_ARGS is empty for a debug build; bash 3.2 with `set -u` treats an empty
+# array as unbound, hence the guard.
 if [ "${PICLINE_SIMPLE:-0}" = 1 ]; then
-  SWIFT_ARGS=(--disable-sandbox -c "$CONFIGURATION" "${ARCH_ARGS[@]}")
+  SWIFT_ARGS=(--disable-sandbox -c "$CONFIGURATION" ${ARCH_ARGS[@]+"${ARCH_ARGS[@]}"})
 else
   SWIFT_ARGS=(--disable-sandbox --scratch-path "$PREVIEW_DIR/swift-picline"
     --cache-path "$PREVIEW_CACHE/cache" --config-path "$PREVIEW_CACHE/config"
-    --security-path "$PREVIEW_CACHE/security" -c "$CONFIGURATION" "${ARCH_ARGS[@]}")
+    --security-path "$PREVIEW_CACHE/security" -c "$CONFIGURATION" ${ARCH_ARGS[@]+"${ARCH_ARGS[@]}"})
 fi
 swift build "${SWIFT_ARGS[@]}" --product Picline
 BIN_DIR="$(swift build "${SWIFT_ARGS[@]}" --show-bin-path)"

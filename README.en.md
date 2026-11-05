@@ -34,7 +34,7 @@ Two platforms, the same set of gestures:
 | | macOS | Windows |
 | --- | --- | --- |
 | Lives in | Menu bar icon + a line at the top of the screen | Tray icon + a line at the top of the screen |
-| Installs as | `Picline-0.3.0.dmg`, dragged into Applications | A single exe, no installer |
+| Installs as | `Picline-0.3.1.dmg`, dragged into Applications | A single exe, no installer |
 | Add to selection | `Command` | `Ctrl` |
 | Interface languages | 11, switchable | Chinese |
 
@@ -66,8 +66,8 @@ Everything is on the [Releases](https://github.com/Xinguangcuican/Picline/releas
 
 | Platform | File | Notes |
 | --- | --- | --- |
-| macOS | `Picline-0.3.0.dmg` | Universal binary: Apple silicon and Intel in one package |
-| macOS | `Picline-0.3.0.zip` | Same, for people who prefer a zip |
+| macOS | `Picline-0.3.1.dmg` | Universal binary: Apple silicon and Intel in one package |
+| macOS | `Picline-0.3.1.zip` | Same, for people who prefer a zip |
 | Windows x64 | `Picline-0.2.5-win-x64.exe` | Nearly every 64-bit Windows |
 | Windows ARM64 | `Picline-0.2.5-win-arm64.exe` | Snapdragon laptops and other ARM machines |
 | Windows | `Picline-0.2.5-win.zip` | Both exes and the readme |
@@ -80,7 +80,7 @@ Neither build is code signed. On macOS, allow it once in Privacy & Security. On 
 
 ## Install
 
-1. Open `Picline-0.3.0.dmg` and drag `Picline` into Applications.
+1. Open `Picline-0.3.1.dmg` and drag `Picline` into Applications.
 2. The first launch is blocked by Gatekeeper (no notarisation). Either allow it in System Settings → Privacy & Security, or run:
    `xattr -dr com.apple.quarantine /Applications/Picline.app`
 3. The menu bar icon appears. Tick "Hang copied images" in the menu to start collecting.
@@ -91,10 +91,11 @@ Neither build is code signed. On macOS, allow it once in Privacy & Security. On 
 | --- | --- | --- |
 | Pointer touches the menu bar | The line comes down at once, with a 0.06 s buffer so a pointer merely passing through does not pull it out | 0.1.x; instant as of 0.2.6 |
 | Hold a key, then touch the menu bar | Bring the line down → "Only with a key held", choose `⌘` / `⌥` / `⌃` / `⇧`. Without the key nothing happens | **0.2.7** |
-| An empty line stays away | With nothing hanging, touching the top does nothing, so reaching for the Wi-Fi menu is not blocked; the shortcut and the menu still open it | 0.2.8 (0.2.5–0.2.7 came down) |
+| An empty line stays away | With nothing hanging, touching the top does nothing, so reaching for the Wi-Fi menu is not blocked; the shortcut and the menu still open it. A picture being carried in is the exception: the line comes down to take it | 0.2.8 (0.2.5–0.2.7 came down) |
+| Hold the button and drag a picture up | Once the pointer is within two menu bars of the top edge (about 64 / 50 points) the line comes down, dipping to meet it; let go and the picture hangs | **0.3.1** |
 | The very first run | The line comes down by itself for nine seconds, saying what hangs on it and how to call it back | **0.3.0** |
 | Click anywhere in the menu bar | Puts it away | 0.1.x |
-| Pointer leaves for 0.5 s | Tucks itself away | 0.1.x |
+| Pointer leaves for 0.5 s | Tucks itself away; an empty line goes on the same frame instead of waiting out the half second | 0.1.x; empty line instant as of **0.3.1** |
 | `Control + Option + T` | Show / hide; change it under Shortcut → Change Shortcut | 0.1.9 |
 
 It comes down on whichever screen you touched the top of, drawn at that screen's scale. It stays out of the way over full screen apps unless you ask for it with the shortcut or the menu.
@@ -150,12 +151,14 @@ Every item acts on what is picked out: three photos picked and one of them right
 
 Select one or more pictures, right-click → Open With → Picline. The picture is copied into the app and hangs on the line. Third-party file managers that offer Open With work the same way, and you can drag pictures onto the app icon.
 
+**You can also drag them onto the line** (as of 0.3.1): hold a picture and drag it to the top of the screen. The line comes down to take it and a dashed outline shows where it will land. Several at once work. The press has to be held, the pointer has to actually move, and it has to reach within two menu bars of the top edge — which is why clicking the menu bar or resting a finger up there no longer brings the line down.
+
 ## Building from source
 
 ```sh
 scripts/build-picline.sh release    # universal binary (arm64 + x86_64) in build/Picline.app
 scripts/package-dmg.sh              # build/Picline-<version>.dmg
-swift test --disable-sandbox        # 95 tests
+swift test --disable-sandbox        # 104 tests
 swift scripts/check-strings.swift   # 83 strings × 11 languages
 ```
 
@@ -257,6 +260,7 @@ The two builds are aligned item by item, but some gestures are native to one pla
 
 The full history is in [`CHANGELOG.md`](CHANGELOG.md) (Chinese).
 
+- **0.3.1 — 2026-11-06 (macOS)** Pictures can be dragged in: hold one in Finder, drag it to the top of the screen, and the line comes down to take it, with a dashed outline showing where it will land. The catching strip is two menu bars tall, so window drags and text selections no longer summon the line. A press counts as carrying only if it is held and actually moves, and an empty line leaves the moment the pointer does.
 - **0.3.0 — 2026-11-05 (macOS) / 0.2.5 (Windows)** Picline finds its own updates: a system notification, a line at the top of the menu, and a check that answers on the spot. The first run introduces itself for nine seconds. Windows stops leaving a temporary PNG behind on every drag, and taking a card down recycles the files the app made for it.
 - **0.2.9 — 2026-11-04 (macOS) / 0.2.4 (Windows)** The Windows build catches up: arrow keys page through the preview, the tray icon fades when the line is empty, launch at login, check for updates, "mark up" through Paint with the card following the save, and WebP / HEIC / AVIF loading. macOS code unchanged. The Windows build also moved to single-digit numbering — after `0.1.9` comes `0.2.0` — which puts this release at `0.2.4`.
 - **0.2.8 — 2026-11-04** An empty line no longer drops when the pointer reaches the top, so the Wi-Fi menu is no longer covered by a bare rope. With photos hanging nothing changed; the shortcut, the menu and a new screenshot still bring it down. The Windows build also got its own icon, instead of the generic system one; the tray uses a one-colour version that flips with a light or dark taskbar.
