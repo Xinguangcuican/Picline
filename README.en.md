@@ -5,8 +5,8 @@
 <h1 align="center">Picline</h1>
 
 <p align="center">
-The clipboard remembers only the last screenshot — so hang each one on the line as you take it, then drag the ones you need away together.<br>
-A photo line at the top of the screen — and you can hang several from a folder at once.<br>
+Hang the pictures you need at the top of the screen and take them back whenever you send or edit — consecutive screenshots no longer overwrite each other: hang each as you take it, then drag one or several away together.<br>
+A photo line in the macOS menu bar — and you can hang several from a folder at once.<br>
 macOS and Windows from the same source · works on every Space · 11 interface languages
 </p>
 
