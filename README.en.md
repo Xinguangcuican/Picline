@@ -54,7 +54,7 @@ Nothing to save first, and no hopping between the window you are working in and 
 
 A folder has a batch of pictures and you need three of them for one person, or for laying out in an editor — you should not have to drag them in one at a time.
 
-Select those three in Finder and choose Open With → Picline; on Windows, select them and right-click "挂到 Picline". As many as you select is as many as get hung, and then you drag the group away as above.
+Select those three in Finder and choose Open With → Picline; on Windows, select them and right-click "挂到 Picline". You can also hold a picture and drag it to the top of the screen, where the line comes down to take it. As many as you select is as many as get hung, and then you drag the group away as above.
 
 What hangs is a copy, so the original can be moved or deleted afterwards and the card stays.
 
@@ -68,9 +68,9 @@ Everything is on the [Releases](https://github.com/Xinguangcuican/Picline/releas
 | --- | --- | --- |
 | macOS | `Picline-0.3.1.dmg` | Universal binary: Apple silicon and Intel in one package |
 | macOS | `Picline-0.3.1.zip` | Same, for people who prefer a zip |
-| Windows x64 | `Picline-0.2.5-win-x64.exe` | Nearly every 64-bit Windows |
-| Windows ARM64 | `Picline-0.2.5-win-arm64.exe` | Snapdragon laptops and other ARM machines |
-| Windows | `Picline-0.2.5-win.zip` | Both exes and the readme |
+| Windows x64 | `Picline-0.2.6-win-x64.exe` | Nearly every 64-bit Windows |
+| Windows ARM64 | `Picline-0.2.6-win-arm64.exe` | Snapdragon laptops and other ARM machines |
+| Windows | `Picline-0.2.6-win.zip` | Both exes and the readme |
 
 Neither build is code signed. On macOS, allow it once in Privacy & Security. On Windows, SmartScreen asks for "More info → Run anyway".
 
@@ -172,7 +172,7 @@ The Windows half has a repository of its own — [`Xinguangcuican/Picline-Window
 
 ## Install
 
-1. Download `Picline-0.2.5-win-x64.exe` (most machines) or `Picline-0.2.5-win-arm64.exe` (ARM laptops).
+1. Download `Picline-0.2.6-win-x64.exe` (most machines) or `Picline-0.2.6-win-arm64.exe` (ARM laptops).
 2. Double-click it. Nothing is installed and no registry keys are written, apart from the optional Explorer right-click entry, which can be switched off and removes its own key.
 3. SmartScreen stops the first run (unsigned): More info → Run anyway.
 
@@ -182,7 +182,8 @@ The Windows half has a repository of its own — [`Xinguangcuican/Picline-Window
 | --- | --- | --- |
 | Pointer rests at the very top of the screen | The line comes down (0.09 s buffer); with nothing hanging it stays away | 0.1.0; empty line ignored as of 0.2.0 |
 | Hold a key, then touch the top | Tray menu → "贴顶唤出" → no key / `Ctrl` / `Alt` / `Shift`; the choice is remembered | 0.1.8 |
-| Pointer leaves for 0.5 s | Tucks itself away | 0.1.0 |
+| Hold the button and drag a picture up | Within about 56 points of the top edge the line comes down, a dashed outline showing where it will land; let go and it hangs | **0.2.6** |
+| Pointer leaves for 0.5 s | Tucks itself away; an empty line goes at once instead of waiting out the half second | 0.1.0; empty line instant as of **0.2.6** |
 | `Ctrl + Alt + T` | Show / hide, **changeable**: tray → "快捷键：…", press the new combination (`Esc` cancels, `Delete` clears it) | 0.1.0; changeable as of 0.1.9 |
 | `Ctrl + Alt + Shift + Q` | Quit | 0.1.0 |
 
@@ -218,6 +219,7 @@ The Windows half has a repository of its own — [`Xinguangcuican/Picline-Window
 | --- | --- | --- |
 | Clipboard | DIB from screenshot tools, PNG from browsers and tools, image files copied in Explorer | 0.1.1 |
 | Explorer right-click "挂到 Picline" | Select pictures, right-click, they hang on the line; no need to start the app first (Windows 11: "Show more options") | 0.1.2 |
+| Drag a picture to the top edge | The line comes down to take it, with a dashed outline where it will land; several at once work | **0.2.6** |
 | Tray menu | Show / hide, take everything down, reveal key, Explorer entry on/off, quit | 0.1.2 |
 | Several screens and scaling | Comes down on the screen you touched, drawn at that screen's scale | 0.1.2 |
 | Full screen and single instance | Stays away over full screen apps; double-clicking twice does not make two lines | 0.1.2 |
@@ -248,7 +250,7 @@ The two builds are aligned item by item, but some gestures are native to one pla
 | AirDrop | Yes | No; copy the picture and paste it, or drag the card out |
 | Add to selection | `Command` | `Ctrl` |
 | Reveal shortcut | Editable, default `⌃⌥T` (menu bar → Shortcut → Change Shortcut) | Editable, default `Ctrl + Alt + T` (tray → 快捷键：…, press the new combination) |
-| Hanging a picture | Finder → Open With → Picline | Explorer right-click → 挂到 Picline |
+| Hanging a picture | Finder → Open With → Picline, or drag a picture to the top of the screen | Explorer right-click → 挂到 Picline, or drag one to the top of the screen (as of **0.2.6**) |
 | Interface language | 11 languages | Chinese |
 | Image formats | Anything ImageIO decodes, webp and heic included | Anything GDI+ or the system WIC decodes (webp and heic depend on the codecs installed) |
 | Virtual desktops | Works on every Space | The window does not follow a desktop switch |

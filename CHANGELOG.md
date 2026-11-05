@@ -1,6 +1,6 @@
 ## 0.3.1 — 2026-11-06
 
-把图拖到屏幕顶部，绳子会自己下来接住。macOS 端；Windows 本版未改，仍是 0.2.5。
+把图拖到屏幕顶部，绳子会自己下来接住。两端都做了：macOS 0.3.1，Windows 同步到 0.2.6。
 
 ### 新增
 
@@ -9,6 +9,7 @@
   - 只认文件、TIFF、PNG，拖别的东西绳子不动。
 - **接图带只有两个菜单栏那么高。** 从屏幕顶边往下算，约 64 像素（内建刘海屏）/ 50 像素（外接屏）。早先试过 200 像素，结果拖窗口、选文字经过屏幕上方时绳子也会掉下来，比省下的那点距离烦人得多。
 - **空绳子不再白下来。** 判定从「左键按着」改成「左键按住 0.25 秒 **且指针真的移动过** 5 像素以上」：手指停在屏幕顶上不动、或者点一下菜单栏，都不算在拖东西；从访达把图拖上来，一路上早就超过这个距离了。
+- **Windows 端同步到 0.2.6。** 从资源管理器或桌面按住图片拖到屏幕顶部约 56 像素内，绳子下来接，落点同样画虚线框，松手挂上，一次几张就挂几张；走的是 `DragAcceptFiles` + `WM_DROPFILES`，最后和「挂到 Picline」进同一个收图函数。判定与收回规则和 Mac 一致：要按住且移动过，空绳离开当帧收回。
 
 ### 改动
 
@@ -22,6 +23,8 @@ Pictures can now be dragged in. Until this version the line only handed pictures
 The catching strip is two menu bars tall — about 64 points on a built-in display, 50 on an external one. A 200-point strip was tried first and pulled the line down during window drags and text selections.
 
 The empty line stays put more firmly: a press now has to be held for a quarter of a second *and* actually move five points to count as carrying a picture, so resting a finger on the top edge no longer summons it. And once nothing is hanging and nothing is on its way, the line leaves the moment the pointer leaves the strip instead of lingering half a second.
+
+The Windows build moves to 0.2.6 with the same behaviour: hold a picture in Explorer or on the desktop and drag it within about 56 points of the top edge, and the line comes down to take it. It goes through `DragAcceptFiles` and `WM_DROPFILES` and ends in the same intake as the Explorer menu item.
 
 ## 0.3.0 — 2026-11-05
 
