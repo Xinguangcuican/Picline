@@ -5,9 +5,9 @@
 <h1 align="center">Picline</h1>
 
 <p align="center">
-Take five screenshots in a row and the clipboard keeps only the last one. Picline hangs them on a line at the top of the screen, so you pick the one you want.<br>
-A photo line in the macOS menu bar, with a sibling build for Windows.<br>
-Works on every Space · pick several out and drag them together · 11 interface languages
+The clipboard remembers only the last screenshot — so hang each one on the line as you take it, then drag the ones you need away together.<br>
+A photo line at the top of the screen — and you can hang several from a folder at once.<br>
+macOS and Windows from the same source · works on every Space · 11 interface languages
 </p>
 
 <p align="center">
@@ -34,9 +34,29 @@ Two platforms, the same set of gestures:
 | | macOS | Windows |
 | --- | --- | --- |
 | Lives in | Menu bar icon + a line at the top of the screen | Tray icon + a line at the top of the screen |
-| Installs as | `Picline-0.2.7.dmg`, dragged into Applications | A single exe, no installer |
+| Installs as | `Picline-0.3.0.dmg`, dragged into Applications | A single exe, no installer |
 | Add to selection | `Command` | `Ctrl` |
 | Interface languages | 11, switchable | Chinese |
+
+---
+
+## The two things it is for
+
+### 1. Screenshot one, hang one, drag them all away at the end
+
+The system clipboard only remembers the last picture. Take a second screenshot and the first is gone — so five screenshots in a row means saving each one, or going back to the folder to find them.
+
+Picline hangs every picture on the line at the top of the screen instead. They sit side by side, and a new one does not push out the one before it. When you are done, click the ones you want, and drag the group into WeChat, Slack, Keynote, or any window that takes pictures — drag five across and five land there.
+
+Nothing to save first, and no hopping between the window you are working in and a folder.
+
+### 2. A folder of pictures, hung several at a time
+
+A folder has a batch of pictures and you need three of them for one person, or for laying out in an editor — you should not have to drag them in one at a time.
+
+Select those three in Finder and choose Open With → Picline; on Windows, select them and right-click "挂到 Picline". As many as you select is as many as get hung, and then you drag the group away as above.
+
+What hangs is a copy, so the original can be moved or deleted afterwards and the card stays.
 
 ---
 
