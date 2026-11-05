@@ -28,6 +28,11 @@ enum Layout {
     static let ropeTop: CGFloat = 10
     static let pinAbove: CGFloat = 9.5
 
+    /// How far the line dips while a picture is being carried in. It reaches
+    /// down to meet it, which also keeps the place to let go away from the top
+    /// edge of the screen — that edge belongs to Mission Control.
+    static let catchDip: CGFloat = 60
+
     /// The rope hangs as a parabola from edge to edge of the screen.
     static func sag(width: CGFloat) -> CGFloat { min(30, width * 0.018) }
 
@@ -62,9 +67,25 @@ struct LineView: View {
             ZStack(alignment: .topLeading) {
                 Rope(width: width)
 
-                if line.items.isEmpty {
+                if line.items.isEmpty && !line.catching {
                     Hint(coaching: line.coaching)
                         .position(x: width / 2, y: Layout.ropeY(x: width / 2, width: width) + 34)
+                        .transition(.opacity)
+                }
+
+                // A picture is on its way in: show where it will hang, so it is
+                // clear the line has room for it and the button can be let go.
+                if line.catching {
+                    let slotX = Layout.x(index: line.items.count, count: line.items.count + 1,
+                                         width: width, visible: line.visibleCount, scroll: line.scroll)
+                    let ropeY = Layout.ropeY(x: min(max(slotX, 80), width - 80), width: width)
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .strokeBorder(Color.secondary.opacity(0.6),
+                                      style: StrokeStyle(lineWidth: 1.4, dash: [7, 5]))
+                        .frame(width: Layout.cardWidth, height: Layout.photoMaxHeight)
+                        .position(x: min(max(slotX, 80), width - 80),
+                                  y: ropeY - Layout.pinAbove + Layout.photoMaxHeight / 2)
+                        .allowsHitTesting(false)
                         .transition(.opacity)
                 }
 
@@ -81,13 +102,16 @@ struct LineView: View {
             }
             .animation(.spring(response: 0.55, dampingFraction: 0.78), value: line.items.map(\.id))
             .animation(.easeInOut(duration: 0.3), value: line.items.isEmpty)
+            .animation(.easeOut(duration: 0.12), value: line.catching)
             // Tucked away, the whole line waits above the top edge and slides
             // out from under the menu bar, the way an auto-hiding Dock does.
             // Coming down is quick and barely overshoots: reaching the menu
             // bar should feel like the rope was waiting there all along.
-            .offset(y: line.revealed ? 0 : -(Layout.panelHeight + 12))
+            .offset(y: line.revealed ? (line.catching ? Layout.catchDip : 0)
+                                     : -(Layout.panelHeight + 12))
             .animation(line.revealed ? .spring(response: 0.26, dampingFraction: 0.9)
                                      : .easeIn(duration: 0.2), value: line.revealed)
+            .animation(.easeOut(duration: 0.14), value: line.catching)
         }
         .onPreferenceChange(HitRectsKey.self) { rects in
             line.hitRects = rects

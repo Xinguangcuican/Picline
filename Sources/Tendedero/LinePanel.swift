@@ -4,7 +4,16 @@ import AppKit
 /// app and every Space except full screen ones, never takes focus, and lets clicks pass through
 /// everywhere except over the photos.
 final class LinePanel: NSPanel {
+    /// The layer the line is drawn on, and the thing a picture can be dropped
+    /// onto. The app delegate wires it up once, when the panel is made.
+    private(set) var surface: DropSurface
+
     init(content: NSView) {
+        // `keepOnActiveSpace` moves the contents into a fresh window when the
+        // old one is bound to a Space that is no longer showing. What it hands
+        // over is this surface, so reuse it rather than wrapping it again.
+        let existing = content as? DropSurface
+        surface = existing ?? DropSurface(frame: .zero)
         super.init(contentRect: .zero, styleMask: [.borderless, .nonactivatingPanel],
                    backing: .buffered, defer: false)
         isOpaque = false
@@ -18,7 +27,17 @@ final class LinePanel: NSPanel {
         isMovable = false
         becomesKeyOnlyIfNeeded = true
         ignoresMouseEvents = true
-        contentView = content
+        contentView = surface
+        if existing == nil {
+            content.translatesAutoresizingMaskIntoConstraints = false
+            surface.addSubview(content)
+            NSLayoutConstraint.activate([
+                content.leadingAnchor.constraint(equalTo: surface.leadingAnchor),
+                content.trailingAnchor.constraint(equalTo: surface.trailingAnchor),
+                content.topAnchor.constraint(equalTo: surface.topAnchor),
+                content.bottomAnchor.constraint(equalTo: surface.bottomAnchor),
+            ])
+        }
     }
 
     /// Two-finger swipes and the scroll wheel, for moving along a long line.

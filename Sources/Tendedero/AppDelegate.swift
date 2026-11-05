@@ -23,9 +23,13 @@ struct RevealPolicy {
     /// arriving every time you reach for the Wi-Fi menu is noise, and there is
     /// nothing on it to take. The shortcut and the menu still open it.
     var hanging: Int
+    /// The left button is down, so a drag is under way. This is the one case
+    /// an empty line does come down for: you are carrying a picture towards
+    /// the top of the screen, and the line has to be there to catch it.
+    var carrying: Bool = false
 
     var bringsTheLineDown: Bool {
-        allowed && keyHeld && !suppressed && !overFullScreen && hanging > 0
+        allowed && keyHeld && !suppressed && !overFullScreen && (hanging > 0 || carrying)
     }
 }
 
@@ -157,6 +161,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let host = NSHostingView(rootView: LineView(line: line))
         host.sizingOptions = []
         panel = LinePanel(content: host)
+        panel.surface.onDrop = { [weak self] items in self?.hang(items) }
+        panel.surface.onDragChange = { [weak self] inside in self?.line.catching = inside }
         panel.placeOnScreen()
         updateCapacity()
 
@@ -511,6 +517,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         old.orderOut(nil)
         let fresh = LinePanel(content: content ?? NSView())
         fresh.onScroll = old.onScroll
+        fresh.surface.onDrop = { [weak self] items in self?.hang(items) }
+        fresh.surface.onDragChange = { [weak self] inside in self?.line.catching = inside }
         fresh.setFrame(old.frame, display: false)
         fresh.ignoresMouseEvents = old.ignoresMouseEvents
         fresh.alphaValue = old.alphaValue
@@ -605,6 +613,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         return NSRect(x: screen.frame.minX, y: screen.frame.maxY - h, width: screen.frame.width, height: h)
     }
 
+    /// How far below the top edge a picture on its way in brings the line
+    /// down, in menu bars. Two is enough to let go short of the top edge,
+    /// which is what asks the system for Mission Control, and narrow enough
+    /// that ordinary work near the top does not keep pulling the line out.
+    /// A wide band is not free: it catches window drags and text selections
+    /// too, and a line that appears while you are doing something else is
+    /// worse than one you have to reach a little further for.
+    private static let carryBand: CGFloat = 2
+
+    static func catchBand(of screen: NSScreen) -> NSRect {
+        let h = menuBarBand(of: screen).height * carryBand
+        return NSRect(x: screen.frame.minX, y: screen.frame.maxY - h,
+                      width: screen.frame.width, height: h)
+    }
+
     /// A click anywhere in the top bar of any screen, a menu or an icon, puts the line away.
     private func watchMenuBarClicks() {
         let handler: (NSEvent?) -> Void = { [weak self] _ in
@@ -630,13 +653,61 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     /// How long the cursor is away before the line tucks back up.
     private static let retractDelay: TimeInterval = 0.5
 
+    /// How long the button has to stay down before a press counts as carrying
+    /// something. A click in the menu bar is a press too, and one click should
+    /// not bring the line down; a picture dragged up from Finder has been held
+    /// for far longer than this by the time it arrives.
+    nonisolated static let pressHold: TimeInterval = 0.25
+
+    /// How far the pointer has to travel while the button is down before the
+    /// press counts as carrying. Holding still is not a drag: a finger resting
+    /// on the top edge has nothing to hang, and a line that appears for it
+    /// would be in the way. A picture carried up from Finder crosses dozens of
+    /// pixels on the way, so it clears this without anyone trying.
+    nonisolated static let pressTravel: CGFloat = 5
+
+    /// Whether the button has been down long enough, and moved far enough, to
+    /// count as a drag. The clock starts when the button goes down, not when
+    /// the pointer reaches the top, so a picture dragged up from Finder
+    /// already qualifies.
+    nonisolated static func carrying(buttonDown: Bool, since: Date?, travel: CGFloat,
+                                     at now: Date) -> Bool {
+        guard buttonDown, let since else { return false }
+        return now.timeIntervalSince(since) >= pressHold && travel >= pressTravel
+    }
+    /// When the button went down, and how far the pointer has moved since.
+    private var pressSince: Date?
+    private var pressTravelSoFar: CGFloat = 0
+    /// Where the pointer was on the last frame, for the travel above.
+    private var lastPointer: NSPoint?
+
     private func tick() {
         let mouse = NSEvent.mouseLocation
         let now = Date()
+        let down = NSEvent.pressedMouseButtons != 0
+        if down {
+            if pressSince == nil {
+                pressSince = now
+                pressTravelSoFar = 0
+            } else if let last = lastPointer {
+                pressTravelSoFar += hypot(mouse.x - last.x, mouse.y - last.y)
+            }
+        } else {
+            pressSince = nil
+            pressTravelSoFar = 0
+        }
+        lastPointer = mouse
+        let carrying = Self.carrying(buttonDown: down, since: pressSince,
+                                     travel: pressTravelSoFar, at: now)
 
         let screenUnderPointer = NSScreen.screens.first { NSMouseInRect(mouse, $0.frame, false) }
         let inMenuBar = screenUnderPointer.map { NSMouseInRect(mouse, Self.menuBarBand(of: $0), false) } ?? false
         if !inMenuBar { menuBarSuppressed = false }
+
+        // A picture on its way in brings the line down before the pointer
+        // reaches the top edge, because the top edge is the system's.
+        let inReach = inMenuBar
+            || (carrying && screenUnderPointer.map { NSMouseInRect(mouse, Self.catchBand(of: $0), false) } ?? false)
 
         guard isRevealed else {
             // Landing in the menu bar brings the line down on that screen
@@ -645,17 +716,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             // the way somewhere else does not pull it out.
             // A click in the menu bar puts it away for as long as the cursor
             // stays up there, so reaching for a menu leaves nothing hanging.
+            // A picture being dragged in is the exception: the button is down,
+            // the pointer is at the top, and there is somewhere for it to go,
+            // so the line comes down even when it is empty.
             let policy = RevealPolicy(
                 allowed: Self.opensFromMenuBar,
                 keyHeld: Self.revealKey.isHeld,
                 suppressed: menuBarSuppressed,
                 overFullScreen: screenUnderPointer.map { FullScreen.blocksLine(on: $0) } ?? false,
-                hanging: line.liveCount)
-            if let screen = screenUnderPointer, inMenuBar, policy.bringsTheLineDown {
+                hanging: line.liveCount,
+                carrying: carrying)
+            if let screen = screenUnderPointer, inReach, policy.bringsTheLineDown {
                 let since = hotZoneSince ?? now
                 hotZoneSince = since
                 if now.timeIntervalSince(since) >= Self.revealDelay {
                     hotZoneSince = nil
+                    if carrying && line.liveCount == 0 {
+                        log.notice("A picture is being carried in; bringing the empty line down")
+                    }
                     if panel.screen != screen || !isPresent {
                         panel.placeOnScreen(screen)
                         updateCapacity()
@@ -669,19 +747,29 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             return
         }
 
-        updateMousePassThrough(mouse)
+        updateMousePassThrough(mouse, carrying: carrying)
 
         // The line's zone runs from its lowest point up to the top of the
-        // screen, menu bar included, so moving up never hides it.
+        // screen, menu bar included, so moving up never hides it. An empty
+        // line is the exception: it came down for a picture that is on its
+        // way in, so the strip that called it down is the whole of its zone.
         var zone = panel.frame
         if let screen = panel.screen { zone.size.height = screen.frame.maxY - zone.minY }
-        let inside = NSMouseInRect(mouse, zone, false)
+        let empty = line.liveCount == 0
+        if empty, let screen = panel.screen { zone = Self.catchBand(of: screen) }
+        let inside = NSMouseInRect(mouse, zone, false) || (empty && line.catching)
         if inside && pinned { pinned = false }
 
         let busy = pinned || GrabView.isDragging || GrabView.isShowingMenu
             || line.pressedID != nil || now < peekUntil
         if inside || busy {
             awaySince = nil
+        } else if empty {
+            // Nothing on the line and nothing being carried towards it: there
+            // is nothing to wait for, so it goes away on this very frame
+            // instead of hovering over whatever the user is doing underneath.
+            awaySince = nil
+            setRevealed(false)
         } else {
             let since = awaySince ?? now
             awaySince = since
@@ -694,12 +782,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     /// The panel spans the whole width of the screen, so it only accepts the
     /// mouse while the cursor is over a photo. Everywhere else, clicks go to
-    /// whatever is underneath.
-    private func updateMousePassThrough(_ mouse: NSPoint) {
+    /// whatever is underneath. The one exception is a drag in progress: then
+    /// the whole strip takes the mouse, because a picture on its way in has to
+    /// land somewhere between the photos as well as on one.
+    private func updateMousePassThrough(_ mouse: NSPoint, carrying: Bool) {
         guard !GrabView.isDragging else { return }
         let local = panel.convertPoint(fromScreen: mouse)
         let flipped = CGPoint(x: local.x, y: panel.frame.height - local.y)
-        var overPhoto = line.hitRects.values.contains { $0.insetBy(dx: -4, dy: -4).contains(flipped) }
+        let overStrip = carrying && NSMouseInRect(mouse, panel.frame, false)
+        var overPhoto = overStrip
+            || line.hitRects.values.contains { $0.insetBy(dx: -4, dy: -4).contains(flipped) }
         // A line longer than the screen also takes the band the photos hang
         // in, gaps included, so a swipe anywhere along it moves it.
         if !overPhoto, line.items.count > line.visibleCount, Line.keepOnLine != nil {
@@ -1092,6 +1184,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
         inputs.forEach(receiver.receive)
         sender.reply(toOpenOrPrint: .success)
+    }
+
+    /// A picture dropped on the line with the mouse. It goes through the same
+    /// intake as a copy, so it is hung as a snapshot: the original file can be
+    /// moved or deleted afterwards without losing the card. Several at once
+    /// hang as several, in the order they were dragged.
+    private func hang(_ items: [NSPasteboardItem]) {
+        let inputs = ClipboardWatcher.inputs(from: items)
+        log.notice("Dropped \(items.count, privacy: .public) item(s) on the line, \(inputs.count, privacy: .public) to hang")
+        guard !inputs.isEmpty else { return }
+        inputs.forEach(receiver.receive)
     }
 
     // MARK: Quick Look

@@ -50,6 +50,10 @@ final class Line: ObservableObject {
     /// back once it slips away again.
     @Published var coaching = false
 
+    /// Set while a picture is being dragged over the line: it then shows the
+    /// place the picture will land, so it is clear it can be let go here.
+    @Published var catching = false
+
     /// Card frames in window coordinates, reported by the views. The panel
     /// uses them to only catch clicks over photos and let the rest through.
     var hitRects: [UUID: CGRect] = [:]
