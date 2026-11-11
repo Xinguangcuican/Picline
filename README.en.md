@@ -27,14 +27,14 @@ macOS 14+ · Windows 10 / 11 · free and open source
 
 ## What this is
 
-Picline is a fork of [Tendedero](https://github.com/alejandrobujan/tendedero) by Alejandro Buján. The Picline branch (by 老张) strengthened how pictures are taken in: it reads third-party screenshot tools off the clipboard, merges duplicates across sources, and lets you choose which app opens a picture. This repository fixed the multi-Space bug and added AirDrop, press-and-hold Quick Look, a Finder entry, and picking several photos out to use them together.
+Picline is a fork of [Tendedero](https://github.com/alejandrobujan/tendedero) by Alejandro Buján. The Picline branch (by 老张) strengthened how pictures are taken in: it reads third-party screenshot tools off the clipboard, merges duplicates across sources, and lets you choose which app opens a picture. This repository fixed the multi-Space bug, taught the line to stay quiet inside Mission Control, and added AirDrop, press-and-hold Quick Look, a Finder entry, and picking several photos out to use them together.
 
 Two platforms, the same set of gestures:
 
 | | macOS | Windows |
 | --- | --- | --- |
 | Lives in | Menu bar icon + a line at the top of the screen | Tray icon + a line at the top of the screen |
-| Installs as | `Picline-0.3.1.dmg`, dragged into Applications | A single exe, no installer |
+| Installs as | `Picline-0.3.2.dmg`, dragged into Applications | A single exe, no installer |
 | Add to selection | `Command` | `Ctrl` |
 | Interface languages | 11, switchable | Chinese |
 
@@ -66,8 +66,8 @@ Everything is on the [Releases](https://github.com/Xinguangcuican/Picline/releas
 
 | Platform | File | Notes |
 | --- | --- | --- |
-| macOS | `Picline-0.3.1.dmg` | Universal binary: Apple silicon and Intel in one package |
-| macOS | `Picline-0.3.1.zip` | Same, for people who prefer a zip |
+| macOS | `Picline-0.3.2.dmg` | Universal binary: Apple silicon and Intel in one package |
+| macOS | `Picline-0.3.2.zip` | Same, for people who prefer a zip |
 | Windows x64 | `Picline-0.2.6-win-x64.exe` | Nearly every 64-bit Windows |
 | Windows ARM64 | `Picline-0.2.6-win-arm64.exe` | Snapdragon laptops and other ARM machines |
 | Windows | `Picline-0.2.6-win.zip` | Both exes and the readme |
@@ -80,7 +80,7 @@ Neither build is code signed. On macOS, allow it once in Privacy & Security. On 
 
 ## Install
 
-1. Open `Picline-0.3.1.dmg` and drag `Picline` into Applications.
+1. Open `Picline-0.3.2.dmg` and drag `Picline` into Applications.
 2. The first launch is blocked by Gatekeeper (no notarisation). Either allow it in System Settings → Privacy & Security, or run:
    `xattr -dr com.apple.quarantine /Applications/Picline.app`
 3. The menu bar icon appears. Tick "Hang copied images" in the menu to start collecting.
@@ -169,6 +169,8 @@ swift scripts/check-strings.swift   # 83 strings × 11 languages
 > Every Windows release adds one to the last number, and carries into the middle one at 9 — `0.1.9` is followed by `0.2.0`, so nothing is ever as wide as `0.1.13`. Counting that way, this release is **0.2.5**; the four two-digit numbers before it (`0.1.10`–`0.1.13`) are `0.2.0`–`0.2.3`.
 
 The Windows half has a repository of its own — [`Xinguangcuican/Picline-Windows`](https://github.com/Xinguangcuican/Picline-Windows) — where its history can be read on its own and where the Windows builds get their own releases. `windows/` here is a mirror of it.
+
+The two version numbers move independently: macOS is on **0.3.2**, Windows on **0.2.6**. 0.3.2 only touched the Mac side (Mission Control, narrower hover zone) and left the Windows line unchanged, so it stays at 0.2.6; the last version that moved both was 0.3.1 / 0.2.6 (dragging pictures in).
 
 ## Install
 
@@ -262,6 +264,7 @@ The two builds are aligned item by item, but some gestures are native to one pla
 
 The full history is in [`CHANGELOG.md`](CHANGELOG.md) (Chinese).
 
+- **0.3.2 — 2026-11-11 (macOS only, Windows stays 0.2.6)** The line no longer comes down inside Mission Control, App Exposé or Launchpad, where dragging a window to another desktop is the same held-button-crossing-the-top-edge gesture as carrying a picture up, and the drop belongs to the spaces bar rather than to the line. The hover zone also shrinks from the whole menu bar to a 320-point strip in the middle, wider than the notch, which hands the Apple menu, the app menus, Control Centre, the battery, Wi-Fi and the clock back to the system. Dragging a picture in still uses the full width.
 - **0.3.1 — 2026-11-06 (macOS)** Pictures can be dragged in: hold one in Finder, drag it to the top of the screen, and the line comes down to take it, with a dashed outline showing where it will land. The catching strip is two menu bars tall, so window drags and text selections no longer summon the line. A press counts as carrying only if it is held and actually moves, and an empty line leaves the moment the pointer does.
 - **0.3.0 — 2026-11-05 (macOS) / 0.2.5 (Windows)** Picline finds its own updates: a system notification, a line at the top of the menu, and a check that answers on the spot. The first run introduces itself for nine seconds. Windows stops leaving a temporary PNG behind on every drag, and taking a card down recycles the files the app made for it.
 - **0.2.9 — 2026-11-04 (macOS) / 0.2.4 (Windows)** The Windows build catches up: arrow keys page through the preview, the tray icon fades when the line is empty, launch at login, check for updates, "mark up" through Paint with the card following the save, and WebP / HEIC / AVIF loading. macOS code unchanged. The Windows build also moved to single-digit numbering — after `0.1.9` comes `0.2.0` — which puts this release at `0.2.4`.

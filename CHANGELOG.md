@@ -1,3 +1,29 @@
+## 0.3.2 — 2026-11-11
+
+调度中心里不再乱动，顶部唤出区也收窄到了中间。只动 macOS，Windows 仍是 0.2.6。
+
+### 修复
+
+- **调度中心、应用窗口、启动台里，绳子一律不降。** 在这类界面里把一个窗口拖去另一个桌面，动作本身就是「左键按住 + 指针越过屏幕顶边」，和「拖一张图上来挂」长得一模一样，之前绳子会误降，把本该交给 spaces bar 的松手接走了。现在只要这类界面开着，无论绳子上有没有图、指针在不在顶上，都不下来；已经展开的会当帧收回，并清掉「正在搬运」的残留状态。
+  - 判定方式是看 Dock 是否在每块屏幕上都有一个覆盖整屏的窗口。实测调度中心打开时，前台 App、菜单栏归属、space 模式全都不变，只有这一项会变——之前按前台 App 判断的思路是错的。
+  - 顺带覆盖了 App Exposé 与启动台，它们走同一个判定。
+- **顶部唤出区只留中间 320 像素。** 之前指针停在菜单栏任意位置都会把绳子叫下来，等于跟苹果菜单、编辑／查看／窗口／帮助、控制中心、电池、Wi-Fi、时钟抢地方。现在只有屏幕正中一条 320 像素宽（比刘海略宽）、一个菜单栏高的区域会唤出，左右两端完整还给系统。
+  - 拖图接入仍是**全宽**：这一条没收窄，否则把图拖到屏幕右侧就挂不上去了。拖拽本来也不跟菜单栏抢点击。
+  - 外接屏没有刘海，也用同一个 320 像素常数，内置屏与外接屏手感一致，不需要两套分支。
+
+### 改动
+
+- **点击抑制的复位仍按整条菜单栏算。** 在顶栏点一下会把绳子收走并标记「别烦我」，这个状态如果在指针离开 320 像素区时不清，点了左边的苹果菜单再往右移，绳子就再也不出来了。所以触发区收窄、抑制范围没收窄。
+- 绳子展开之后的「留住区」也没收窄，仍是从绳底到屏幕顶的整屏宽，不会出现「拉下来之后往左移一点就被收走」。
+
+### English
+
+The line now stays away while Mission Control, App Exposé or Launchpad is up. Dragging a window to another desktop is, as far as the pointer is concerned, the same gesture as carrying a picture to the line — a held button crossing the top edge — so the line used to come down and take a drop that belonged to the spaces bar. It now stays put whenever one of those overviews is open, whatever is hanging, and an expanded line retreats on the same frame. The check looks for a Dock-owned window covering a whole screen: the frontmost app, the menu bar owner and the space mode all stay unchanged in Mission Control, so none of them were usable.
+
+The hover zone is now a 320-point strip in the middle of the menu bar, one menu bar tall. Resting the pointer over the Apple menu, the app menus, Control Centre, the battery, Wi-Fi or the clock is left to the system, and the ends of the bar are clickable again. Dragging a picture in still uses the full width, so a picture picked up at the far right of the screen still lands. External displays have no notch and use the same 320-point constant, so both kinds of screen feel alike.
+
+Only the Mac moves in this version; Windows stays at 0.2.6.
+
 ## 0.3.1 — 2026-11-06
 
 把图拖到屏幕顶部，绳子会自己下来接住。两端都做了：macOS 0.3.1，Windows 同步到 0.2.6。
