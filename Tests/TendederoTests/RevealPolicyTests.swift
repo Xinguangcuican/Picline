@@ -62,6 +62,32 @@ final class RevealPolicyTests: XCTestCase {
         XCTAssertFalse(policy.bringsTheLineDown)
     }
 
+    // MARK: Overviews
+
+    /// Mission Control, App Exposé and Launchpad belong to the Dock while they
+    /// are up: the pointer at the top of the screen is working the spaces bar,
+    /// and a window dragged towards another Space crosses the band a picture
+    /// would. Whatever is hanging, the line stays away.
+    func testAnOverviewKeepsItAway() {
+        var policy = ready()
+        policy.overview = true
+        XCTAssertFalse(policy.bringsTheLineDown)
+    }
+
+    /// Including the one case the line normally makes an exception for: a
+    /// picture carried towards an empty line.
+    func testAnOverviewKeepsAnEmptyLineAwayWhileCarrying() {
+        var policy = ready(hanging: 0, carrying: true)
+        policy.overview = true
+        XCTAssertFalse(policy.bringsTheLineDown)
+    }
+
+    /// The overview is the only thing holding it back: take that away and the
+    /// same state brings the line down again.
+    func testWithNoOverviewItComesDownAgain() {
+        XCTAssertTrue(ready(carrying: true).bringsTheLineDown)
+    }
+
     // MARK: Press and hold
 
     /// A click is a press too. It must not count as carrying anything, or the

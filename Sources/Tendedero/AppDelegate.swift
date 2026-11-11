@@ -27,9 +27,14 @@ struct RevealPolicy {
     /// an empty line does come down for: you are carrying a picture towards
     /// the top of the screen, and the line has to be there to catch it.
     var carrying: Bool = false
+    /// Mission Control, App Exposé or Launchpad owns the screen. The pointer at
+    /// the top is theirs, and a window dragged towards the spaces bar passes
+    /// through the band a picture would, so the line stays out of it.
+    var overview: Bool = false
 
     var bringsTheLineDown: Bool {
-        allowed && keyHeld && !suppressed && !overFullScreen && (hanging > 0 || carrying)
+        allowed && keyHeld && !suppressed && !overFullScreen && !overview
+            && (hanging > 0 || carrying)
     }
 }
 
@@ -628,6 +633,29 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                       width: screen.frame.width, height: h)
     }
 
+    /// How wide the strip that answers a resting pointer is. The menu bar is
+    /// not free space: the app menus own its left end, the status items its
+    /// right end, and both are clicked all day long. What is left over is the
+    /// middle — the notch and a little either side of it. 320 points clears
+    /// the ~200 point notch on a built-in screen and still keeps well away
+    /// from both ends.
+    nonisolated static let hotWidth: CGFloat = 320
+
+    /// The strip at the top of a screen that a resting pointer may bring the
+    /// line down from: the middle of the menu bar, from the top edge down.
+    /// Everything outside it — the Apple menu, the app menus, the clock, the
+    /// status items — is left for the system to answer.
+    static func hotZone(of screen: NSScreen) -> NSRect {
+        hotZone(in: screen.frame, menuBarHeight: menuBarBand(of: screen).height)
+    }
+
+    /// Split out from the screen so the arithmetic can be checked without one.
+    nonisolated static func hotZone(in frame: NSRect, menuBarHeight: CGFloat) -> NSRect {
+        let width = min(hotWidth, frame.width)
+        return NSRect(x: frame.midX - width / 2, y: frame.maxY - menuBarHeight,
+                      width: width, height: menuBarHeight)
+    }
+
     /// A click anywhere in the top bar of any screen, a menu or an icon, puts the line away.
     private func watchMenuBarClicks() {
         let handler: (NSEvent?) -> Void = { [weak self] _ in
@@ -704,10 +732,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let inMenuBar = screenUnderPointer.map { NSMouseInRect(mouse, Self.menuBarBand(of: $0), false) } ?? false
         if !inMenuBar { menuBarSuppressed = false }
 
+        // A click in the menu bar also has to be able to cancel the line from
+        // the ends, so the suppression above stays tied to the whole bar. What
+        // moved to the middle is the *trigger*: the Apple menu and the status
+        // items are clicked all day, and a rope arriving over them takes the
+        // click that was meant for the Wi-Fi menu.
+        let inHotZone = screenUnderPointer.map { NSMouseInRect(mouse, Self.hotZone(of: $0), false) } ?? false
+
         // A picture on its way in brings the line down before the pointer
-        // reaches the top edge, because the top edge is the system's.
-        let inReach = inMenuBar
+        // reaches the top edge, because the top edge is the system's. That one
+        // keeps the full width: a picture dragged up from the right hand side
+        // of the screen has to be able to hang too, and dragging is not the
+        // gesture the menu bar fights with.
+        let inReach = inHotZone
             || (carrying && screenUnderPointer.map { NSMouseInRect(mouse, Self.catchBand(of: $0), false) } ?? false)
+
+        // An overview takes the top of the screen away from everyone else: the
+        // pointer up there is working the spaces bar, and a window on its way
+        // to another Space crosses the same band a picture would. Asked for only
+        // when the answer can change something, since it reads the window list.
+        let overview = (inReach || isRevealed) && Overview.isUp(now: now)
 
         guard isRevealed else {
             // Landing in the menu bar brings the line down on that screen
@@ -725,7 +769,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 suppressed: menuBarSuppressed,
                 overFullScreen: screenUnderPointer.map { FullScreen.blocksLine(on: $0) } ?? false,
                 hanging: line.liveCount,
-                carrying: carrying)
+                carrying: carrying,
+                overview: overview)
             if let screen = screenUnderPointer, inReach, policy.bringsTheLineDown {
                 let since = hotZoneSince ?? now
                 hotZoneSince = since
@@ -749,6 +794,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
         updateMousePassThrough(mouse, carrying: carrying)
 
+        // Nothing the line offers is wanted in an overview, and hanging over
+        // the spaces bar it takes the drops meant for another Space. It goes
+        // away at once. The press is forgotten with it: the button is still
+        // down from dragging a window around in there, and leaving the overview
+        // must not read as a picture arriving.
+        if overview {
+            awaySince = nil
+            pressSince = nil
+            pressTravelSoFar = 0
+            if isRevealed { log.notice("An overview is up; the line gets out of the way") }
+            setRevealed(false)
+            return
+        }
         // The line's zone runs from its lowest point up to the top of the
         // screen, menu bar included, so moving up never hides it. An empty
         // line is the exception: it came down for a picture that is on its
