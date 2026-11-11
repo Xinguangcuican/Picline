@@ -285,19 +285,26 @@ An `NSPanel` with `canJoinAllSpaces` can get pinned to one Space for good after 
 
 ```
 Tendedero (Alejandro Buján, MIT)
-  └── Picline 0.1.9 (老张: clipboard and intake)
-        └── Picline 0.2.0 (multi-Space fix)
-              ├── Picline 0.2.1 (AirDrop, press-and-hold Quick Look)
-              │     └── Picline 0.2.2 (release pipeline check, same as 0.2.1)
-              │           └── Picline 0.2.3 (Finder service)
-              │                 └── Picline 0.2.4 (Open With instead of Services)
-              │                       └── Picline 0.2.5 (an empty line comes down)
-              │                             └── Picline 0.2.6 (pick several, act on all)
-              │                                   └── Picline 0.2.7 (reveal can require a key)
-              │                                         └── Picline 0.2.8 (an empty line stays away)
-              │                                               └── Picline 0.2.9 (the Windows build catches up)
-              └── Picline for Windows 0.1.x (Rust + Win32, aligned with macOS)
+└─ Picline 0.1.9 (老张: clipboard and intake)
+   └─ Picline 0.2.0 (fix: multi-Space, upstream issue #80)
+      ├─ 0.2.1 (new: AirDrop, press-and-hold Quick Look)
+      ├─ 0.2.2 (check: release pipeline, otherwise identical to 0.2.1)
+      ├─ 0.2.3 (new: Finder Services entry; intake fixes)
+      ├─ 0.2.4 (change: Open With instead of Services)
+      ├─ 0.2.5 (new: an empty line comes down too)
+      ├─ 0.2.6 (new: click to pick, ⇧ to extend, ⌘ to add; group drag and group menus)
+      ├─ 0.2.7 (new: the reveal can require a held key; rebindable shortcut)
+      ├─ 0.2.8 (change: an empty line no longer sits at the top edge)
+      ├─ 0.2.9 (the Windows build catches up; macOS untouched)
+      ├─ 0.3.0 (new: the app asks GitHub for updates; a first-run introduction)
+      ├─ 0.3.1 (new: drag a picture to the top edge and it hangs; change: a two-menu-bar catching strip)
+      ├─ 0.3.2 (fix: no line inside Mission Control, App Exposé or Launchpad; change: the hover zone is the middle 320 points)
+      │
+      └─ Picline for Windows: 0.1.0 → 0.2.6 (17th build)
+            Rust + Win32, its own repository, the same gestures as macOS; 0.2.6 is the Windows half of 0.3.1
 ```
+
+Within a tier the versions run downwards in time. The earlier detail lives in [`CHANGELOG.md`](CHANGELOG.md) (Chinese), one section per version, each split into new / changed / fixed.
 
 This repository only adds features and the multi-Space fix. The names and icons are not covered by the MIT licence; see [`NOTICE`](NOTICE).
 
