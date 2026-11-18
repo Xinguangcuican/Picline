@@ -170,6 +170,73 @@ final class Line: ObservableObject {
         targets(including: id)
     }
 
+    // MARK: Rearranging
+
+    /// The photo being carried along the line, and how far it has travelled
+    /// from its slot so it stays under the pointer. A press that only moves
+    /// sideways rearranges; one that leaves the line carries the files to
+    /// another app.
+    @Published var sortingID: UUID?
+    @Published var sortShift: CGFloat = 0
+    /// The width the line is drawn at. The views report it, so the move can
+    /// work out where a slot is without asking a window.
+    var lineWidth: CGFloat = 0
+    /// The order before the carry started. Leaving the line puts it back:
+    /// taking a photo away should not silently shuffle the ones left behind.
+    private var sortOrigin: [Pegged]?
+
+    func beginSort(_ id: UUID) {
+        guard sortOrigin == nil, !items.contains(where: { $0.falling }),
+              items.contains(where: { $0.id == id }) else { return }
+        sortOrigin = items
+        sortingID = id
+        sortShift = 0
+    }
+
+    /// The pointer has moved: the other cards make room, and this one stays
+    /// under the pointer. Everything picked out travels as one block.
+    func sort(_ id: UUID, toX x: CGFloat) {
+        guard sortingID == id, lineWidth > 0 else { return }
+        let moving = targets(including: id)
+        guard !moving.isEmpty else { return }
+        let movingIDs = Set(moving.map(\.id))
+        let rest = items.filter { !movingIDs.contains($0.id) }
+
+        // The block goes before the first card whose centre the pointer has
+        // not yet passed.
+        var insert = rest.count
+        for (i, other) in rest.enumerated() where !other.falling {
+            let centre = Layout.x(index: i, count: items.count, width: lineWidth,
+                                  visible: visibleCount, scroll: scroll)
+            if x < centre { insert = i; break }
+        }
+        var next = rest
+        next.insert(contentsOf: moving, at: min(insert, rest.count))
+        if next.map(\.id) != items.map(\.id) {
+            items = next
+            save()
+        }
+        if let i = items.firstIndex(where: { $0.id == id }) {
+            let slot = Layout.x(index: i, count: items.count, width: lineWidth,
+                                visible: visibleCount, scroll: scroll)
+            sortShift = x - slot
+        }
+    }
+
+    /// The button came up. `keeping` is false when the pointer left the line
+    /// and the drag went on to another app, in which case the order goes back
+    /// to what it was.
+    func endSort(_ id: UUID, keeping: Bool) {
+        guard sortingID == id else { return }
+        if !keeping, let origin = sortOrigin, origin.map(\.id) != items.map(\.id) {
+            items = origin
+            save()
+        }
+        sortOrigin = nil
+        sortingID = nil
+        sortShift = 0
+    }
+
     private func forgetSelection(_ id: UUID) {
         if anchorID == id { anchorID = nil }
         selection.remove(id)

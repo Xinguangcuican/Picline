@@ -4,7 +4,8 @@ import SwiftUI
 /// Bridges each photo to AppKit's drag and drop, so it can be dragged into
 /// any app as a real file. Each destination means one thing:
 ///
-/// - An app gets a copy, and the photo stays on the line.
+/// - An app gets a copy, and the photo stays on the line: the same picture is
+///   often sent to several people, or used in a message and an editor both.
 /// - A folder or the Desktop keeps the file, and the photo leaves the line.
 /// - The Trash discards it.
 /// - Nowhere that accepts it: the photo flies back to the line.
@@ -57,6 +58,11 @@ struct GrabArea: NSViewRepresentable {
         view.onForceClick = { line.quickLook(id) }
         view.onMiddleClick = { line.markup(id) }
         view.onPressChange = { pressed in line.pressedID = pressed ? id : nil }
+        // Moving sideways along the line changes the order; leaving the line
+        // turns the same press into a drag to another app.
+        view.onSortBegin = { line.beginSort(id) }
+        view.onSortMove = { x in line.sort(id, toX: x) }
+        view.onSortEnd = { keeping in line.endSort(id, keeping: keeping) }
         view.menuProvider = { CardMenu.make(for: item, on: line) }
     }
 }
@@ -153,10 +159,18 @@ final class GrabView: NSView, NSDraggingSource {
     var onForceClick: @MainActor () -> Void = {}
     var onMiddleClick: @MainActor () -> Void = {}
     var onPressChange: @MainActor (Bool) -> Void = { _ in }
+    /// The press started moving sideways along the line: the photo changes
+    /// place instead of being dragged off to another app.
+    var onSortBegin: @MainActor () -> Void = {}
+    var onSortMove: @MainActor (CGFloat) -> Void = { _ in }
+    /// The order stays (`true`) or goes back to what it was (`false`).
+    var onSortEnd: @MainActor (Bool) -> Void = { _ in }
     var menuProvider: @MainActor () -> NSMenu = { NSMenu() }
 
     private var downPoint: NSPoint?
     private var startedDrag = false
+    /// The photo is being moved along the line rather than dragged away.
+    private var sorting = false
     private var holdTimer: Timer?
     private var didLongPress = false
 
@@ -193,12 +207,13 @@ final class GrabView: NSView, NSDraggingSource {
         onPress(event.modifierFlags.contains(.shift), event.modifierFlags.contains(.command))
         downPoint = event.locationInWindow
         startedDrag = false
+        sorting = false
         didLongPress = false
         onPressChange(true)
         holdTimer?.invalidate()
         holdTimer = Timer.scheduledTimer(withTimeInterval: Self.holdDuration, repeats: false) { [weak self] _ in
             MainActor.assumeIsolated {
-                guard let self, self.downPoint != nil, !self.startedDrag else { return }
+                guard let self, self.downPoint != nil, !self.startedDrag, !self.sorting else { return }
                 self.didLongPress = true
                 self.onPressChange(false)
                 self.onLongPress()
@@ -209,7 +224,7 @@ final class GrabView: NSView, NSDraggingSource {
     /// A force click on a trackpad opens Quick Look, as it does in Finder.
     /// It counts instead of the click and of a long press.
     override func pressureChange(with event: NSEvent) {
-        guard event.stage == 2, downPoint != nil, !startedDrag, !didLongPress else { return }
+        guard event.stage == 2, downPoint != nil, !startedDrag, !sorting, !didLongPress else { return }
         didLongPress = true
         endPress()
         onForceClick()
@@ -226,8 +241,36 @@ final class GrabView: NSView, NSDraggingSource {
         let p = event.locationInWindow
         guard hypot(p.x - start.x, p.y - start.y) > 4, !didLongPress else { return }
 
-        // Everything picked out travels together; a photo that is not part of
-        // the selection travels alone.
+        // The line is where the photo can be moved; past its edge, the drag
+        // is the one that takes the file somewhere else. The margin keeps a
+        // pointer grazing the edge from flicking between the two.
+        if let window {
+            let onScreen = window.convertPoint(toScreen: p)
+            if !window.frame.insetBy(dx: -24, dy: -24).contains(onScreen) {
+                if sorting {
+                    sorting = false
+                    onSortEnd(false)
+                }
+                carryAway(event)
+                return
+            }
+        }
+
+        if !sorting {
+            sorting = true
+            // A carry is not a long press: looking at the photo can wait
+            // until the button comes up without having moved it anywhere.
+            holdTimer?.invalidate()
+            holdTimer = nil
+            onPressChange(false)
+            onSortBegin()
+        }
+        onSortMove(p.x)
+    }
+
+    /// Hands the files to AppKit: everything picked out, peeking out as a
+    /// stack so the drag reads as several photos rather than one.
+    private func carryAway(_ event: NSEvent) {
         var payload = dragEntries()
         if payload.isEmpty, let url { payload = [(url, dragImage)] }
         guard !payload.isEmpty else { return }
@@ -257,8 +300,13 @@ final class GrabView: NSView, NSDraggingSource {
         // The pick already happened on the way down; letting go changes
         // nothing. Copying moved to the menu, so a click no longer touches the
         // clipboard.
+        let moved = startedDrag || sorting
+        if sorting {
+            sorting = false
+            onSortEnd(true)
+        }
         endPress()
-        onSettle(startedDrag)
+        onSettle(moved)
         downPoint = nil
         didLongPress = false
     }
@@ -307,7 +355,11 @@ final class GrabView: NSView, NSDraggingSource {
         if operation.contains(.move) {
             let done = onDragEnd
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { done() }
+            return
         }
+        // Dropped on an app, which took a copy. The photo stays: the same
+        // picture is often sent to several people, or dropped into a message
+        // and an editor both, and one drag should not use it up.
     }
 
     /// The drag preview keeps the photo's aspect ratio inside the card.

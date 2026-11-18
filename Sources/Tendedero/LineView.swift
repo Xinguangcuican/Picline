@@ -93,13 +93,29 @@ struct LineView: View {
                     let x = Layout.x(index: index, count: line.items.count, width: width,
                                      visible: line.visibleCount, scroll: line.scroll)
                     let ropeY = Layout.ropeY(x: x, width: width)
+                    let sorting = line.sortingID == item.id
                     PeggedView(item: item, line: line)
                         .frame(width: Layout.cardWidth, height: Layout.panelHeight - ropeY, alignment: .top)
                         // Photos scrolled towards an edge fade out before they reach it.
                         .opacity(min(1, max(0, min(x, width - x) / 90)))
-                        .position(x: x, y: ropeY - Layout.pinAbove + (Layout.panelHeight - ropeY) / 2)
+                        // A photo being carried along the line follows the
+                        // pointer instead of its slot; the others close up
+                        // behind it with the spring below.
+                        .position(x: x + (sorting ? line.sortShift : 0),
+                                  y: ropeY - Layout.pinAbove + (Layout.panelHeight - ropeY) / 2)
+                        // Letting go drops the card into its slot with the
+                        // same spring the others moved with; while it is
+                        // being carried it follows the pointer with none.
+                        .animation(sorting ? nil : .spring(response: 0.32, dampingFraction: 0.82),
+                                   value: line.sortShift)
+                        .zIndex(sorting ? 1 : 0)
+                        .transaction { t in if sorting { t.animation = nil } }
                 }
             }
+            // Where a slot is depends on how wide the line is drawn, so the
+            // move keeps the figure the views are drawn with.
+            .onAppear { line.lineWidth = width }
+            .onChange(of: width) { _, now in line.lineWidth = now }
             .animation(.spring(response: 0.55, dampingFraction: 0.78), value: line.items.map(\.id))
             .animation(.easeInOut(duration: 0.3), value: line.items.isEmpty)
             .animation(.easeOut(duration: 0.12), value: line.catching)

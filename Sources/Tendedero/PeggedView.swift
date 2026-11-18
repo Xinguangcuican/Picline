@@ -18,6 +18,9 @@ struct PeggedView: View {
         line.draggingID != nil && line.selection.contains(item.id)
     }
     private var pressed: Bool { line.pressedID == item.id }
+    /// Being carried along the line to a new place: it lifts off the others
+    /// so it is clear which one is moving and which ones are making room.
+    private var sorting: Bool { line.sortingID == item.id }
 
     var body: some View {
         VStack(spacing: -12) {
@@ -91,11 +94,14 @@ struct PeggedView: View {
                     .opacity(selected ? 1 : 0)
             )
             .animation(.easeOut(duration: 0.14), value: selected)
-            .shadow(color: .black.opacity(hovering ? 0.26 : 0.18), radius: hovering ? 14 : 10, y: hovering ? 8 : 5)
+            .shadow(color: .black.opacity(sorting ? 0.32 : (hovering ? 0.26 : 0.18)),
+                    radius: sorting ? 18 : (hovering ? 14 : 10),
+                    y: sorting ? 10 : (hovering ? 8 : 5))
             // Holding presses the photo in slowly, so a long press feels like
             // it is building up to something.
-            .scaleEffect(pressed ? 0.95 : (hovering ? 1.035 : 1), anchor: .top)
+            .scaleEffect(pressed ? 0.95 : (sorting ? 1.06 : (hovering ? 1.035 : 1)), anchor: .top)
             .animation(pressed ? .easeInOut(duration: 0.45) : .spring(response: 0.3, dampingFraction: 0.6), value: pressed)
+            .animation(.spring(response: 0.28, dampingFraction: 0.7), value: sorting)
             .opacity(dragging ? 0.45 : 1)
             .overlay(alignment: .topLeading) {
                 // Drawn here, clicked through GrabView, which sits on top. A
