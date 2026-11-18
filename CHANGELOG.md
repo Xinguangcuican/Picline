@@ -1,3 +1,26 @@
+## 0.3.4 — 2026-11-19
+
+绳子上的图可以左右拖着换位置了。两端一起：macOS 0.3.4，Windows 0.2.8。
+
+### 新增
+
+- **按住一张图左右拖，就是把它搬个位置。** 这张跟着指针走，别的图让开，松手定住；顺序记在偏好里，重启还是这个顺序。
+  - 选了一组（`Shift` 连选、`Command` 加选）就整组一起搬，组内相对顺序不变。
+  - 判据只有一条：**指针还在绳子上就是搬图，拖出绳子才是拖去别的 app**。所以「拖进聊天窗口发出去」一点没变。
+- **Windows 同步到 0.2.8。** 同一套规则：在绳子上横拖＝换位置，拖出去才是导出文件。
+
+### 说明
+
+- **拖出去之后，图仍然挂在绳上**，这一点没变，也是想要的：同一张图常常要发给三五个人，或者在聊天窗口和编辑器里各用一次，拖一次就少一张会很难用。图什么时候离开，由你决定 —— 点叉号、右键「取下」，或者拖进文件夹。
+- 拖出去的过程中如果在绳子上挪过位置，那张图离开的瞬间顺序会先复原：取走一张不该顺手打乱留下的那些。
+- 已经从绳子上拖出去的图，不受影响；这条只改「拖到哪儿」和「拖完留不留」的关系。
+
+### English
+
+Photos on the line can be dragged sideways into another slot: the one under the pointer follows it, the others step aside, and the order is remembered across launches. A picked group travels together, keeping its own order.
+
+There is one rule — while the pointer is still over the line it is moving a photo; only once the pointer leaves is it a drag to another app. Sending a picture to a chat window therefore works exactly as before, and the photo stays on the line afterwards, so the same one can go to several people or into a message and an editor both. The Windows build moves to 0.2.8 with the same rule.
+
 ## 0.3.3 — 2026-11-19
 
 图片存哪儿，现在可以自己定了。两端一起：macOS 0.3.3，Windows 0.2.7。

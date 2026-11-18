@@ -34,7 +34,7 @@ Two platforms, the same set of gestures:
 | | macOS | Windows |
 | --- | --- | --- |
 | Lives in | Menu bar icon + a line at the top of the screen | Tray icon + a line at the top of the screen |
-| Installs as | `Picline-0.3.3.dmg`, dragged into Applications | A single exe, no installer |
+| Installs as | `Picline-0.3.4.dmg`, dragged into Applications | A single exe, no installer |
 | Add to selection | `Command` | `Ctrl` |
 | Interface languages | 11, switchable | Chinese |
 
@@ -66,11 +66,11 @@ Everything is on the [Releases](https://github.com/Xinguangcuican/Picline/releas
 
 | Platform | File | Notes |
 | --- | --- | --- |
-| macOS | `Picline-0.3.3.dmg` | Universal binary: Apple silicon and Intel in one package |
-| macOS | `Picline-0.3.3.zip` | Same, for people who prefer a zip |
-| Windows x64 | `Picline-0.2.7-win-x64.exe` | Nearly every 64-bit Windows |
-| Windows ARM64 | `Picline-0.2.7-win-arm64.exe` | Snapdragon laptops and other ARM machines |
-| Windows | `Picline-0.2.7-win.zip` | Both exes and the readme |
+| macOS | `Picline-0.3.4.dmg` | Universal binary: Apple silicon and Intel in one package |
+| macOS | `Picline-0.3.4.zip` | Same, for people who prefer a zip |
+| Windows x64 | `Picline-0.2.8-win-x64.exe` | Nearly every 64-bit Windows |
+| Windows ARM64 | `Picline-0.2.8-win-arm64.exe` | Snapdragon laptops and other ARM machines |
+| Windows | `Picline-0.2.8-win.zip` | Both exes and the readme |
 
 Neither build is code signed. On macOS, allow it once in Privacy & Security. On Windows, SmartScreen asks for "More info → Run anyway".
 
@@ -80,7 +80,7 @@ Neither build is code signed. On macOS, allow it once in Privacy & Security. On 
 
 ## Install
 
-1. Open `Picline-0.3.3.dmg` and drag `Picline` into Applications.
+1. Open `Picline-0.3.4.dmg` and drag `Picline` into Applications.
 2. The first launch is blocked by Gatekeeper (no notarisation). Either allow it in System Settings → Privacy & Security, or run:
    `xattr -dr com.apple.quarantine /Applications/Picline.app`
 3. The menu bar icon appears. Tick "Hang copied images" in the menu to start collecting.
@@ -89,7 +89,7 @@ Neither build is code signed. On macOS, allow it once in Privacy & Security. On 
 
 | Gesture | What happens | Since |
 | --- | --- | --- |
-| Pointer touches the menu bar | The line comes down at once, with a 0.06 s buffer so a pointer merely passing through does not pull it out | 0.1.x; instant as of 0.2.6 |
+| Pointer rests in the middle of the menu bar | The line comes down at once, with a 0.06 s buffer so a pointer merely passing through does not pull it out. The middle is a 320-point strip; the Apple menu, the app menus, Control Centre, the battery, Wi-Fi and the clock are not part of it, so clicking them is never blocked | 0.1.x; instant as of 0.2.6; narrowed as of **0.3.2** |
 | Hold a key, then touch the menu bar | Bring the line down → "Only with a key held", choose `⌘` / `⌥` / `⌃` / `⇧`. Without the key nothing happens | **0.2.7** |
 | An empty line stays away | With nothing hanging, touching the top does nothing, so reaching for the Wi-Fi menu is not blocked; the shortcut and the menu still open it. A picture being carried in is the exception: the line comes down to take it | 0.2.8 (0.2.5–0.2.7 came down) |
 | Hold the button and drag a picture up | Once the pointer is within two menu bars of the top edge (about 64 / 50 points) the line comes down, dipping to meet it; let go and the picture hangs | **0.3.1** |
@@ -108,6 +108,7 @@ It comes down on whichever screen you touched the top of, drawn at that screen's
 | `Shift` + click | Picks the run between the last pick and this one | 0.2.6 |
 | `Command` + click | Adds or removes one | 0.2.6 |
 | Drag a picked photo | The whole group travels: several pictures sent to a chat, several files copied into a folder | 0.2.6 |
+| Hold and drag sideways | Inside the line this moves that photo to another slot, the others stepping aside; only once the pointer leaves the line is it a drag to another app. The order is remembered | **0.3.4** |
 | Double click | Opens with the app chosen under "Double click opens with", system default by default | 0.1.9 |
 | Hold for 0.45 s, or force click | Quick Look, arrow keys page through the whole line | 0.2.1 |
 | Middle button | Markup | 0.1.9 |
@@ -176,15 +177,15 @@ swift scripts/check-strings.swift   # 83 strings × 11 languages
 
 # Windows
 
-> Every Windows release adds one to the last number, and carries into the middle one at 9 — `0.1.9` is followed by `0.2.0`, so nothing is ever as wide as `0.1.13`. Counting that way, this release is **0.2.5**; the four two-digit numbers before it (`0.1.10`–`0.1.13`) are `0.2.0`–`0.2.3`.
+> Every Windows release adds one to the last number, and carries into the middle one at 9 — `0.1.9` is followed by `0.2.0`, so nothing is ever as wide as `0.1.13`. Counting that way, this release is **0.2.8**; the four two-digit numbers before it (`0.1.10`–`0.1.13`) are `0.2.0`–`0.2.3`.
 
 The Windows half has a repository of its own — [`Xinguangcuican/Picline-Windows`](https://github.com/Xinguangcuican/Picline-Windows) — where its history can be read on its own and where the Windows builds get their own releases. `windows/` here is a mirror of it.
 
-The two version numbers move independently: macOS is on **0.3.3**, Windows on **0.2.7**. Both moved this time for the same reason — the folder new pictures are saved in can now be chosen. The time before, macOS went it alone at 0.3.2 (Mission Control, narrower hover zone) and Windows stayed put, because nothing on its side had changed.
+The two version numbers move independently: macOS is on **0.3.4**, Windows on **0.2.8**. Both moved this time for the same reason — a photo can be dragged sideways to another slot. The time before, macOS went it alone at 0.3.2 (Mission Control, narrower hover zone) and Windows stayed put, because nothing on its side had changed.
 
 ## Install
 
-1. Download `Picline-0.2.7-win-x64.exe` (most machines) or `Picline-0.2.7-win-arm64.exe` (ARM laptops).
+1. Download `Picline-0.2.8-win-x64.exe` (most machines) or `Picline-0.2.8-win-arm64.exe` (ARM laptops).
 2. Double-click it. Nothing is installed and no registry keys are written, apart from the optional Explorer right-click entry, which can be switched off and removes its own key.
 3. SmartScreen stops the first run (unsigned): More info → Run anyway.
 
@@ -232,6 +233,7 @@ The two version numbers move independently: macOS is on **0.3.3**, Windows on **
 | Clipboard | DIB from screenshot tools, PNG from browsers and tools, image files copied in Explorer | 0.1.1 |
 | Explorer right-click "挂到 Picline" | Select pictures, right-click, they hang on the line; no need to start the app first (Windows 11: "Show more options") | 0.1.2 |
 | Drag a picture to the top edge | The line comes down to take it, with a dashed outline where it will land; several at once work | **0.2.6** |
+| Drag sideways | Over the line this moves that photo to another slot; only off the line is it a drag to another app. The order is remembered | **0.2.8** |
 | Picture storage location | Tray → "Picture storage location" → "Choose Folder…"; new pictures go there. Unset, it is `%TEMP%\Picline`; an unplugged drive or a deleted folder falls back to it | **0.2.7** |
 | Tray menu | Show / hide, take everything down, reveal key, Explorer entry on/off, quit | 0.1.2 |
 | Several screens and scaling | Comes down on the screen you touched, drawn at that screen's scale | 0.1.2 |
@@ -275,6 +277,7 @@ The two builds are aligned item by item, but some gestures are native to one pla
 
 The full history is in [`CHANGELOG.md`](CHANGELOG.md) (Chinese).
 
+- **0.3.4 — 2026-11-19 (macOS) / 0.2.8 (Windows)** Photos on the line can be dragged sideways into another slot: the one under the pointer follows it, the others step aside, and the order is remembered. There is one rule — while the pointer is still over the line it is moving a photo; only once the pointer leaves is it a drag to another app. So sending one to a chat works exactly as before, and the photo stays on the line, ready to be sent to the next person too. A picked group moves together. Windows moves to 0.2.8.
 - **0.3.3 — 2026-11-19 (macOS) / 0.2.7 (Windows)** Pictures can be saved wherever you like: the menu's "Picture storage location" submenu picks a folder, a work folder or an external drive, and new pictures go there. Pictures already on the line stay exactly where they are — nothing is moved. The choice is remembered; an unplugged drive or a deleted folder falls back to the default so a picture still hangs. Windows moves to 0.2.7 with the same submenu and the same rules.
 - **0.3.2 — 2026-11-11 (macOS only, Windows stays 0.2.6)** The line no longer comes down inside Mission Control, App Exposé or Launchpad, where dragging a window to another desktop is the same held-button-crossing-the-top-edge gesture as carrying a picture up, and the drop belongs to the spaces bar rather than to the line. The hover zone also shrinks from the whole menu bar to a 320-point strip in the middle, wider than the notch, which hands the Apple menu, the app menus, Control Centre, the battery, Wi-Fi and the clock back to the system. Dragging a picture in still uses the full width.
 - **0.3.1 — 2026-11-06 (macOS)** Pictures can be dragged in: hold one in Finder, drag it to the top of the screen, and the line comes down to take it, with a dashed outline showing where it will land. The catching strip is two menu bars tall, so window drags and text selections no longer summon the line. A press counts as carrying only if it is held and actually moves, and an empty line leaves the moment the pointer does.
@@ -312,9 +315,10 @@ Tendedero (Alejandro Buján, MIT)
       ├─ 0.3.1 (new: drag a picture to the top edge and it hangs; change: a two-menu-bar catching strip)
       ├─ 0.3.2 (fix: no line inside Mission Control, App Exposé or Launchpad; change: the hover zone is the middle 320 points)
       ├─ 0.3.3 (new: pictures can be saved anywhere, including an external drive; existing cards stay put)
+      ├─ 0.3.4 (new: drag a photo sideways to another slot; over the line it moves, off the line it is dragged away)
       │
-      └─ Picline for Windows: 0.1.0 → 0.2.7 (18th build)
-            Rust + Win32, its own repository, the same gestures as macOS; 0.2.7 is the Windows half of 0.3.3
+      └─ Picline for Windows: 0.1.0 → 0.2.8 (19th build)
+            Rust + Win32, its own repository, the same gestures as macOS; 0.2.8 is the Windows half of 0.3.4
 ```
 
 Within a tier the versions run downwards in time. The earlier detail lives in [`CHANGELOG.md`](CHANGELOG.md) (Chinese), one section per version, each split into new / changed / fixed.
