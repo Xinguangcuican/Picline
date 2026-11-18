@@ -92,7 +92,7 @@ swift test --disable-sandbox        # 104 项测试
 
 ## Windows 版
 
-`windows/` 里是同一套交互的 Windows 实现：Rust 写的手写 Win32 + GDI+，一个 exe，不用安装。贴顶唤出（也可要求按住 `Ctrl` / `Alt` / `Shift`）、快捷键可自行录制、截图与复制的图自动挂上、把图拖到屏幕顶部挂上（0.2.6 起）、单击选中、`Shift` 连选、`Ctrl` 加选、双击预览、右键菜单、拖进聊天窗口或文件夹，规则与 Mac 版一致。在 Mac 上用 llvm-mingw 交叉编译出 x64 与 ARM64 两个 exe，详见 [`../windows/README.md`](../windows/README.md)。
+`windows/` 里是同一套交互的 Windows 实现：Rust 写的手写 Win32 + GDI+，一个 exe，不用安装。贴顶唤出（也可要求按住 `Ctrl` / `Alt` / `Shift`）、快捷键可自行录制、截图与复制的图自动挂上、把图拖到屏幕顶部挂上（0.2.6 起）、图片保存位置可自选（0.2.7 起）、单击选中、`Shift` 连选、`Ctrl` 加选、双击预览、右键菜单、拖进聊天窗口或文件夹，规则与 Mac 版一致。在 Mac 上用 llvm-mingw 交叉编译出 x64 与 ARM64 两个 exe，详见 [`../windows/README.md`](../windows/README.md)。
 
 ## 最近几个版本
 
