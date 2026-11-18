@@ -307,12 +307,19 @@ final class Line: ObservableObject {
         contentsOfFile: "/System/Library/Components/CoreAudio.component/Contents/SharedSupport/SystemSounds/dock/drag to trash.aif",
         byReference: true)
 
-    /// Whether the file lives in Tendedero's own folder. Those are discarded
-    /// to the Trash, or the folder would fill up with forgotten screenshots.
-    /// Files anywhere else, like the Desktop, stay where they are.
+    /// Whether the file lives in a folder Picline saves into. Those are
+    /// discarded to the Trash, or the folder would fill up with forgotten
+    /// screenshots. Files anywhere else, like the Desktop, stay where they are.
+    ///
+    /// The default folder counts even after the user has picked another one,
+    /// so pictures hung before the change are still cleaned up rather than
+    /// left behind as orphans.
     func isInInbox(_ id: UUID) -> Bool {
         guard let item = items.first(where: { $0.id == id }) else { return false }
-        return item.url.standardizedFileURL.path.hasPrefix(Inbox.folder.standardizedFileURL.path + "/")
+        let path = item.url.standardizedFileURL.path
+        return [Inbox.folder, Inbox.defaultFolder].contains {
+            path.hasPrefix($0.standardizedFileURL.path + "/")
+        }
     }
 
     /// The corner cross and "Take down" both end up here. The cross is always

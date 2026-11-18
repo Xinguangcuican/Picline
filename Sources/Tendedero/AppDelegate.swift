@@ -861,6 +861,37 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
     }
 
+    // MARK: Storage folder
+
+    private func chooseStorageFolder() {
+        let panel = NSOpenPanel()
+        panel.canChooseDirectories = true
+        panel.canChooseFiles = false
+        panel.allowsMultipleSelection = false
+        panel.canCreateDirectories = true
+        panel.prompt = L("Use This Folder")
+        panel.message = L("New pictures will be saved here.")
+        panel.directoryURL = Inbox.folder
+        NSApp.activate(ignoringOtherApps: true)
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        useStorageFolder(url)
+    }
+
+    /// Nil goes back to the default folder. The watcher is rebuilt because it
+    /// holds the folder it was pointed at, and would otherwise keep watching
+    /// the old one — the pictures would be saved somewhere nothing is looking.
+    private func useStorageFolder(_ url: URL?) {
+        Inbox.choose(url)
+        startWatcher()
+        guard Inbox.isUsable(Inbox.folder) else {
+            let alert = NSAlert()
+            alert.messageText = L("That folder cannot be written to")
+            alert.informativeText = L("Pictures will go to the default folder instead.")
+            alert.runModal()
+            return
+        }
+    }
+
     // MARK: Shortcut
 
     private func registerShortcut() {
@@ -1104,10 +1135,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         shortcutItem.submenu = shortcuts
         menu.addItem(shortcutItem)
 
-        menu.addItem(ClosureMenuItem(L("Open screenshots folder")) { [weak self] in
-            guard let self else { return }
-            NSWorkspace.shared.open(self.watcher.folder)
+        // Where new pictures go. The default is inside Application Support,
+        // which Finder hides from ordinary browsing, so it can be pointed at a
+        // folder of the user's own — a work folder, or a drive that is backed up.
+        let storageItem = NSMenuItem(title: L("Picture storage location"), action: nil, keyEquivalent: "")
+        let storage = NSMenu()
+        let defaultItem = ClosureMenuItem(L("Default folder")) { [weak self] in
+            self?.useStorageFolder(nil)
+        }
+        defaultItem.state = Inbox.chosenFolder == nil ? .on : .off
+        storage.addItem(defaultItem)
+        storage.addItem(ClosureMenuItem(L("Choose Folder…")) { [weak self] in
+            self?.chooseStorageFolder()
         })
+        storage.addItem(.separator())
+        storage.addItem(ClosureMenuItem(L("Open screenshots folder")) {
+            NSWorkspace.shared.open(Inbox.folder)
+        })
+        storageItem.submenu = storage
+        menu.addItem(storageItem)
 
         menu.addItem(.separator())
 

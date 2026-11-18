@@ -107,3 +107,10 @@
 "You're up to date" = "최신 버전입니다";
 "Couldn't check for updates" = "업데이트를 확인하지 못했습니다";
 "Push the pointer to the top of the screen to bring it back" = "포인터를 화면 맨 위로 옮기면 다시 내려옵니다";
+"Picture storage location" = "이미지 저장 위치";
+"Default folder" = "기본 폴더";
+"Choose Folder…" = "폴더 선택…";
+"Use This Folder" = "이 폴더 사용";
+"New pictures will be saved here." = "새 이미지는 여기에 저장됩니다.";
+"That folder cannot be written to" = "이 폴더에 쓸 수 없습니다";
+"Pictures will go to the default folder instead." = "이미지는 기본 폴더에 저장됩니다.";

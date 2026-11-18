@@ -107,3 +107,10 @@
 "You're up to date" = "最新バージョンです";
 "Couldn't check for updates" = "アップデートを確認できませんでした";
 "Push the pointer to the top of the screen to bring it back" = "ポインタを画面の一番上に持っていくと、また出てきます";
+"Picture storage location" = "画像の保存場所";
+"Default folder" = "デフォルトのフォルダ";
+"Choose Folder…" = "フォルダを選択…";
+"Use This Folder" = "このフォルダを使う";
+"New pictures will be saved here." = "新しい画像はここに保存されます。";
+"That folder cannot be written to" = "このフォルダに書き込めません";
+"Pictures will go to the default folder instead." = "画像はデフォルトのフォルダに保存されます。";

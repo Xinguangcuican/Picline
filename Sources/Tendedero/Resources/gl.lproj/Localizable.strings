@@ -107,3 +107,10 @@
 "You're up to date" = "Xa tes a última versión";
 "Couldn't check for updates" = "Non se puido comprobar se hai actualizacións";
 "Push the pointer to the top of the screen to bring it back" = "Leva o punteiro á parte superior da pantalla para que volva";
+"Picture storage location" = "Localización das imaxes";
+"Default folder" = "Cartafol predeterminado";
+"Choose Folder…" = "Escoller cartafol…";
+"Use This Folder" = "Usar este cartafol";
+"New pictures will be saved here." = "As imaxes novas gardaranse aquí.";
+"That folder cannot be written to" = "Non se pode escribir nese cartafol";
+"Pictures will go to the default folder instead." = "As imaxes irán ao cartafol predeterminado.";

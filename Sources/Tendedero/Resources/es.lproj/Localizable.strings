@@ -107,3 +107,10 @@
 "You're up to date" = "Ya tienes la última versión";
 "Couldn't check for updates" = "No se pudo comprobar si hay actualizaciones";
 "Push the pointer to the top of the screen to bring it back" = "Lleva el puntero al borde superior de la pantalla para que vuelva";
+"Picture storage location" = "Ubicación de las imágenes";
+"Default folder" = "Carpeta predeterminada";
+"Choose Folder…" = "Elegir carpeta…";
+"Use This Folder" = "Usar esta carpeta";
+"New pictures will be saved here." = "Las imágenes nuevas se guardarán aquí.";
+"That folder cannot be written to" = "No se puede escribir en esa carpeta";
+"Pictures will go to the default folder instead." = "Las imágenes irán a la carpeta predeterminada.";

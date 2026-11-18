@@ -33,11 +33,71 @@ enum Inbox {
     private static let enabledKey = "inboxEnabled"
     private static let offeredKey = "inboxOffered"
     private static let savedKey = "inboxSavedSettings"
+    private static let chosenKey = "chosenStorageFolder"
 
-    static let folder: URL = {
+    /// Where new pictures go: the folder picked in the menu, or the default.
+    ///
+    /// The folder is asked for every time rather than remembered, because the
+    /// answer changes when a drive is unmounted. A picture taken while the
+    /// external disk is away lands in the default folder instead of failing
+    /// to hang at all.
+    static var folder: URL {
+        if let chosen = chosenFolder, isUsable(chosen) { return chosen }
+        return defaultFolder
+    }
+
+    /// The folder inside Application Support. It is what earlier versions
+    /// used, and it stays the fallback once another folder is chosen.
+    static let defaultFolder: URL = {
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
         return storageFolder(in: base)
     }()
+
+    /// What the menu's "Choose Folder…" was last given, kept across launches.
+    /// Nil means the default.
+    static var chosenFolder: URL? {
+        get {
+            guard let path = UserDefaults.standard.string(forKey: chosenKey) else { return nil }
+            return URL(fileURLWithPath: path, isDirectory: true)
+        }
+        set {
+            if let newValue {
+                UserDefaults.standard.set(newValue.path, forKey: chosenKey)
+            } else {
+                UserDefaults.standard.removeObject(forKey: chosenKey)
+            }
+        }
+    }
+
+    /// Whether pictures can be written there right now. An unmounted drive or
+    /// a folder renamed out from under us answers no.
+    static func isUsable(_ url: URL) -> Bool {
+        var isDirectory: ObjCBool = false
+        guard FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory),
+              isDirectory.boolValue else { return false }
+        return FileManager.default.isWritableFile(atPath: url.path)
+    }
+
+    /// Points new pictures at `url`, or back at the default folder when nil.
+    ///
+    /// When screenshots are being taken over, the screenshot service has been
+    /// told the old folder and has to be told the new one. Its own settings are
+    /// put back first, so the value saved as "what the user had" keeps being
+    /// the user's, not a path we wrote earlier.
+    static func choose(_ url: URL?) {
+        let wasApplied = isApplied
+        if wasApplied { restore() }
+        remember(url)
+        if wasApplied, isEnabled { apply() }
+    }
+
+    /// Records the choice and makes sure the folder exists, without touching
+    /// the screenshot service. Split out so tests can exercise the bookkeeping
+    /// without rewriting the machine's screenshot settings.
+    static func remember(_ url: URL?) {
+        chosenFolder = url
+        try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+    }
 
     /// Keep existing card paths, Inbox ownership and saved screenshot settings
     /// valid across the rename. New installations use the Picline directory.

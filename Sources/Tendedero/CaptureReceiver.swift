@@ -84,7 +84,11 @@ struct CaptureFileVersion: Equatable {
 final class CaptureReceiver {
     nonisolated static let imageExtensions: Set<String> = ["png", "jpg", "jpeg", "heic", "heif", "tif", "tiff", "gif", "webp", "bmp"]
     nonisolated static let maxBytes = 64 * 1024 * 1024
-    private let inbox: URL
+    /// Nil in the app, so the folder is read again for every picture: the
+    /// user can point it somewhere else, or the drive it lived on can go away.
+    /// Tests pass a folder to keep their work off the real one.
+    private let fixedInbox: URL?
+    private var inbox: URL { fixedInbox ?? Inbox.folder }
     private let isPresent: (URL) -> Bool
     private let currentURLs: () -> [URL]
     private let onCapture: (ReceivedCapture) -> Void
@@ -105,11 +109,11 @@ final class CaptureReceiver {
     }
     private var records: [Record] = []
 
-    init(inbox: URL = Inbox.folder, isPresent: @escaping (URL) -> Bool,
+    init(inbox: URL? = nil, isPresent: @escaping (URL) -> Bool,
          currentURLs: @escaping () -> [URL] = { [] },
          onRemove: @escaping (URL) -> Void = { _ in },
          onCapture: @escaping (ReceivedCapture) -> Void) {
-        self.inbox = inbox
+        self.fixedInbox = inbox
         self.isPresent = isPresent
         self.currentURLs = currentURLs
         self.onRemove = onRemove

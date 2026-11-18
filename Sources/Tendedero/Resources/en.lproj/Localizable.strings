@@ -109,3 +109,10 @@
 "You're up to date" = "You're up to date";
 "Couldn't check for updates" = "Couldn't check for updates";
 "Push the pointer to the top of the screen to bring it back" = "Push the pointer to the top of the screen to bring it back";
+"Picture storage location" = "Picture storage location";
+"Default folder" = "Default folder";
+"Choose Folder…" = "Choose Folder…";
+"Use This Folder" = "Use This Folder";
+"New pictures will be saved here." = "New pictures will be saved here.";
+"That folder cannot be written to" = "That folder cannot be written to";
+"Pictures will go to the default folder instead." = "Pictures will go to the default folder instead.";

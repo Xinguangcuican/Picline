@@ -107,3 +107,10 @@
 "You're up to date" = "Você está na versão mais recente";
 "Couldn't check for updates" = "Não foi possível verificar atualizações";
 "Push the pointer to the top of the screen to bring it back" = "Leve o ponteiro até o topo da tela para trazê-la de volta";
+"Picture storage location" = "Local das imagens";
+"Default folder" = "Pasta padrão";
+"Choose Folder…" = "Escolher pasta…";
+"Use This Folder" = "Usar esta pasta";
+"New pictures will be saved here." = "As novas imagens serão salvas aqui.";
+"That folder cannot be written to" = "Não é possível gravar nessa pasta";
+"Pictures will go to the default folder instead." = "As imagens irão para a pasta padrão.";
