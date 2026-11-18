@@ -34,7 +34,7 @@ Two platforms, the same set of gestures:
 | | macOS | Windows |
 | --- | --- | --- |
 | Lives in | Menu bar icon + a line at the top of the screen | Tray icon + a line at the top of the screen |
-| Installs as | `Picline-0.3.2.dmg`, dragged into Applications | A single exe, no installer |
+| Installs as | `Picline-0.3.3.dmg`, dragged into Applications | A single exe, no installer |
 | Add to selection | `Command` | `Ctrl` |
 | Interface languages | 11, switchable | Chinese |
 
@@ -66,11 +66,11 @@ Everything is on the [Releases](https://github.com/Xinguangcuican/Picline/releas
 
 | Platform | File | Notes |
 | --- | --- | --- |
-| macOS | `Picline-0.3.2.dmg` | Universal binary: Apple silicon and Intel in one package |
-| macOS | `Picline-0.3.2.zip` | Same, for people who prefer a zip |
-| Windows x64 | `Picline-0.2.6-win-x64.exe` | Nearly every 64-bit Windows |
-| Windows ARM64 | `Picline-0.2.6-win-arm64.exe` | Snapdragon laptops and other ARM machines |
-| Windows | `Picline-0.2.6-win.zip` | Both exes and the readme |
+| macOS | `Picline-0.3.3.dmg` | Universal binary: Apple silicon and Intel in one package |
+| macOS | `Picline-0.3.3.zip` | Same, for people who prefer a zip |
+| Windows x64 | `Picline-0.2.7-win-x64.exe` | Nearly every 64-bit Windows |
+| Windows ARM64 | `Picline-0.2.7-win-arm64.exe` | Snapdragon laptops and other ARM machines |
+| Windows | `Picline-0.2.7-win.zip` | Both exes and the readme |
 
 Neither build is code signed. On macOS, allow it once in Privacy & Security. On Windows, SmartScreen asks for "More info → Run anyway".
 
@@ -80,7 +80,7 @@ Neither build is code signed. On macOS, allow it once in Privacy & Security. On 
 
 ## Install
 
-1. Open `Picline-0.3.2.dmg` and drag `Picline` into Applications.
+1. Open `Picline-0.3.3.dmg` and drag `Picline` into Applications.
 2. The first launch is blocked by Gatekeeper (no notarisation). Either allow it in System Settings → Privacy & Security, or run:
    `xattr -dr com.apple.quarantine /Applications/Picline.app`
 3. The menu bar icon appears. Tick "Hang copied images" in the menu to start collecting.
@@ -147,6 +147,16 @@ Every item acts on what is picked out: three photos picked and one of them right
 - **System screenshots**: "Handle screenshots" points the macOS screenshot tool at the app's own folder and turns off the floating thumbnail; it is restored when you turn the option off or quit.
 - **Duplicates**: matched on decoded pixels and orientation, so the same picture arriving from a folder, the clipboard or two tools hangs once. Cropped, annotated or recompressed counts as different.
 
+## Where pictures are kept
+
+The default is `~/Library/Application Support/Picline/Screenshots`. Finder hides that folder — the personal Library is hidden until you hold `⌥` while opening the Go menu. "Show in Finder" on a card, or "Picture storage location → Open screenshots folder" in the menu, gets you there in one step.
+
+To put them somewhere else — a work folder, an external drive — use "Picture storage location → Choose Folder…". The rules:
+
+- Only pictures taken from then on are affected. Cards already on the line keep their files; nothing is moved.
+- The choice is remembered across launches; "Default folder" puts it back.
+- An unplugged drive, a deleted or renamed folder: the next picture falls back to the default folder instead of failing to hang, and your choice takes over again when the drive is back.
+
 ## Hanging a picture from Finder
 
 Select one or more pictures, right-click → Open With → Picline. The picture is copied into the app and hangs on the line. Third-party file managers that offer Open With work the same way, and you can drag pictures onto the app icon.
@@ -170,11 +180,11 @@ swift scripts/check-strings.swift   # 83 strings × 11 languages
 
 The Windows half has a repository of its own — [`Xinguangcuican/Picline-Windows`](https://github.com/Xinguangcuican/Picline-Windows) — where its history can be read on its own and where the Windows builds get their own releases. `windows/` here is a mirror of it.
 
-The two version numbers move independently: macOS is on **0.3.2**, Windows on **0.2.6**. 0.3.2 only touched the Mac side (Mission Control, narrower hover zone) and left the Windows line unchanged, so it stays at 0.2.6; the last version that moved both was 0.3.1 / 0.2.6 (dragging pictures in).
+The two version numbers move independently: macOS is on **0.3.3**, Windows on **0.2.7**. Both moved this time for the same reason — the folder new pictures are saved in can now be chosen. The time before, macOS went it alone at 0.3.2 (Mission Control, narrower hover zone) and Windows stayed put, because nothing on its side had changed.
 
 ## Install
 
-1. Download `Picline-0.2.6-win-x64.exe` (most machines) or `Picline-0.2.6-win-arm64.exe` (ARM laptops).
+1. Download `Picline-0.2.7-win-x64.exe` (most machines) or `Picline-0.2.7-win-arm64.exe` (ARM laptops).
 2. Double-click it. Nothing is installed and no registry keys are written, apart from the optional Explorer right-click entry, which can be switched off and removes its own key.
 3. SmartScreen stops the first run (unsigned): More info → Run anyway.
 
@@ -222,6 +232,7 @@ The two version numbers move independently: macOS is on **0.3.2**, Windows on **
 | Clipboard | DIB from screenshot tools, PNG from browsers and tools, image files copied in Explorer | 0.1.1 |
 | Explorer right-click "挂到 Picline" | Select pictures, right-click, they hang on the line; no need to start the app first (Windows 11: "Show more options") | 0.1.2 |
 | Drag a picture to the top edge | The line comes down to take it, with a dashed outline where it will land; several at once work | **0.2.6** |
+| Picture storage location | Tray → "Picture storage location" → "Choose Folder…"; new pictures go there. Unset, it is `%TEMP%\Picline`; an unplugged drive or a deleted folder falls back to it | **0.2.7** |
 | Tray menu | Show / hide, take everything down, reveal key, Explorer entry on/off, quit | 0.1.2 |
 | Several screens and scaling | Comes down on the screen you touched, drawn at that screen's scale | 0.1.2 |
 | Full screen and single instance | Stays away over full screen apps; double-clicking twice does not make two lines | 0.1.2 |
@@ -264,6 +275,7 @@ The two builds are aligned item by item, but some gestures are native to one pla
 
 The full history is in [`CHANGELOG.md`](CHANGELOG.md) (Chinese).
 
+- **0.3.3 — 2026-11-19 (macOS) / 0.2.7 (Windows)** Pictures can be saved wherever you like: the menu's "Picture storage location" submenu picks a folder, a work folder or an external drive, and new pictures go there. Pictures already on the line stay exactly where they are — nothing is moved. The choice is remembered; an unplugged drive or a deleted folder falls back to the default so a picture still hangs. Windows moves to 0.2.7 with the same submenu and the same rules.
 - **0.3.2 — 2026-11-11 (macOS only, Windows stays 0.2.6)** The line no longer comes down inside Mission Control, App Exposé or Launchpad, where dragging a window to another desktop is the same held-button-crossing-the-top-edge gesture as carrying a picture up, and the drop belongs to the spaces bar rather than to the line. The hover zone also shrinks from the whole menu bar to a 320-point strip in the middle, wider than the notch, which hands the Apple menu, the app menus, Control Centre, the battery, Wi-Fi and the clock back to the system. Dragging a picture in still uses the full width.
 - **0.3.1 — 2026-11-06 (macOS)** Pictures can be dragged in: hold one in Finder, drag it to the top of the screen, and the line comes down to take it, with a dashed outline showing where it will land. The catching strip is two menu bars tall, so window drags and text selections no longer summon the line. A press counts as carrying only if it is held and actually moves, and an empty line leaves the moment the pointer does.
 - **0.3.0 — 2026-11-05 (macOS) / 0.2.5 (Windows)** Picline finds its own updates: a system notification, a line at the top of the menu, and a check that answers on the spot. The first run introduces itself for nine seconds. Windows stops leaving a temporary PNG behind on every drag, and taking a card down recycles the files the app made for it.
@@ -299,9 +311,10 @@ Tendedero (Alejandro Buján, MIT)
       ├─ 0.3.0 (new: the app asks GitHub for updates; a first-run introduction)
       ├─ 0.3.1 (new: drag a picture to the top edge and it hangs; change: a two-menu-bar catching strip)
       ├─ 0.3.2 (fix: no line inside Mission Control, App Exposé or Launchpad; change: the hover zone is the middle 320 points)
+      ├─ 0.3.3 (new: pictures can be saved anywhere, including an external drive; existing cards stay put)
       │
-      └─ Picline for Windows: 0.1.0 → 0.2.6 (17th build)
-            Rust + Win32, its own repository, the same gestures as macOS; 0.2.6 is the Windows half of 0.3.1
+      └─ Picline for Windows: 0.1.0 → 0.2.7 (18th build)
+            Rust + Win32, its own repository, the same gestures as macOS; 0.2.7 is the Windows half of 0.3.3
 ```
 
 Within a tier the versions run downwards in time. The earlier detail lives in [`CHANGELOG.md`](CHANGELOG.md) (Chinese), one section per version, each split into new / changed / fixed.

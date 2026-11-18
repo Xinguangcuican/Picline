@@ -1,3 +1,30 @@
+## 0.3.3 — 2026-11-19
+
+图片存哪儿，现在可以自己定了。两端一起：macOS 0.3.3，Windows 0.2.7。
+
+### 新增
+
+- **图片保存位置可以自己选。** 菜单栏 →「图片保存位置」→「选择文件夹…」，以后新挂的图就写到你选的文件夹，可以是工作目录，也可以是外置盘，方便备份、或者给剪辑软件直接读。选「默认文件夹」能改回来。
+  - **已经挂在绳子上的图不受影响**：路径不动，照常能拖、能存、能取下。换目录不该把你正在用的东西搬走，所以这一版一条文件都不搬。
+  - 选过的位置记在偏好里，重启还在。
+  - 外置盘拔了、文件夹被删掉或改了名，这一张退回默认目录存下，图不会挂不上；菜单里的勾选仍然记着你选的那个位置，盘插回来就又生效。
+  - 如果开着「接管系统截图位置」，换目录时会先把系统原来的截图设置还原，再指到新目录，不在系统里留一个旧路径。
+- **菜单里的「打开截图文件夹」挪进了这个子菜单**，和「默认文件夹」「选择文件夹…」放在一起，跳过去看一眼还是那一下。
+- **Windows 同步到 0.2.7。** 托盘右键 →「图片保存位置」→「选择文件夹…」，规则一致：新图进新目录、旧卡片不动、目录不可用时退回默认（`%TEMP%\Picline`）。另外自己指定过文件夹之后，启动时不再清理那个目录里超过一周的文件——那儿可能放着用户自己的东西。
+
+### 改动
+
+- 卡片取下时「这个文件是不是我们自己生成的」判断，同时认默认目录和当前目录。旧图不会因为换了目录就变成「别人的文件」而留在磁盘上。
+- Windows 端新增 `src/storage.rs`，图片写到哪个文件夹只有一处答案，不再散落在各个函数里。
+
+### English
+
+Pictures can now be saved wherever you like. The menu's "Picture storage location" submenu picks a folder — a work folder, or an external drive that gets backed up — and new pictures go there from then on. "Default folder" puts it back.
+
+Pictures already on the line are left exactly where they are: the change only affects what comes next, and no file is moved. The choice is remembered across launches. If the drive is unplugged, or the folder is deleted or renamed, the next picture falls back to the default folder instead of failing to hang, and the choice still stands for when the drive comes back. When screenshots are being taken over, the system's own screenshot setting is put back before being pointed at the new folder, so no stale path is left behind.
+
+The Windows build moves to 0.2.7 with the same submenu and the same rules. It also stops sweeping old files out of a folder the user picked, since their own pictures may live there.
+
 ## 0.3.2 — 2026-11-11
 
 调度中心里不再乱动，顶部唤出区也收窄到了中间。只动 macOS，Windows 仍是 0.2.6。
